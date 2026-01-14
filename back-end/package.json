@@ -4,7 +4,7 @@
   "description": "RESTFul API back-end application",
   "main": "server.js",
   "scripts": {
-    "start": "nodemon server",
+    "start": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "import-data": "node scripts/import-data.js"
   },
