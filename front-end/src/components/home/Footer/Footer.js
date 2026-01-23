@@ -1,7 +1,6 @@
-import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { FaFacebook, FaYoutube, FaLinkedin, FaGithub } from "react-icons/fa";
-import FooterListTitle from "./FooterListTitle";
+import { useState } from "react";
+import { FaFacebook, FaGithub, FaLinkedin, FaYoutube } from "react-icons/fa";
 import { paymentCard } from "../../../assets/images";
 import Image from "../../designLayouts/Image";
 
@@ -27,146 +26,218 @@ const Footer = () => {
       setEmailInfo("");
     }
   };
+
   return (
-    <div className="w-full bg-[#F5F5F3] py-20">
-      <div className="max-w-container mx-auto grid grid-cols-1 md:grid-cols-2  xl:grid-cols-6 px-4 gap-10">
-        <div className="col-span-2">
-          <FooterListTitle title=" More about ebay" />
-          <div className="flex flex-col gap-6">
-            <p className="text-base w-full xl:w-[80%]">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim sint
-              ab ullam, numquam nesciunt in.
+    <footer className="bg-[#3C3C3C] text-white py-12 md:py-16">
+      <div className="px-4 mx-auto max-w-7xl md:px-8">
+        <div className="grid grid-cols-1 gap-12 mb-12 md:grid-cols-2">
+          {/* Left Side - Brand & Newsletter */}
+          <div className="space-y-6">
+            <div>
+              <h3 className="mb-1 text-2xl font-bold md:text-3xl">
+                More About
+              </h3>
+              <h3 className="text-2xl font-bold md:text-3xl">eBay</h3>
+            </div>
+            <p className="text-sm leading-relaxed text-white/70">
+              Get newsletter update for upcoming product and best discount for
+              all items.
             </p>
-            <ul className="flex items-center gap-2">
-              <a
-                href="https://www.youtube.com/@reactjsBD"
-                target="_blank"
-                rel="noreferrer"
-              >
-                <li className="w-7 h-7 bg-primeColor text-gray-100 hover:text-white cursor-pointer text-lg rounded-full flex justify-center items-center hover:bg-black duration-300">
-                  <FaYoutube />
-                </li>
-              </a>
-              <a
-                href="https://github.com/noorjsdivs"
-                target="_blank"
-                rel="noreferrer"
-              >
-                <li className="w-7 h-7 bg-primeColor text-gray-100 hover:text-white cursor-pointer text-lg rounded-full flex justify-center items-center hover:bg-black duration-300">
-                  <FaGithub />
-                </li>
-              </a>
-              <a
-                href="https://www.facebook.com/Noorlalu143/"
-                target="_blank"
-                rel="noreferrer"
-              >
-                <li className="w-7 h-7 bg-primeColor text-gray-100 hover:text-white cursor-pointer text-lg rounded-full flex justify-center items-center hover:bg-black duration-300">
-                  <FaFacebook />
-                </li>
-              </a>
-              <a
-                href="https://www.linkedin.com/in/noor-mohammad-ab2245193/"
-                target="_blank"
-                rel="noreferrer"
-              >
-                <li className="w-7 h-7 bg-primeColor text-gray-100 hover:text-white cursor-pointer text-lg rounded-full flex justify-center items-center hover:bg-black duration-300">
-                  <FaLinkedin />
-                </li>
-              </a>
-            </ul>
-          </div>
-        </div>
-        <div>
-          <FooterListTitle title="Shop" />
-          <ul className="flex flex-col gap-2">
-            <li className="font-titleFont text-base text-lightText hover:text-black hover:underline decoration-[1px] decoration-gray-500 underline-offset-2 cursor-pointer duration-300">
-              Accesories
-            </li>
-            <li className="font-titleFont text-base text-lightText hover:text-black hover:underline decoration-[1px] decoration-gray-500 underline-offset-2 cursor-pointer duration-300">
-              Clothes
-            </li>
-            <li className="font-titleFont text-base text-lightText hover:text-black hover:underline decoration-[1px] decoration-gray-500 underline-offset-2 cursor-pointer duration-300">
-              Electronics
-            </li>
-            <li className="font-titleFont text-base text-lightText hover:text-black hover:underline decoration-[1px] decoration-gray-500 underline-offset-2 cursor-pointer duration-300">
-              Home appliances
-            </li>
-            <li className="font-titleFont text-base text-lightText hover:text-black hover:underline decoration-[1px] decoration-gray-500 underline-offset-2 cursor-pointer duration-300">
-              New Arrivals
-            </li>
-          </ul>
-        </div>
-        <div>
-          <FooterListTitle title="Your account" />
-          <ul className="flex flex-col gap-2">
-            <li className="font-titleFont text-base text-lightText hover:text-black hover:underline decoration-[1px] decoration-gray-500 underline-offset-2 cursor-pointer duration-300">
-              Profile
-            </li>
-            <li className="font-titleFont text-base text-lightText hover:text-black hover:underline decoration-[1px] decoration-gray-500 underline-offset-2 cursor-pointer duration-300">
-              Orders
-            </li>
-            <li className="font-titleFont text-base text-lightText hover:text-black hover:underline decoration-[1px] decoration-gray-500 underline-offset-2 cursor-pointer duration-300">
-              Addresses
-            </li>
-            <li className="font-titleFont text-base text-lightText hover:text-black hover:underline decoration-[1px] decoration-gray-500 underline-offset-2 cursor-pointer duration-300">
-              Account Details
-            </li>
-            <li className="font-titleFont text-base text-lightText hover:text-black hover:underline decoration-[1px] decoration-gray-500 underline-offset-2 cursor-pointer duration-300">
-              Payment Options
-            </li>
-          </ul>
-        </div>
-        <div className="col-span-2 flex flex-col items-center w-full px-4">
-          <FooterListTitle title="Subscribe to our newsletter." />
-          <div className="w-full">
-            <p className="text-center mb-4">
-              A at pellentesque et mattis porta enim elementum.
-            </p>
+
+            {/* Newsletter Subscription */}
             {subscription ? (
               <motion.p
                 initial={{ x: 20, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 transition={{ duration: 0.5 }}
-                className="w-full text-center text-base font-titleFont font-semibold text-green-600"
+                className="text-base font-semibold text-green-400"
               >
-                Subscribed Successfully !
+                Subscribed Successfully!
               </motion.p>
             ) : (
-              <div className="w-full flex-col xl:flex-row flex justify-between items-center gap-4">
-                <div className="flex flex-col w-full">
+              <div className="space-y-3">
+                <div className="inline-flex flex-col w-full gap-4 sm:flex-row">
                   <input
                     onChange={(e) => setEmailInfo(e.target.value)}
                     value={emailInfo}
-                    className="w-full h-12 border-b border-gray-400 bg-transparent px-4 text-primeColor text-lg placeholder:text-base outline-none"
-                    type="text"
-                    placeholder="Insert your email ...*"
+                    type="email"
+                    placeholder="Your email"
+                    className="flex-1 px-4 py-2.5 bg-transparent border border-white/30 rounded-lg text-sm placeholder:text-white/50 focus:outline-none focus:border-white/50 transition-colors"
                   />
-                  {errMsg && (
-                    <p className="text-red-600 text-sm font-semibold font-titleFont text-center animate-bounce mt-2">
-                      {errMsg}
-                    </p>
-                  )}
+                  <button
+                    onClick={handleSubscription}
+                    className="px-6 py-2.5 bg-[#E8EFD8] text-[#3C3C3C] rounded-lg text-sm font-medium hover:bg-[#D8DFCA] transition-colors whitespace-nowrap"
+                  >
+                    Subscribe
+                  </button>
                 </div>
-                <button
-                  onClick={handleSubscription}
-                  className="bg-white text-lightText w-[30%] h-10 hover:bg-black hover:text-white duration-300 text-base tracking-wide"
-                >
-                  Subscribe
-                </button>
+                {errMsg && (
+                  <p className="text-sm font-semibold text-red-400 animate-bounce">
+                    {errMsg}
+                  </p>
+                )}
               </div>
             )}
 
-            <Image
-              className={`w-[80%] lg:w-[60%] mx-auto ${
-                subscription ? "mt-2" : "mt-6"
-              }`}
-              imgSrc={paymentCard}
-            />
+            {/* Social Media Icons */}
+            <div className="flex items-center gap-3 pt-2">
+              <a
+                href="https://www.youtube.com/@reactjsBD"
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center justify-center w-9 h-9 text-lg transition-all duration-300 rounded-full bg-white/10 hover:bg-[#E8EFD8] hover:text-[#3C3C3C]"
+              >
+                <FaYoutube />
+              </a>
+              <a
+                href="https://github.com/noorjsdivs"
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center justify-center w-9 h-9 text-lg transition-all duration-300 rounded-full bg-white/10 hover:bg-[#E8EFD8] hover:text-[#3C3C3C]"
+              >
+                <FaGithub />
+              </a>
+              <a
+                href="https://www.facebook.com/Noorlalu143/"
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center justify-center w-9 h-9 text-lg transition-all duration-300 rounded-full bg-white/10 hover:bg-[#E8EFD8] hover:text-[#3C3C3C]"
+              >
+                <FaFacebook />
+              </a>
+              <a
+                href="https://www.linkedin.com/in/noor-mohammad-ab2245193/"
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center justify-center w-9 h-9 text-lg transition-all duration-300 rounded-full bg-white/10 hover:bg-[#E8EFD8] hover:text-[#3C3C3C]"
+              >
+                <FaLinkedin />
+              </a>
+            </div>
+          </div>
+
+          {/* Right Side - 3 Columns */}
+          <div className="grid grid-cols-1 gap-8 sm:grid-cols-3">
+            {/* Shop Column */}
+            <div className="space-y-4">
+              <h4 className="text-lg font-semibold">Shop</h4>
+              <ul className="space-y-3 text-sm text-white/70">
+                <li>
+                  <a href="#" className="transition-colors hover:text-white">
+                    Accessories
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="transition-colors hover:text-white">
+                    Clothes
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="transition-colors hover:text-white">
+                    Electronics
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="transition-colors hover:text-white">
+                    Home Appliances
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="transition-colors hover:text-white">
+                    New Arrivals
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            {/* Your Account Column */}
+            <div className="space-y-4">
+              <h4 className="text-lg font-semibold">Your Account</h4>
+              <ul className="space-y-3 text-sm text-white/70">
+                <li>
+                  <a href="#" className="transition-colors hover:text-white">
+                    Profile
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="transition-colors hover:text-white">
+                    Orders
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="transition-colors hover:text-white">
+                    Addresses
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="transition-colors hover:text-white">
+                    Account Details
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="transition-colors hover:text-white">
+                    Payment Options
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            {/* Help & Contact Column */}
+            <div className="space-y-4">
+              <h4 className="text-lg font-semibold">Help & Contact</h4>
+              <ul className="space-y-3 text-sm text-white/70">
+                <li>
+                  <a href="#" className="transition-colors hover:text-white">
+                    Customer Service
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="transition-colors hover:text-white">
+                    Shipping Info
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="transition-colors hover:text-white">
+                    Returns
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="transition-colors hover:text-white">
+                    FAQ
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="transition-colors hover:text-white">
+                    Contact Us
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        {/* Payment Methods */}
+        <div className="flex justify-center mb-8">
+          <Image
+            className="w-[80%] sm:w-[60%] md:w-[40%] lg:w-[30%] opacity-80"
+            imgSrc={paymentCard}
+          />
+        </div>
+
+        {/* Bottom Bar */}
+        <div className="flex flex-col items-center justify-between gap-4 pt-8 text-sm border-t border-white/20 md:flex-row text-white/60">
+          <p>© 2025 eBay. All rights reserved</p>
+          <div className="flex gap-6">
+            <a href="#" className="transition-colors hover:text-white">
+              Terms & Conditions
+            </a>
+            <a href="#" className="transition-colors hover:text-white">
+              Privacy Policy
+            </a>
           </div>
         </div>
       </div>
-    </div>
+    </footer>
   );
 };
 

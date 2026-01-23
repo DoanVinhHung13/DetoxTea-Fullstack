@@ -1,14 +1,16 @@
 // src/components/OTPVerification.jsx
-import { motion } from "framer-motion";
-import { useState, useEffect, useRef } from "react";
-import { useNavigate, useLocation, Link } from "react-router-dom";
 import axios from "axios";
+import { motion } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 const OTPVerification = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const email = location.state?.email || "";
+
+  const API_BASE_URL = "http://localhost:9999".trim();
 
   const [otp, setOtp] = useState(new Array(6).fill(""));
   const [loading, setLoading] = useState(false);
@@ -58,7 +60,10 @@ const OTPVerification = () => {
 
     setLoading(true);
     try {
-      const res = await axios.post("http://localhost:9999/api/verify-otp", { email, otp: otpValue });
+      const res = await axios.post(`${API_BASE_URL}/api/verify-otp`, {
+        email,
+        otp: otpValue,
+      });
       if (res.data.success) {
         toast.success(res.data.message || "Xác thực thành công!");
         navigate("/signin");
@@ -77,7 +82,9 @@ const OTPVerification = () => {
     if (!email || resendCooldown > 0) return;
     setResendLoading(true);
     try {
-      const res = await axios.post("http://localhost:9999/api/resend-otp", { email });
+      const res = await axios.post(`${API_BASE_URL}/api/resend-otp`, {
+        email,
+      });
       if (res.data.success) {
         toast.success(res.data.message || "OTP mới đã được gửi");
         setResendCooldown(30);
@@ -94,16 +101,18 @@ const OTPVerification = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-50 to-indigo-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="flex items-center justify-center min-h-screen px-4 py-12 bg-gradient-to-r from-blue-50 to-indigo-50 sm:px-6 lg:px-8">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="max-w-md w-full space-y-6 bg-white p-8 rounded-xl shadow-lg"
+        className="w-full max-w-md p-8 space-y-6 bg-white shadow-lg rounded-xl"
       >
         <div>
-          <h2 className="text-center text-3xl font-extrabold text-gray-900">Xác thực Email</h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
+          <h2 className="text-3xl font-extrabold text-center text-gray-900">
+            Xác thực Email
+          </h2>
+          <p className="mt-2 text-sm text-center text-gray-600">
             Nhập mã OTP đã được gửi tới email: <strong>{email}</strong>
           </p>
         </div>
@@ -139,7 +148,9 @@ const OTPVerification = () => {
             onClick={handleResendOTP}
             disabled={resendLoading || resendCooldown > 0}
             className={`w-full py-3 px-4 mt-2 text-sm font-medium rounded-lg text-[#0F52BA] border border-[#0F52BA] hover:bg-[#0F52BA] hover:text-white transition-all duration-200 ${
-              resendLoading || resendCooldown > 0 ? "opacity-70 cursor-not-allowed" : ""
+              resendLoading || resendCooldown > 0
+                ? "opacity-70 cursor-not-allowed"
+                : ""
             }`}
           >
             {resendLoading
@@ -149,9 +160,12 @@ const OTPVerification = () => {
               : "Gửi lại OTP"}
           </button>
 
-          <div className="text-sm text-center mt-4">
+          <div className="mt-4 text-sm text-center">
             <span className="text-gray-600">Verified? </span>
-            <Link to="/signin" className="font-medium text-[#0F52BA] hover:text-[#0A3C8A] transition-colors">
+            <Link
+              to="/signin"
+              className="font-medium text-[#0F52BA] hover:text-[#0A3C8A] transition-colors"
+            >
               Sign In
             </Link>
           </div>

@@ -7,13 +7,10 @@ import {
   ScrollRestoration,
 } from "react-router-dom";
 import Footer from "./components/home/Footer/Footer";
-import FooterBottom from "./components/home/Footer/FooterBottom";
 import Header from "./components/home/Header/Header";
-import Chatbot from "./components/Chatbot/Chatbot";
 
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { fetchCart } from "./features/cart/cartSlice";
 import OverviewA from "./pages/DashboardAdmin/Overview/Overview";
@@ -55,6 +52,8 @@ import WriteReview from "./pages/Review/WriteReview";
 import SignUp from "./pages/SignUp";
 import StoreRegistration from "./pages/StoreRegistration";
 
+import { ToastContainer } from "react-toastify";
+import Watchlist from "./components/home/Header/Watchlist.jsx";
 import AuthCallback from "./pages/AuthCallback";
 import ManagePayment from "./pages/DashboardAdmin/ManagePayment/ManagePayment";
 import ManageProductA from "./pages/DashboardAdmin/ManageProduct/ManageProduct";
@@ -62,7 +61,6 @@ import AdminDashboardLayout from "./pages/DashboardAdmin/ManagerDashboardAdminLa
 import ManageStore from "./pages/DashboardAdmin/ManageShop/ManageStore";
 import ManageUser from "./pages/DashboardAdmin/ManageUser/ManageUser";
 import ManageVoucher from "./pages/DashboardAdmin/ManageVoucher/ManageVoucher";
-import Watchlist from "./components/home/Header/Watchlist.jsx";
 
 const Layout = () => {
   return (
@@ -85,14 +83,15 @@ const Layout = () => {
       <ScrollRestoration />
       <Outlet />
       <Footer />
-      <FooterBottom />
-      <Chatbot />
+      {/* <FooterBottom /> */}
+      {/* <Chatbot /> */}
     </div>
   );
 };
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route errorElement={<ErrorPage />}>
+      {/* Annoymus route */}
       <Route path="/" element={<Layout />}>
         <Route index element={<Home />}></Route>
         <Route path="/cart" element={<Cart />}></Route>
@@ -121,9 +120,7 @@ const router = createBrowserRouter(
         <Route path="/return-requests" element={<ReturnRequestsList />}></Route>
         <Route path="/signup" element={<SignUp />}></Route>
         <Route path="/verify-otp" element={<OTPVerification />}></Route>{" "}
-        {/* 🌟 THÊM ROUTE WATCHLIST 🌟 */}
         <Route path="/watchlist" element={<Watchlist />}></Route>
-        {/* Thêm route này */}
         <Route path="/signin" element={<SignIn />}></Route>
         <Route path="/auth/callback" element={<AuthCallback />}></Route>
         <Route path="/forgot-password" element={<ForgotPassword />}></Route>
@@ -132,6 +129,7 @@ const router = createBrowserRouter(
           element={<StoreRegistration />}
         ></Route>
       </Route>
+      {/* Seller route */}
       <Route
         path="/"
         element={<ManagerDashboardSellerLaydout />}
@@ -151,7 +149,7 @@ const router = createBrowserRouter(
         <Route path="manage-dispute" element={<ManageDispute />} />
         <Route path="manage-return-request" element={<ManageReturnRequest />} />
       </Route>
-
+      {/* Admin route */}
       <Route path="/admin" element={<AdminDashboardLayout />}>
         <Route path="/admin" element={<OverviewA />}></Route>
         <Route
@@ -171,8 +169,8 @@ const router = createBrowserRouter(
       </Route>
 
       <Route path="*" element={<ErrorPage />} />
-    </Route>
-  )
+    </Route>,
+  ),
 );
 
 function App() {
