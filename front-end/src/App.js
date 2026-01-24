@@ -61,10 +61,11 @@ import AdminDashboardLayout from "./pages/DashboardAdmin/ManagerDashboardAdminLa
 import ManageStore from "./pages/DashboardAdmin/ManageShop/ManageStore";
 import ManageUser from "./pages/DashboardAdmin/ManageUser/ManageUser";
 import ManageVoucher from "./pages/DashboardAdmin/ManageVoucher/ManageVoucher";
+import ProductList from "./pages/ProductList/ProductList.jsx";
 
 const Layout = () => {
   return (
-    <div>
+    <div className="flex flex-col min-h-screen">
       <ToastContainer
         position="top-right"
         autoClose={1000}
@@ -78,10 +79,13 @@ const Layout = () => {
         theme="colored"
       />
       <Header />
+      <main className="flex-grow min-h-[60vh] ">
+        <ScrollRestoration />
+        <Outlet />
+      </main>
       {/* <HeaderBottom /> */}
       {/* <SpecialCase /> */}
-      <ScrollRestoration />
-      <Outlet />
+
       <Footer />
       {/* <FooterBottom /> */}
       {/* <Chatbot /> */}
@@ -94,6 +98,7 @@ const router = createBrowserRouter(
       {/* Annoymus route */}
       <Route path="/" element={<Layout />}>
         <Route index element={<Home />}></Route>
+        <Route path="/products" element={<ProductList />}></Route>
         <Route path="/cart" element={<Cart />}></Route>
         <Route path="/checkout" element={<Checkout />}></Route>
         <Route path="/address" element={<Address />}></Route>
