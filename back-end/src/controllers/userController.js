@@ -48,31 +48,31 @@ const searchUsers = async (req, res) => {
 const getUserById = async (req, res) => {
   try {
     const { id } = req.params;
-    
-    const user = await User.findById(id)
-      .select('username fullname avatarURL role');
-    
+
+    const user = await User.findById(id).select(
+      "username email fullname avatarURL role action createdAt"
+    );
+
     if (!user) {
-      logger.info(`User not found with ID: ${id}`);
       return res.status(404).json({
         success: false,
-        message: 'User not found'
+        message: "User not found",
       });
     }
-    
-    logger.info(`User fetched by ID: ${id}`);
+
     return res.status(200).json({
       success: true,
-      user
+      user,
     });
   } catch (error) {
-    logger.error('Error getting user by ID:', error);
+    logger.error("Error getting user by ID:", error);
     return res.status(500).json({
       success: false,
-      message: 'Server error while fetching user'
+      message: "Server error",
     });
   }
 };
+
 
 // Lấy thông tin người dùng từ token
 const getProfile = async (req, res) => {
