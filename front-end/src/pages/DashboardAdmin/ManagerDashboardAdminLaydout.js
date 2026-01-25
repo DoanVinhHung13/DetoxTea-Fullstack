@@ -326,7 +326,7 @@ export default function AdminDashboardLayout() {
             ) : (
               <Chip
                 avatar={<Avatar />}
-                label="Loading..."
+                label="Admin"
                 color="primary"
                 variant="outlined"
                 sx={{ ml: 2 }}

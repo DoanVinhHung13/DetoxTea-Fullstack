@@ -79,7 +79,9 @@ const updateVoucher = async (req, res, next) => {
     if (minOrderValue !== undefined) voucher.minOrderValue = minOrderValue;
     if (usageLimit !== undefined) voucher.usageLimit = usageLimit;
     if (maxDiscount !== undefined) voucher.maxDiscount = maxDiscount;
-    if (isActive !== undefined) voucher.isActive = isActive;
+    if (isActive !== undefined) {
+      voucher.isActive = isActive === true || isActive === 'true';
+    }
 
     const updatedVoucher = await voucher.save();
     res.json(updatedVoucher);
@@ -94,18 +96,23 @@ const updateVoucher = async (req, res, next) => {
 // @access  Private/Admin
 const deleteVoucher = async (req, res, next) => {
   try {
+    console.log("DELETE voucher id:", req.params.id);
+    console.log("USER:", req.user); // nếu có auth
+
     const voucher = await Voucher.findById(req.params.id);
 
-    if (voucher) {
-      await voucher.remove();
-      res.json({ message: 'Voucher removed' });
-    } else {
-      res.status(404).json({ message: 'Voucher not found' });
+    if (!voucher) {
+      return res.status(404).json({ message: 'Voucher not found' });
     }
+
+    await Voucher.findByIdAndDelete(req.params.id);
+    res.json({ message: 'Voucher removed successfully' });
   } catch (error) {
+    console.error("DELETE ERROR:", error);
     next(error);
   }
 };
+
 
 // @desc    Toggle voucher active status
 // @route   PUT /api/vouchers/:id/toggle-active

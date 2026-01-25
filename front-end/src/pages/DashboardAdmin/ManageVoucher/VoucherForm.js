@@ -52,26 +52,18 @@ const VoucherForm = ({ open, onClose, onSubmit, voucher = null, isEdit = false }
   }, [voucher, isEdit]);
 
   const formatDateForInput = (date) => {
-  if (!date) return "";
+    const d = new Date(date);
+    let month = '' + (d.getMonth() + 1);
+    let day = '' + d.getDate();
+    const year = d.getFullYear();
 
-  // Nếu backend trả dd/MM/yyyy
-  if (typeof date === "string" && date.includes("/")) {
-    const [day, month, year] = date.split("/");
-    return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
-  }
+    if (month.length < 2) 
+      month = '0' + month;
+    if (day.length < 2) 
+      day = '0' + day;
 
-  // Trường hợp Date hoặc ISO string
-  const d = new Date(date);
-  if (isNaN(d)) return "";
-
-  const year = d.getFullYear();
-  const month = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-
-  return `${year}-${month}-${day}`;
-};
-
-  
+    return [year, month, day].join('-');
+  };
 
   const validateForm = () => {
     let tempErrors = {};
@@ -156,7 +148,7 @@ const VoucherForm = ({ open, onClose, onSubmit, voucher = null, isEdit = false }
         minOrderValue: Number(formData.minOrderValue),
         usageLimit: Number(formData.usageLimit),
         maxDiscount: formData.maxDiscount ? Number(formData.maxDiscount) : undefined,
-        expirationDate: formatDateForInput(formData.expirationDate),
+        expirationDate: formData.expirationDate,
       };
       onSubmit(submitData);
     }
@@ -284,7 +276,7 @@ const VoucherForm = ({ open, onClose, onSubmit, voucher = null, isEdit = false }
               label="Expiration Date"
               name="expirationDate"
               type="date"
-              value={formatDateForInput(formData.expirationDate)}
+              value={formData.expirationDate}
               onChange={handleChange}
               InputLabelProps={{ 
                 shrink: true,

@@ -162,23 +162,19 @@ exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
+
     if (!user)
-      return res
-        .status(400)
-        .json({ success: false, message: "Email hoặc mật khẩu không đúng" });
-    // if (!user.isVerified)
-    //   return res
-    //     .status(400)
-    //     .json({
-    //       success: false,
-    //       message: "Vui lòng xác thực email trước khi đăng nhập",
-    //     });
+      return res.status(400).json({
+        success: false,
+        message: "Email hoặc mật khẩu không đúng",
+      });
 
     const isMatch = await user.comparePassword(password);
     if (!isMatch)
-      return res
-        .status(400)
-        .json({ success: false, message: "Email hoặc mật khẩu không đúng" });
+      return res.status(400).json({
+        success: false,
+        message: "Email hoặc mật khẩu không đúng",
+      });
 
     const token = jwt.sign(
       { id: user._id, role: user.role },
@@ -186,10 +182,18 @@ exports.login = async (req, res) => {
       { expiresIn: "1d" }
     );
 
+    // ✅ TRẢ ĐẦY ĐỦ THÔNG TIN USER
     res.json({
       success: true,
       token,
-      user: { id: user._id, username: user.username, role: user.role },
+      user: {
+        id: user._id,
+        username: user.username,
+        fullname: user.fullname,
+        email: user.email,
+        avatarURL: user.avatarURL, // QUAN TRỌNG
+        role: user.role,
+      },
     });
   } catch (error) {
     logger.error("Lỗi đăng nhập:", error);
@@ -197,23 +201,38 @@ exports.login = async (req, res) => {
   }
 };
 
+
 // ------------------ LOGIN BY GOOGLE ------------------
 exports.googleCallback = async (req, res) => {
   try {
     const user = req.user;
-    console.log("Google user:", user); // Thêm dòng này
+
     const token = jwt.sign(
       { id: user._id, role: user.role },
       process.env.JWT_SECRET,
       { expiresIn: "1d" }
     );
-    console.log("Google token:", token); // Thêm dòng này
-    res.redirect(`${process.env.CLIENT_URL}/auth/callback?token=${token}`);
+
+    const userData = encodeURIComponent(
+      JSON.stringify({
+        id: user._id,
+        username: user.username,
+        fullname: user.fullname,
+        email: user.email,
+        avatarURL: user.avatarURL,
+        role: user.role,
+      })
+    );
+
+    res.redirect(
+      `${process.env.CLIENT_URL}/auth/callback?token=${token}&user=${userData}`
+    );
   } catch (err) {
     console.error("Google login error:", err);
     res.status(500).json({ message: "Google login failed" });
   }
 };
+
 
 // ------------------ FORGOT PASSWORD ------------------
 exports.forgotPassword = async (req, res) => {
