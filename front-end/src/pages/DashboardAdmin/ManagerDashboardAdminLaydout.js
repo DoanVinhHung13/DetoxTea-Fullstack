@@ -56,7 +56,7 @@ function Copyright(props) {
     >
       {"Copyright © "}
       <Link color="inherit" href="#!">
-        SDN Company
+        Detox Tea Company
       </Link>{" "}
       {new Date().getFullYear()}
       {"."}
@@ -345,7 +345,7 @@ export default function AdminDashboardLayout() {
             }}
           >
             <Typography variant="h6" color="primary.contrastText" sx={{ ml: 1, display: open ? "block" : "none" }}>
-              SHOPII Admin
+              Detox Tea Admin
             </Typography>
             <IconButton onClick={toggleDrawer} sx={{ color: "primary.contrastText" }}>
               <ChevronLeftIcon />

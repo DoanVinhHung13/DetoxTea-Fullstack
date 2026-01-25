@@ -21,7 +21,7 @@ export default function ManageProductA() {
   const updateProductList = async (page = 1) => {
     try {
       const res = await axios.get(
-        `http://localhost:9999/api/admin/products?page=${page}&limit=10`,
+        `http://localhost:9999/api/admin/products?page=${page}&limit=5`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("accessToken")}`,

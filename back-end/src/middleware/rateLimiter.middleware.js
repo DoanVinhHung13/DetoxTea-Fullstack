@@ -6,8 +6,8 @@ const logger = require('../utils/logger');
  * Giới hạn: 100 requests trong 15 phút
  */
 const generalLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 phút
-    max: 100, // giới hạn 100 requests
+    windowMs: 1000 * 60 * 1000, // 15 phút
+    max: 1000, // giới hạn 100 requests
     message: {
         success: false,
         message: 'Quá nhiều requests từ IP này, vui lòng thử lại sau 15 phút'
@@ -15,7 +15,7 @@ const generalLimiter = rateLimit({
     standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
     legacyHeaders: false, // Disable the `X-RateLimit-*` headers
     handler: (req, res) => {
-        logger.warn(`Rate limit exceeded for IP: ${req.ip}, Path: ${req.path}`);
+        logger.info(`Rate limit exceeded for IP: ${req.ip}, Path: ${req.path}`);
         res.status(429).json({
             success: false,
             message: 'Quá nhiều requests từ IP này, vui lòng thử lại sau 15 phút',
@@ -29,8 +29,8 @@ const generalLimiter = rateLimit({
  * Giới hạn: 5 requests trong 15 phút (chống brute force)
  */
 const authLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 phút
-    max: 5, // chỉ 5 lần thử trong 15 phút
+    windowMs: 1000 * 60 * 1000, // 100 phút
+    max: 1000, // chỉ 100 lần thử trong 100 phút
     skipSuccessfulRequests: true, // không đếm các request thành công
     message: {
         success: false,
@@ -39,7 +39,7 @@ const authLimiter = rateLimit({
     standardHeaders: true,
     legacyHeaders: false,
     handler: (req, res) => {
-        logger.warn(`Auth rate limit exceeded for IP: ${req.ip}, Path: ${req.path}`);
+        logger.info(`Auth rate limit exceeded for IP: ${req.ip}, Path: ${req.path}`);
         res.status(429).json({
             success: false,
             message: 'Quá nhiều lần thử đăng nhập, vui lòng thử lại sau 15 phút',
@@ -53,8 +53,8 @@ const authLimiter = rateLimit({
  * Giới hạn: 3 requests trong 10 phút (chống spam OTP)
  */
 const otpLimiter = rateLimit({
-    windowMs: 10 * 60 * 1000, // 10 phút
-    max: 3, // chỉ 3 lần gửi OTP trong 10 phút
+    windowMs: 1000 * 60 * 1000, // 10 phút
+    max: 300, // chỉ 3 lần gửi OTP trong 10 phút
     message: {
         success: false,
         message: 'Quá nhiều lần yêu cầu OTP, vui lòng thử lại sau 10 phút'
@@ -62,7 +62,7 @@ const otpLimiter = rateLimit({
     standardHeaders: true,
     legacyHeaders: false,
     handler: (req, res) => {
-        logger.warn(`OTP rate limit exceeded for IP: ${req.ip}, Email: ${req.body.email || 'N/A'}`);
+        logger.info(`OTP rate limit exceeded for IP: ${req.ip}, Email: ${req.body.email || 'N/A'}`);
         res.status(429).json({
             success: false,
             message: 'Quá nhiều lần yêu cầu OTP, vui lòng thử lại sau 10 phút',
@@ -76,8 +76,8 @@ const otpLimiter = rateLimit({
  * Giới hạn: 3 requests trong 1 giờ (chống spam email)
  */
 const passwordResetLimiter = rateLimit({
-    windowMs: 60 * 60 * 1000, // 1 giờ
-    max: 3, // chỉ 3 lần reset password trong 1 giờ
+    windowMs: 6000 * 60 * 1000, // 1 giờ
+    max: 30, // chỉ 3 lần reset password trong 1 giờ
     message: {
         success: false,
         message: 'Quá nhiều lần yêu cầu reset mật khẩu, vui lòng thử lại sau 1 giờ'
@@ -85,7 +85,7 @@ const passwordResetLimiter = rateLimit({
     standardHeaders: true,
     legacyHeaders: false,
     handler: (req, res) => {
-        logger.warn(`Password reset rate limit exceeded for IP: ${req.ip}, Email: ${req.body.email || 'N/A'}`);
+        logger.info(`Password reset rate limit exceeded for IP: ${req.ip}, Email: ${req.body.email || 'N/A'}`);
         res.status(429).json({
             success: false,
             message: 'Quá nhiều lần yêu cầu reset mật khẩu, vui lòng thử lại sau 1 giờ',
@@ -99,8 +99,8 @@ const passwordResetLimiter = rateLimit({
  * Giới hạn: 10 requests trong 1 phút (chống spam orders)
  */
 const orderLimiter = rateLimit({
-    windowMs: 60 * 1000, // 1 phút
-    max: 10, // 10 đơn hàng trong 1 phút
+    windowMs: 600 * 1000, // 1 phút
+    max: 100, // 10 đơn hàng trong 1 phút
     message: {
         success: false,
         message: 'Quá nhiều đơn hàng được tạo, vui lòng thử lại sau 1 phút'
@@ -108,7 +108,7 @@ const orderLimiter = rateLimit({
     standardHeaders: true,
     legacyHeaders: false,
     handler: (req, res) => {
-        logger.warn(`Order rate limit exceeded for IP: ${req.ip}, User: ${req.user?.id || 'N/A'}`);
+        logger.info(`Order rate limit exceeded for IP: ${req.ip}, User: ${req.user?.id || 'N/A'}`);
         res.status(429).json({
             success: false,
             message: 'Quá nhiều đơn hàng được tạo, vui lòng thử lại sau 1 phút',
@@ -122,8 +122,8 @@ const orderLimiter = rateLimit({
  * Giới hạn: 5 reviews trong 1 phút (chống spam reviews)
  */
 const reviewLimiter = rateLimit({
-    windowMs: 60 * 1000, // 1 phút
-    max: 5, // 5 reviews trong 1 phút
+    windowMs: 600 * 1000, // 1 phút
+    max: 50, // 5 reviews trong 1 phút
     message: {
         success: false,
         message: 'Quá nhiều reviews được tạo, vui lòng thử lại sau 1 phút'
@@ -131,7 +131,7 @@ const reviewLimiter = rateLimit({
     standardHeaders: true,
     legacyHeaders: false,
     handler: (req, res) => {
-        logger.warn(`Review rate limit exceeded for IP: ${req.ip}, User: ${req.user?.id || 'N/A'}`);
+        logger.info(`Review rate limit exceeded for IP: ${req.ip}, User: ${req.user?.id || 'N/A'}`);
         res.status(429).json({
             success: false,
             message: 'Quá nhiều reviews được tạo, vui lòng thử lại sau 1 phút',
@@ -145,8 +145,8 @@ const reviewLimiter = rateLimit({
  * Giới hạn: 20 requests trong 1 phút (chatbot có thể được dùng nhiều)
  */
 const chatbotLimiter = rateLimit({
-    windowMs: 60 * 1000, // 1 phút
-    max: 20, // 20 messages trong 1 phút
+    windowMs: 600 * 1000, // 1 phút
+    max: 200, // 20 messages trong 1 phút
     message: {
         success: false,
         message: 'Quá nhiều tin nhắn chatbot, vui lòng thử lại sau 1 phút'
@@ -154,7 +154,7 @@ const chatbotLimiter = rateLimit({
     standardHeaders: true,
     legacyHeaders: false,
     handler: (req, res) => {
-        logger.warn(`Chatbot rate limit exceeded for IP: ${req.ip}`);
+        logger.info(`Chatbot rate limit exceeded for IP: ${req.ip}`);
         res.status(429).json({
             success: false,
             message: 'Quá nhiều tin nhắn chatbot, vui lòng thử lại sau 1 phút',
