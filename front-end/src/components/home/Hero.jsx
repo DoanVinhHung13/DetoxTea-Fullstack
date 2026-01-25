@@ -8,8 +8,8 @@ const Hero = () => {
   };
 
   return (
-    <section className="relative bg-background">
-      <div className="relative w-full h-80 md:h-[400px] bg-gradient-to-b from-[#8BA899] to-[#A8D5BA]">
+    <section className="relative bg-cream">
+      <div className="relative w-full h-80 md:h-[400px]  bg-cream ">
         <div
           className="absolute inset-0 bg-center bg-cover"
           style={{
@@ -30,7 +30,7 @@ const Hero = () => {
           </p>
           <button
             className="px-8 py-3 font-medium text-white transition-colors bg-[#8BA899] rounded-full hover:bg-[#486456]"
-            onClick={scrollToProducts}
+            onClick={() => (window.location.href = "/products")}
           >
             SHOP NOW
           </button>

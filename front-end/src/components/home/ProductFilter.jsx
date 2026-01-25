@@ -33,8 +33,8 @@ const ProductFilter = ({
           onClick={onResetCategories}
           className={`px-4 py-2 rounded-full whitespace-nowrap transition-colors ${
             selectedCategories.length === 0
-              ? "bg-gray-900 text-white"
-              : "bg-gray-200 text-gray-900 hover:bg-gray-300"
+              ? "bg-foreground text-background"
+              : "bg-muted text-foreground hover:bg-secondary"
           }`}
         >
           All Products

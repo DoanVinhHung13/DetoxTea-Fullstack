@@ -12,12 +12,17 @@ module.exports = {
     },
     extend: {
       fontFamily: {
-        bodyFont: ["var(--font-sans)"],
-        titleFont: ["var(--font-serif)"],
-        sans: ["var(--font-sans)"],
-        serif: ["var(--font-serif)"],
+        bodyFont: ["Montserrat", "sans-serif"],
+        titleFont: ["Playfair Display", "serif"],
+        sans: ["Montserrat", "sans-serif"],
+        serif: ["Playfair Display", "serif"],
       },
       colors: {
+        cream: "#F7F5E8",
+        "forest-green": "#2D4F3E",
+        "sage-green": "#8BA889",
+        charcoal: "#1A1A1A",
+        "soft-gold": "#C5A059",
         border: "var(--border)",
         input: "var(--input)",
         ring: "var(--ring)",

@@ -1,19 +1,21 @@
 import axios from "axios";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import {
+  ChevronDown,
   Heart,
   Menu,
-  MessageSquare,
+  Package,
   Search,
   ShoppingCart,
+  Star,
   User,
+  X,
 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { logout } from "../../../features/auth/authSlice";
 import { resetUserInfo, setUserInfo } from "../../../redux/orebiSlice";
-import NotificationDropdown from "./NotificationDropdown";
 
 const Header = () => {
   const [sidenav, setSidenav] = useState(false);
@@ -25,6 +27,7 @@ const Header = () => {
     !!localStorage.getItem("accessToken"),
   );
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -48,6 +51,15 @@ const Header = () => {
     (total, item) => total + item.quantity,
     0,
   );
+
+  // Scroll detection
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 10);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -193,331 +205,318 @@ const Header = () => {
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-white border-b border-gray-200">
-      <div className="px-4 py-4 mx-auto max-w-7xl md:px-8">
-        <div className="flex items-center justify-between gap-8">
-          {/* Logo */}
-          <Link
-            to="/"
-            onClick={() => {
-              setSearchQuery("");
-              setFilteredProducts([]);
-              if (location.pathname === "/") {
-                window.location.href = "/";
-              }
-            }}
-            className="flex-shrink-0"
-          >
-            <h1 className="font-serif text-2xl font-bold text-gray-900 transition-colors hover:text-blue-600">
-              eBay
-            </h1>
-          </Link>
+    <>
+      {/* Top Bar */}
 
-          {/* Desktop Navigation */}
-          <nav className="hidden gap-6 text-sm font-medium md:flex">
+      {/* Main Header */}
+      <header
+        className={`sticky top-0 z-50 bg- bg-[#f9f5e9] transition-all duration-300 ${
+          scrolled ? "shadow-lg" : "border-b-2 border-stone-300"
+        }`}
+      >
+        <div className="px-4 py-2 mx-auto max-w-7xl md:px-8">
+          <div className="flex items-center justify-between gap-6">
+            {/* Logo */}
             <Link
               to="/"
-              className="text-gray-700 transition-colors hover:text-blue-600"
+              onClick={() => {
+                setSearchQuery("");
+                setFilteredProducts([]);
+                if (location.pathname === "/") {
+                  window.location.href = "/";
+                }
+              }}
+              className="flex-shrink-0 group"
             >
-              Home
+              <h1 className="font-serif text-2xl font-bold text-transparent transition-all duration-300 bg-black bg-clip-text group-hover:scale-105">
+                DETOX TEA
+              </h1>
             </Link>
-            <Link
-              to="/deals"
-              className="text-gray-700 transition-colors hover:text-blue-600"
-            >
-              Daily Deals
-            </Link>
-            <Link
-              to="/outlet"
-              className="text-gray-700 transition-colors hover:text-blue-600"
-            >
-              Brand Outlet
-            </Link>
-            {isAuthenticated && user?.role === "buyer" && (
-              <button
-                onClick={handleBecomeASeller}
-                className="text-gray-700 transition-colors hover:text-blue-600"
-              >
-                Sell
-              </button>
-            )}
-            <Link
-              to="/help"
-              className="text-gray-700 transition-colors hover:text-blue-600"
-            >
-              Help
-            </Link>
-          </nav>
 
-          {/* Search Bar - Desktop */}
-          <div
-            ref={searchRef}
-            className="relative flex-1 hidden max-w-md md:block"
-          >
+            {/* Desktop Navigation */}
+            <nav className="items-center hidden gap-8 lg:flex">
+              <Link
+                to="/"
+                className="relative font-medium text-md text-stone-700 hover:text-stone-900 group"
+              >
+                Home
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-emerald-600 to-teal-600 transition-all duration-300 group-hover:w-full"></span>
+              </Link>
+              <Link
+                to="/products"
+                className="relative font-medium text-md text-stone-700 hover:text-stone-900 group"
+              >
+                Products
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-emerald-600 to-teal-600 transition-all duration-300 group-hover:w-full"></span>
+              </Link>
+              <Link
+                to="/about-us"
+                className="relative font-medium text-md text-stone-700 hover:text-stone-900 group"
+              >
+                About Us
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-emerald-600 to-teal-600 transition-all duration-300 group-hover:w-full"></span>
+              </Link>
+            </nav>
+
+            {/* Search Bar - Desktop */}
+
+            {/* Action Icons */}
+            <div className="flex items-center gap-3">
+              {/* Wishlist */}
+              {isAuthenticated && (
+                <Link
+                  to="/watchlist"
+                  className="relative hidden p-2 transition-all duration-300 rounded-full lg:block text-stone-700 hover:bg-stone-100 hover:text-red-500 group"
+                >
+                  <Heart className="w-5 h-5 transition-all duration-300 group-hover:fill-red-500" />
+                </Link>
+              )}
+
+              {/* Cart */}
+              <Link
+                to="/cart"
+                className="relative p-2 transition-all duration-300 rounded-full text-stone-700 hover:bg-stone-100 hover:text-amber-600 group"
+              >
+                <ShoppingCart className="w-5 h-5" />
+                {cartTotalCount > 0 && (
+                  <motion.span
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    className="absolute flex items-center justify-center w-5 h-5 text-xs font-bold text-white rounded-full bg-gradient-to-r from-amber-500 to-orange-500 -top-1 -right-1"
+                  >
+                    {cartTotalCount}
+                  </motion.span>
+                )}
+              </Link>
+
+              {/* Notifications */}
+              {/* {isAuthenticated && (
+                <button className="relative hidden p-2 transition-all duration-300 rounded-full lg:block text-stone-700 hover:bg-stone-100 hover:text-amber-600">
+                  <Bell className="w-5 h-5" />
+                  {chatNotifications > 0 && (
+                    <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
+                  )}
+                </button>
+              )} */}
+
+              {/* User Menu */}
+              <div ref={ref} className="relative">
+                <button
+                  onClick={() => setShowUser(!showUser)}
+                  className="flex items-center gap-2 p-2 transition-all duration-300 rounded-full text-stone-700 hover:bg-stone-100"
+                >
+                  <div className="flex items-center justify-center w-8 h-8 text-sm font-bold text-white rounded-full bg-gradient-to-br from-amber-500 to-orange-500">
+                    {isAuthenticated ? (
+                      userName?.[0]?.toUpperCase() ||
+                      user?.username?.[0]?.toUpperCase() ||
+                      "U"
+                    ) : (
+                      <User className="w-4 h-4" />
+                    )}
+                  </div>
+                  <ChevronDown
+                    className={`w-4 h-4 transition-transform duration-300 hidden lg:block ${showUser ? "rotate-180" : ""}`}
+                  />
+                </button>
+
+                <AnimatePresence>
+                  {showUser && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                      transition={{ duration: 0.2 }}
+                      className="absolute right-0 w-64 mt-3 overflow-hidden bg-white border-2 shadow-2xl border-stone-200 rounded-xl top-full"
+                    >
+                      {isAuthenticated ? (
+                        <div className="">
+                          <div className="px-4 py-4 bg-white border-b">
+                            <p className="text-sm font-bold text-stone-900">
+                              {userName || user?.username}
+                            </p>
+                          </div>
+
+                          <div className="py-2">
+                            <Link
+                              to="/profile"
+                              onClick={() => setShowUser(false)}
+                              className="flex items-center gap-3 px-4 py-3 text-sm transition-colors text-stone-700 hover:bg-stone-50"
+                            >
+                              <User className="w-4 h-4" />
+                              My Profile
+                            </Link>
+                            <Link
+                              to="/order-history"
+                              onClick={() => setShowUser(false)}
+                              className="flex items-center gap-3 px-4 py-3 text-sm transition-colors text-stone-700 hover:bg-stone-50"
+                            >
+                              <Package className="w-4 h-4" />
+                              Order History
+                            </Link>
+                            <Link
+                              to="/watchlist"
+                              onClick={() => setShowUser(false)}
+                              className="flex items-center gap-3 px-4 py-3 text-sm transition-colors text-stone-700 hover:bg-stone-50 lg:hidden"
+                            >
+                              <Heart className="w-4 h-4" />
+                              Watchlist
+                            </Link>
+                            <Link
+                              to="/my-reviews"
+                              onClick={() => setShowUser(false)}
+                              className="flex items-center gap-3 px-4 py-3 text-sm transition-colors text-stone-700 hover:bg-stone-50"
+                            >
+                              <Star className="w-4 h-4" />
+                              My Reviews
+                            </Link>
+                          </div>
+
+                          <div className=" border-stone-200">
+                            <button
+                              onClick={handleLogout}
+                              className="flex items-center justify-center w-full gap-2 px-4 py-3 text-sm font-medium text-white transition-all duration-300 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700"
+                            >
+                              Sign out
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="">
+                          <Link
+                            to="/signin"
+                            onClick={() => setShowUser(false)}
+                            className="block px-4 py-3 text-sm font-medium text-center text-white transition-all duration-300 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600"
+                          >
+                            Sign in
+                          </Link>
+                          <Link
+                            to="/signup"
+                            onClick={() => setShowUser(false)}
+                            className="block px-4 py-3 text-sm text-center transition-colors text-stone-700 hover:bg-stone-50"
+                          >
+                            Create account
+                          </Link>
+                        </div>
+                      )}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              {/* Mobile Menu Toggle */}
+              <button
+                className="p-2 transition-all duration-300 rounded-full lg:hidden text-stone-700 hover:bg-stone-100"
+                onClick={() => setSidenav(!sidenav)}
+              >
+                <Menu className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+
+          {/* Mobile Search */}
+          <div className="mt-4 lg:hidden">
             <div className="relative">
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                onFocus={() => setIsSearchOpen(true)}
                 onKeyPress={(e) => {
                   if (e.key === "Enter") {
                     handleSearchSubmit();
                   }
                 }}
-                placeholder="Search for anything"
-                className="w-full py-2 pl-4 pr-10 text-sm border border-gray-300 rounded-full outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+                placeholder="Search for anything..."
+                className="w-full py-2.5 pl-4 pr-12 text-sm border-2 border-stone-200 rounded-xl outline-none focus:border-amber-500"
               />
               <button
                 onClick={handleSearchSubmit}
-                className="absolute text-gray-500 transition-colors transform -translate-y-1/2 right-3 top-1/2 hover:text-blue-600"
+                className="absolute flex items-center justify-center text-white transition-all duration-300 transform -translate-y-1/2 rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 w-9 h-9 right-2 top-1/2"
               >
-                <Search className="w-5 h-5" />
+                <Search className="w-4 h-4" />
               </button>
             </div>
-
-            {/* Search Results Dropdown */}
-            {isSearchOpen && searchQuery && filteredProducts.length > 0 && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.2 }}
-                className="absolute left-0 right-0 mt-2 overflow-hidden bg-white border border-gray-200 rounded-lg shadow-xl top-full"
-              >
-                {filteredProducts.map((item) => (
-                  <div
-                    key={item._id}
-                    onClick={() => {
-                      navigate(`/auth/product/${item._id}`, {
-                        state: { item },
-                      });
-                      setSearchQuery("");
-                      setFilteredProducts([]);
-                      setIsSearchOpen(false);
-                    }}
-                    className="flex items-center gap-3 p-3 transition-colors cursor-pointer hover:bg-gray-50"
-                  >
-                    <div className="flex-shrink-0 w-12 h-12 overflow-hidden bg-gray-100 rounded">
-                      <img
-                        src={getProductImage(item)}
-                        alt={item.name}
-                        className="object-contain w-full h-full"
-                        onError={(e) => {
-                          e.target.src =
-                            "https://via.placeholder.com/48?text=No+Image";
-                        }}
-                      />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900 truncate">
-                        {item.name}
-                      </p>
-                      <p className="text-sm font-semibold text-blue-600">
-                        ${item.price?.toFixed(2) || "0.00"}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </motion.div>
-            )}
-          </div>
-
-          {/* Icons */}
-          <div className="flex items-center gap-4">
-            {isAuthenticated && (
-              <Link
-                to="/watchlist"
-                className="hidden text-gray-700 transition-colors md:block hover:text-blue-600"
-              >
-                <Heart className="w-5 h-5 hover:fill-blue-600" />
-              </Link>
-            )}
-
-            <Link
-              to="/cart"
-              className="relative text-gray-700 transition-colors hover:text-blue-600"
-            >
-              <ShoppingCart className="w-5 h-5" />
-              {cartTotalCount > 0 && (
-                <span className="absolute flex items-center justify-center w-5 h-5 text-xs text-white bg-blue-600 rounded-full -top-2 -right-2">
-                  {cartTotalCount}
-                </span>
-              )}
-            </Link>
-
-            {isAuthenticated && <NotificationDropdown />}
-
-            {isAuthenticated && (
-              <Link
-                to="/chat"
-                className="relative text-gray-700 transition-colors hover:text-blue-600"
-              >
-                <MessageSquare className="w-5 h-5" />
-                {chatNotifications > 0 && (
-                  <span className="absolute flex items-center justify-center w-5 h-5 text-xs text-white bg-blue-600 rounded-full -top-2 -right-2">
-                    {chatNotifications}
-                  </span>
-                )}
-              </Link>
-            )}
-
-            {/* User Menu */}
-            <div ref={ref} className="relative">
-              <button
-                onClick={() => setShowUser(!showUser)}
-                className="text-gray-700 transition-colors hover:text-blue-600"
-              >
-                <User className="w-5 h-5" />
-              </button>
-
-              {showUser && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.2 }}
-                  className="absolute right-0 w-56 mt-2 overflow-hidden bg-white border border-gray-200 rounded-lg shadow-xl top-full"
-                >
-                  {isAuthenticated ? (
-                    <div className="py-2">
-                      <div className="px-4 py-3 border-b border-gray-100">
-                        <p className="text-sm font-semibold text-gray-900">
-                          {userName || user?.username}
-                        </p>
-                      </div>
-                      <Link
-                        to="/profile"
-                        onClick={() => setShowUser(false)}
-                        className="block px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-50"
-                      >
-                        My Profile
-                      </Link>
-                      <Link
-                        to="/order-history"
-                        onClick={() => setShowUser(false)}
-                        className="block px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-50"
-                      >
-                        Order History
-                      </Link>
-                      <Link
-                        to="/return-requests"
-                        onClick={() => setShowUser(false)}
-                        className="block px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-50"
-                      >
-                        Return Requests
-                      </Link>
-                      <Link
-                        to="/my-reviews"
-                        onClick={() => setShowUser(false)}
-                        className="block px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-50"
-                      >
-                        My Reviews
-                      </Link>
-                      <div className="mt-2 border-t border-gray-100">
-                        <button
-                          onClick={handleLogout}
-                          className="block w-full px-4 py-2 text-sm text-left text-red-600 transition-colors hover:bg-gray-50"
-                        >
-                          Sign out
-                        </button>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="py-2">
-                      <Link
-                        to="/signin"
-                        onClick={() => setShowUser(false)}
-                        className="block px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-50"
-                      >
-                        Sign in
-                      </Link>
-                      <Link
-                        to="/signup"
-                        onClick={() => setShowUser(false)}
-                        className="block px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-50"
-                      >
-                        Register
-                      </Link>
-                    </div>
-                  )}
-                </motion.div>
-              )}
-            </div>
-
-            <button className="md:hidden" onClick={() => setSidenav(!sidenav)}>
-              <Menu className="w-5 h-5 text-gray-700" />
-            </button>
           </div>
         </div>
+      </header>
 
-        {/* Mobile Menu */}
+      {/* Mobile Sidebar */}
+      <AnimatePresence>
         {sidenav && (
-          <motion.nav
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            className="flex flex-col gap-3 pt-4 mt-4 border-t border-gray-200 md:hidden"
-          >
-            {/* Mobile Search */}
-            <div className="relative mb-2">
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyPress={(e) => {
-                  if (e.key === "Enter") {
-                    handleSearchSubmit();
-                    setSidenav(false);
-                  }
-                }}
-                placeholder="Search for anything"
-                className="w-full py-2 pl-4 pr-10 text-sm border border-gray-300 rounded-full outline-none focus:border-blue-600"
-              />
-              <Search className="absolute w-5 h-5 text-gray-400 transform -translate-y-1/2 right-3 top-1/2" />
-            </div>
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSidenav(false)}
+              className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm lg:hidden"
+            />
+            <motion.div
+              initial={{ x: "-100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "-100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              className="fixed top-0 left-0 z-50 w-64 h-full overflow-y-auto bg-white shadow-2xl lg:hidden"
+            >
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-8">
+                  <h2 className="text-xl font-bold text-transparent bg-gradient-to-r from-stone-800 to-amber-600 bg-clip-text">
+                    Menu
+                  </h2>
+                  <button
+                    onClick={() => setSidenav(false)}
+                    className="p-2 transition-colors rounded-full hover:bg-stone-100"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
 
-            <Link
-              to="/"
-              onClick={() => setSidenav(false)}
-              className="py-2 text-left text-gray-700 transition-colors hover:text-blue-600"
-            >
-              Home
-            </Link>
-            <Link
-              to="/deals"
-              onClick={() => setSidenav(false)}
-              className="py-2 text-left text-gray-700 transition-colors hover:text-blue-600"
-            >
-              Daily Deals
-            </Link>
-            <Link
-              to="/outlet"
-              onClick={() => setSidenav(false)}
-              className="py-2 text-left text-gray-700 transition-colors hover:text-blue-600"
-            >
-              Brand Outlet
-            </Link>
-            {isAuthenticated && user?.role === "buyer" && (
-              <button
-                onClick={() => {
-                  handleBecomeASeller();
-                  setSidenav(false);
-                }}
-                className="py-2 text-left text-gray-700 transition-colors hover:text-blue-600"
-              >
-                Sell
-              </button>
-            )}
-            <Link
-              to="/help"
-              onClick={() => setSidenav(false)}
-              className="py-2 text-left text-gray-700 transition-colors hover:text-blue-600"
-            >
-              Help
-            </Link>
-          </motion.nav>
+                <nav className="space-y-2">
+                  <Link
+                    to="/"
+                    onClick={() => setSidenav(false)}
+                    className="flex items-center gap-3 px-4 py-3 transition-all duration-300 rounded-lg text-stone-700 hover:bg-gradient-to-r hover:from-amber-50 hover:to-orange-50 hover:text-stone-900"
+                  >
+                    Home
+                  </Link>
+                  <Link
+                    to="/deals"
+                    onClick={() => setSidenav(false)}
+                    className="flex items-center gap-3 px-4 py-3 transition-all duration-300 rounded-lg text-stone-700 hover:bg-gradient-to-r hover:from-amber-50 hover:to-orange-50 hover:text-stone-900"
+                  >
+                    Daily Deals
+                  </Link>
+                  <Link
+                    to="/outlet"
+                    onClick={() => setSidenav(false)}
+                    className="flex items-center gap-3 px-4 py-3 transition-all duration-300 rounded-lg text-stone-700 hover:bg-gradient-to-r hover:from-amber-50 hover:to-orange-50 hover:text-stone-900"
+                  >
+                    Brand Outlet
+                  </Link>
+                  <Link
+                    to="/help"
+                    onClick={() => setSidenav(false)}
+                    className="flex items-center gap-3 px-4 py-3 transition-all duration-300 rounded-lg text-stone-700 hover:bg-gradient-to-r hover:from-amber-50 hover:to-orange-50 hover:text-stone-900"
+                  >
+                    Help & Contact
+                  </Link>
+                  {isAuthenticated && user?.role === "buyer" && (
+                    <button
+                      onClick={() => {
+                        handleBecomeASeller();
+                        setSidenav(false);
+                      }}
+                      className="flex items-center w-full gap-3 px-4 py-3 text-left transition-all duration-300 rounded-lg text-stone-700 hover:bg-gradient-to-r hover:from-amber-50 hover:to-orange-50 hover:text-stone-900"
+                    >
+                      Become a Seller
+                    </button>
+                  )}
+                </nav>
+              </div>
+            </motion.div>
+          </>
         )}
-      </div>
-    </header>
+      </AnimatePresence>
+    </>
   );
 };
 

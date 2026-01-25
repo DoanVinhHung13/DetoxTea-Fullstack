@@ -17,7 +17,7 @@ app.use(
   cors({
     origin: [process.env.CLIENT_URL],
     credentials: true,
-  })
+  }),
 );
 app.use(express.json());
 app.use(passport.initialize());
@@ -40,7 +40,7 @@ app.use((req, res, next) => {
   // Override send to log response
   res.send = function (body) {
     console.log(
-      `[${new Date().toISOString()}] Response ${res.statusCode} for ${req.url}`
+      `[${new Date().toISOString()}] Response ${res.statusCode} for ${req.url}`,
     );
 
     // Restore original send and call it
