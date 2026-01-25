@@ -57,28 +57,37 @@ const getVoucherById = async (req, res, next) => {
 // @access  Private/Admin
 const updateVoucher = async (req, res, next) => {
   try {
-    const { code, discount, expirationDate, minOrderValue, usageLimit, maxDiscount, isActive } = req.body;
+    const {
+      code,
+      discount,
+      expirationDate,
+      minOrderValue,
+      usageLimit,
+      maxDiscount,
+      isActive
+    } = req.body;
 
     const voucher = await Voucher.findById(req.params.id);
 
-    if (voucher) {
-      voucher.code = code || voucher.code;
-      voucher.discount = discount || voucher.discount;
-      voucher.expirationDate = expirationDate || voucher.expirationDate;
-      voucher.minOrderValue = minOrderValue || voucher.minOrderValue;
-      voucher.usageLimit = usageLimit || voucher.usageLimit;
-      voucher.maxDiscount = maxDiscount || voucher.maxDiscount;
-      voucher.isActive = isActive !== undefined ? isActive : voucher.isActive;
-
-      const updatedVoucher = await voucher.save();
-      res.json(updatedVoucher);
-    } else {
-      res.status(404).json({ message: 'Voucher not found' });
+    if (!voucher) {
+      return res.status(404).json({ message: 'Voucher not found' });
     }
+
+    if (code !== undefined) voucher.code = code;
+    if (discount !== undefined) voucher.discount = discount;
+    if (expirationDate !== undefined) voucher.expirationDate = expirationDate;
+    if (minOrderValue !== undefined) voucher.minOrderValue = minOrderValue;
+    if (usageLimit !== undefined) voucher.usageLimit = usageLimit;
+    if (maxDiscount !== undefined) voucher.maxDiscount = maxDiscount;
+    if (isActive !== undefined) voucher.isActive = isActive;
+
+    const updatedVoucher = await voucher.save();
+    res.json(updatedVoucher);
   } catch (error) {
     next(error);
   }
 };
+
 
 // @desc    Delete a voucher
 // @route   DELETE /api/vouchers/:id

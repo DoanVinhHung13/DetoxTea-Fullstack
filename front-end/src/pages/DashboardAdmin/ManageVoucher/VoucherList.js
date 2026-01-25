@@ -193,29 +193,49 @@ const VoucherList = () => {
 
   // Handle toggle voucher status
   const handleToggleStatus = async (voucher) => {
-    try {
-      setLoading(true);
-      await VoucherService.toggleVoucherStatus(voucher._id);
-      
-      setSnackbar({
-        open: true,
-        message: `Voucher ${voucher.isActive ? 'deactivated' : 'activated'} successfully`,
-        severity: 'success'
-      });
-      
-      fetchVouchers();
-    } catch (error) {
-      console.error('Error toggling voucher status:', error);
-      setSnackbar({
-        open: true,
-        message: 'Error changing voucher status',
-        severity: 'error'
-      });
-    } finally {
-      setLoading(false);
-      handleCloseActionMenu();
-    }
-  };
+  try {
+    setLoading(true);
+
+    // 1️⃣ Update UI trước (optimistic)
+    setVouchers(prev =>
+      prev.map(v =>
+        v._id === voucher._id
+          ? { ...v, isActive: !voucher.isActive }
+          : v
+      )
+    );
+
+    // 2️⃣ Gọi API
+    await VoucherService.toggleVoucherStatus(voucher._id);
+
+    setSnackbar({
+      open: true,
+      message: `Voucher ${voucher.isActive ? 'deactivated' : 'activated'} successfully`,
+      severity: 'success'
+    });
+  } catch (error) {
+    console.error('Error toggling voucher status:', error);
+
+    // rollback nếu lỗi
+    setVouchers(prev =>
+      prev.map(v =>
+        v._id === voucher._id
+          ? { ...v, isActive: voucher.isActive }
+          : v
+      )
+    );
+
+    setSnackbar({
+      open: true,
+      message: 'Error changing voucher status',
+      severity: 'error'
+    });
+  } finally {
+    setLoading(false);
+    handleCloseActionMenu();
+  }
+};
+
 
   // Copy voucher code to clipboard
   const handleCopyCode = (code) => {
@@ -228,18 +248,16 @@ const VoucherList = () => {
     handleCloseActionMenu();
   };
 
-  const formatDate = (dateString) => {
-    try {
-      const date = new Date(dateString);
-      return date.toLocaleDateString('en-US', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric'
-      });
-    } catch (error) {
-      return 'Invalid date';
-    }
-  };
+  const formatDate = (date) => {
+  if (!date) return "—";
+
+  // ISO string: 2026-12-25T00:00:00.000Z
+  if (typeof date === "string") {
+    return date.slice(0, 10).split("-").reverse().join("/");
+  }
+
+  return "—";
+};
 
   const isExpired = (dateString) => {
     try {
