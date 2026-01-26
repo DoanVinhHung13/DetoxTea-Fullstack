@@ -416,9 +416,8 @@ exports.getAllProductsAdmin = async (req, res) => {
       limit = 10,
     } = req.query;
 
-    // ÉP KIỂU page & limit
-    const pageNum = parseInt(page);
-    const limitNum = parseInt(limit);
+    const pageNum = Number(page);
+    const limitNum = Number(limit);
     const skip = (pageNum - 1) * limitNum;
 
     const query = {};
@@ -427,10 +426,9 @@ exports.getAllProductsAdmin = async (req, res) => {
       query.status = status;
     }
 
-    // LẤY DATA + COUNT SONG SONG
     const [products, total] = await Promise.all([
       Product.find(query)
-        .populate("username email")
+        .populate("sellerId", "username email") 
         .populate("categoryId", "name")
         .sort({ createdAt: -1 })
         .skip(skip)
@@ -447,10 +445,13 @@ exports.getAllProductsAdmin = async (req, res) => {
       totalItems: total,
     });
   } catch (error) {
-    handleError(res, error, "Lỗi khi lấy danh sách sản phẩm");
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "Lỗi khi lấy danh sách sản phẩm",
+    });
   }
 };
-
 
 /**
  * @desc Lấy chi tiết một sản phẩm bằng ID

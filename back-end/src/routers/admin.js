@@ -106,10 +106,7 @@ router.put("/stores/:storeId/status", updateStoreStatusByAdmin);
 // --- Product Management by Admin Routes ---
 router.get("/products", getAllProductsAdmin); // danh sách
 router.post(
-  "/products",
-  verifyToken,     // check đăng nhập
-  verifyAdmin,     // check role = admin
-  createProductAdmin
+  "/products", createProductAdmin
 );
 router.get("/products/:id", getProductDetailsAdmin); // chi tiết sản phẩm
 router.put("/products/:id/status", updateProductStatusAdmin); // cập nhật trạng thái
