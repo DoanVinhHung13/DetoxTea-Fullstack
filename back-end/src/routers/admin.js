@@ -42,6 +42,7 @@ const {
   // Product Management by Admin
   getAllProductsAdmin,
   getProductDetailsAdmin,
+  createProductAdmin,
   deleteProductAdmin,
   deleteReviewAdmin,
   getProductStatsAdmin,
@@ -104,6 +105,12 @@ router.put("/stores/:storeId/status", updateStoreStatusByAdmin);
 
 // --- Product Management by Admin Routes ---
 router.get("/products", getAllProductsAdmin); // danh sách
+router.post(
+  "/products",
+  verifyToken,     // check đăng nhập
+  verifyAdmin,     // check role = admin
+  createProductAdmin
+);
 router.get("/products/:id", getProductDetailsAdmin); // chi tiết sản phẩm
 router.put("/products/:id/status", updateProductStatusAdmin); // cập nhật trạng thái
 router.delete("/products/:id", deleteProductAdmin); // xoá sản phẩm

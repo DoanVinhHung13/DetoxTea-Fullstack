@@ -66,7 +66,10 @@ const SignIn = () => {
       
       if (response.user?.role === 'admin') {
         navigate('/admin');
-      } else {
+      } else if(response.user?.role === 'seller') {
+        navigate('/seller');
+      }
+      else {
         navigate('/');
       }
       

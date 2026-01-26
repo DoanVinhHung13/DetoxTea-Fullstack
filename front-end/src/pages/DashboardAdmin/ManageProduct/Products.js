@@ -43,10 +43,16 @@
   import axios from "axios";
   import * as React from "react";
   import UpdateProduct from "./UpdateProduct";
+  import CreateProduct from "./CreateProduct";
   export default function Products({
-    products: initialProducts,
-    onProductUpdated,
-  }) {
+  products,
+  currentPage,
+  totalPages,
+  onPageChange,
+  onProductUpdated,
+}) {
+
+  
     const [deletingProduct, setDeletingProduct] = React.useState(null);
     const [editingProduct, setEditingProduct] = React.useState(null);
     const [viewingReviewsProduct, setViewingReviewsProduct] =
@@ -65,9 +71,9 @@
     );
     const [selectedStores, setSelectedStores] = React.useState([]);
     const [selectedRatingRanges, setSelectedRatingRanges] = React.useState([]);
-    const [currentPage, setCurrentPage] = React.useState(1);
     const [storeSearch, setStoreSearch] = React.useState("");
     const [productRatings, setProductRatings] = React.useState({});
+    const [creatingProduct, setCreatingProduct] = React.useState(false);
     const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
     const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
@@ -146,7 +152,7 @@
     // Compute unique stores/sellers from products
     const stores = React.useMemo(() => {
       const storeMap = new Map();
-      initialProducts.forEach((product) => {
+      products.forEach((product) => {
         if (product.sellerId) {
           const sellerId = product.sellerId._id;
           const sellerName =
@@ -157,7 +163,7 @@
         }
       });
       return Array.from(storeMap, ([id, name]) => ({ id, name }));
-    }, [initialProducts]);
+    }, [products]);
 
     // Filtered stores based on storeSearch
     const filteredStores = React.useMemo(() => {
@@ -181,7 +187,7 @@
       const fetchRatings = async () => {
         const ratings = {};
         await Promise.all(
-          initialProducts.map(async (product) => {
+          products.map(async (product) => {
             try {
               const res = await axios.get(
                 `http://localhost:9999/api/admin/products/${product._id}/reviews`,
@@ -209,11 +215,11 @@
         setProductRatings(ratings);
       };
       fetchRatings();
-    }, [initialProducts]);
+    }, [products]);
 
     // Filter products based on search, stores, and rating ranges
     const filteredProducts = React.useMemo(() => {
-      let filtered = [...initialProducts.map((product) => ({ ...product }))]; // Copy to modify
+      let filtered = [...products.map((product) => ({ ...product }))]; // Copy to modify
 
       filtered = filtered.map((product) => {
         const ratingInfo = productRatings[product._id] || {
@@ -270,7 +276,7 @@
 
       return filtered;
     }, [
-      initialProducts,
+      products,
       keywords,
       selectedActiveStatuses,
       selectedStores,
@@ -278,16 +284,9 @@
       productRatings,
     ]);
 
-    const PRODUCTS_PER_PAGE = 10;
-    const totalFilteredPages = Math.ceil(
-      filteredProducts.length / PRODUCTS_PER_PAGE
-    );
-    const startIdx = (currentPage - 1) * PRODUCTS_PER_PAGE;
-    const endIdx = startIdx + PRODUCTS_PER_PAGE;
-    const pageData = filteredProducts.slice(startIdx, endIdx);
 
     React.useEffect(() => {
-      setCurrentPage(1); // Reset to first page when filters change
+   // Reset to first page when filters change
     }, [selectedActiveStatuses, selectedStores, selectedRatingRanges, keywords]);
 
     const handleActiveStatusChange = (status) => {
@@ -314,10 +313,6 @@
           ? prev.filter((r) => r !== rangeLabel)
           : [...prev, rangeLabel]
       );
-    };
-
-    const handlePageChange = (event, newPage) => {
-      setCurrentPage(newPage);
     };
 
     return (
@@ -578,6 +573,23 @@
             </Box>
           </Grid>
           <Grid item xs={12} md={9}>
+              <Box
+                display="flex"
+                justifyContent="space-between"
+                alignItems="center"
+                mb={2}
+              >
+                <Typography variant="h6">Products</Typography>
+
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => setCreatingProduct(true)}
+                >
+                  + Add Product
+                </Button>
+              </Box>
+
             <TableContainer
               component={Paper}
               sx={{
@@ -592,7 +604,6 @@
                       <TableCell><b>Image</b></TableCell>
                       <TableCell><b>Title</b></TableCell>
                       <TableCell><b>Price</b></TableCell>
-                      <TableCell><b>Seller</b></TableCell>
                       <TableCell><b>Active</b></TableCell>
                       <TableCell><b>Rating</b></TableCell>
                       <TableCell><b>Tool</b></TableCell>
@@ -600,7 +611,7 @@
                   </TableHead>
 
                   <TableBody>
-                    {pageData.map((product) => {
+                    {filteredProducts.map((product) => {
                       const imageUrl =
                         product.image ||
                         (Array.isArray(product.images) ? product.images[0] : null);
@@ -634,9 +645,6 @@
 
                           {/* PRICE */}
                           <TableCell>{product.price}</TableCell>
-
-                          {/* SELLER */}
-                          <TableCell>{product.sellerId?.username || "N/A"}</TableCell>
 
                           {/* ACTIVE */}
                           <TableCell>
@@ -694,13 +702,14 @@
             <Stack spacing={2} sx={{ mt: 3 }}>
               <Pagination
                 page={currentPage}
-                count={totalFilteredPages}
-                onChange={handlePageChange}
+                count={totalPages}   //  LẤY TỪ BACKEND
+                onChange={(e, page) => onPageChange(page)}
                 showFirstButton
                 showLastButton
                 sx={{ display: "flex", justifyContent: "center" }}
               />
             </Stack>
+
 
             {editingProduct && (
               <UpdateProduct
@@ -713,6 +722,23 @@
                 handleClose={() => setEditingProduct(null)}
               />
             )}
+
+            {creatingProduct && (
+              <CreateProduct
+                open={creatingProduct}
+                handleClose={() => setCreatingProduct(false)}
+                onCreated={() => {
+                  onProductUpdated(1); // reload lại list
+                  setSnackbar({
+                    open: true,
+                    msg: "Product created successfully!",
+                    severity: "success",
+                  });
+                  setCreatingProduct(false);
+                }}
+              />
+            )}
+
           </Grid>
         </Grid>
       </React.Fragment>

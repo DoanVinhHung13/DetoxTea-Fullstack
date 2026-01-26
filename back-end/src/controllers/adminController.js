@@ -408,32 +408,49 @@ exports.updateStoreByAdmin = async (req, res) => {
  * @access Riêng tư (Admin)
  */
 exports.getAllProductsAdmin = async (req, res) => {
-  const { sellerId, categoryId, status, page = 1, limit = 10 } = req.query;
   try {
+    const {
+      categoryId,
+      status,
+      page = 1,
+      limit = 10,
+    } = req.query;
+
+    // ÉP KIỂU page & limit
+    const pageNum = parseInt(page);
+    const limitNum = parseInt(limit);
+    const skip = (pageNum - 1) * limitNum;
+
     const query = {};
-    if (sellerId) query.sellerId = sellerId;
     if (categoryId) query.categoryId = categoryId;
     if (status && ["available", "out_of_stock", "pending"].includes(status)) {
-      // Điều chỉnh enum dựa trên DB mới
       query.status = status;
     }
-    const products = await Product.find(query)
-      .populate("sellerId", "username email")
-      .populate("categoryId", "name")
-      .skip((page - 1) * limit)
-      .limit(parseInt(limit));
-    const total = await Product.countDocuments(query);
+
+    // LẤY DATA + COUNT SONG SONG
+    const [products, total] = await Promise.all([
+      Product.find(query)
+        .populate("username email")
+        .populate("categoryId", "name")
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limitNum),
+
+      Product.countDocuments(query),
+    ]);
+
     res.status(200).json({
       success: true,
-      count: products.length,
-      totalPages: Math.ceil(total / limit),
-      currentPage: parseInt(page),
       data: products,
+      currentPage: pageNum,
+      totalPages: Math.ceil(total / limitNum),
+      totalItems: total,
     });
   } catch (error) {
     handleError(res, error, "Lỗi khi lấy danh sách sản phẩm");
   }
 };
+
 
 /**
  * @desc Lấy chi tiết một sản phẩm bằng ID
@@ -515,6 +532,68 @@ exports.deleteProductAdmin = async (req, res) => {
     handleError(res, error, "Lỗi khi xóa sản phẩm");
   }
 };
+
+/**
+ * @desc Admin tạo sản phẩm mới
+ * @route POST /api/admin/products
+ * @access Riêng tư (Admin)
+ */
+exports.createProductAdmin = async (req, res) => {
+  try {
+    const {
+      title,
+      description,
+      price,
+      inventory,
+      categoryId,
+      image,
+      isAuction,
+      auctionEndTime,
+    } = req.body;
+
+    // ✅ validate
+    if (!title || !price || !categoryId) {
+      return res.status(400).json({
+        success: false,
+        message: "Thiếu thông tin bắt buộc",
+      });
+    }
+
+    const category = await Category.findById(categoryId);
+    if (!category) {
+      return res.status(400).json({
+        success: false,
+        message: "Danh mục không tồn tại",
+      });
+    }
+
+    const product = await Product.create({
+      title,
+      description,
+      price,
+      image,
+      categoryId,
+      inventory: Number(inventory) || 0, // ✅ QUAN TRỌNG
+      isAuction: Boolean(isAuction),
+      auctionEndTime: isAuction ? auctionEndTime : null,
+      sellerId: null, // admin tạo
+      status: "available",
+    });
+
+    res.status(201).json({
+      success: true,
+      message: "Tạo sản phẩm thành công",
+      data: product,
+    });
+  } catch (error) {
+    console.error("CREATE PRODUCT ERROR:", error);
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 
 /**
  * @desc Đếm và phân tích số lượng sản phẩm theo store (sellerId) hoặc trạng thái
