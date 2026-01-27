@@ -1,146 +1,97 @@
-import React from "react";
-import { Link, useRouteError } from "react-router-dom";
-import { Box, Typography, Button, Paper } from "@mui/material";
-import ErrorIcon from "@mui/icons-material/Error";
+// src/pages/ErrorPage.jsx
 import { motion } from "framer-motion";
+import { Link, useRouteError } from "react-router-dom";
 
 const ErrorPage = () => {
   const error = useRouteError();
   console.error(error);
 
-  let errorMessage = "An unexpected error has occurred";
-  let statusText = "Error";
-  
-  if (error) {
-    if (error.status === 404) {
-      statusText = "404 - Page Not Found";
-      errorMessage = "The page you are looking for doesn't exist or has been moved.";
-    } else if (error.status === 500) {
-      statusText = "500 - Server Error";
-      errorMessage = "A server error has occurred. Please try again later.";
-    } else if (error.message) {
-      errorMessage = error.message;
-    }
-  }
+  // Forest Green Color Palette
+  const colors = {
+    primary: "#228B22", // Forest Green
+    primaryHover: "#1e7b1e",
+    backgroundLight: "#f6f8f6",
+    textDark: "#0d1b11",
+    accent: "#4c9a5f",
+  };
 
   return (
-    <Box
-      display="flex"
-      justifyContent="center"
-      alignItems="center"
-      minHeight="100vh"
-      padding={3}
-      sx={{
-        background: "linear-gradient(to right, #f5f7fa, #e4e9f2)",
-      }}
-    >
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        style={{ width: "100%", maxWidth: 600 }}
-      >
-        <Paper
-          elevation={3}
-          sx={{
-            p: 5,
-            width: "100%",
-            textAlign: "center",
-            borderRadius: 4,
-            overflow: "hidden",
-            position: "relative",
-            boxShadow: "0 10px 30px rgba(0,0,0,0.1)",
-          }}
-        >
-          <motion.div
-            initial={{ scale: 0.8 }}
-            animate={{ scale: 1 }}
-            transition={{ 
-              type: "spring",
-              stiffness: 200,
-              damping: 15,
-              delay: 0.2
-            }}
-          >
-            <ErrorIcon 
-              sx={{ 
-                fontSize: 100, 
-                color: "#0F52BA", 
-                mb: 2,
-                opacity: 0.8
-              }} 
-            />
-          </motion.div>
-          
-          <Typography 
-            variant="h4" 
-            fontWeight="bold" 
-            gutterBottom
-            sx={{ color: "#0F52BA" }}
-          >
-            {statusText}
-          </Typography>
-          
-          <Typography 
-            variant="body1" 
-            color="text.secondary" 
-            paragraph
-            sx={{ mb: 4, maxWidth: "80%", mx: "auto" }}
-          >
-            {errorMessage}
-          </Typography>
-          
-          <Box 
-            mt={4} 
-            display="flex" 
-            justifyContent="center" 
-            gap={2}
-            sx={{ flexWrap: { xs: "wrap", sm: "nowrap" } }}
-          >
-            <Button
-              variant="contained"
-              component={Link}
-              to="/"
-              sx={{ 
-                px: 4, 
-                py: 1.2,
-                backgroundColor: "#0F52BA",
-                "&:hover": {
-                  backgroundColor: "#0A3C8A",
-                },
-                borderRadius: 2,
-                boxShadow: "0 4px 10px rgba(15, 82, 186, 0.3)",
-                textTransform: "none",
-                fontWeight: 600
+    <div className="min-h-screen flex flex-col transition-colors duration-300 bg-cream font-['Noto_Serif']">
+      <div className="flex flex-col grow">
+        {/* Main Content */}
+        <main className="flex items-center justify-center flex-1 px-4 py-10">
+          <div className="flex flex-col max-w-[960px] w-full items-center">
+            {/* Calming Illustration with Animation */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8 }}
+              className="relative w-full max-w-[500px] aspect-[4/3] rounded-xl overflow-hidden shadow-sm bg-gradient-to-br from-[#228B22]/5 to-transparent flex items-center justify-center mb-8"
+              style={{
+                backgroundImage: `url("https://lh3.googleusercontent.com/aida-public/AB6AXuB3tG-5mYWfMbsUu7F4_x7YHxZNiAGGYMp1DRNKtXmvglLCjOAk263BzsOfjDv22Iuwp_Wn3OK0hwJn-iB-VIfRgkd5qdPtVJ9ZZ_WuauKsNLZP5Nb_jgQnlGgu5KWyj_lQln7mG6qtGl1YDbFZoHZqHg80TVtPhdzjCKUO9XznrYcLhQsnHnBR7SWs0adjNEHkYkMva4J7qwbK69p4Sq5P-9vJLMJpSEHGpKXNbPGOkThKh0wDMEzcoKzllw04XxMWz9eYu0Y-9u-G")`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
               }}
             >
-              Return to Home
-            </Button>
-            
-            <Button
-              variant="outlined"
-              onClick={() => window.history.back()}
-              sx={{ 
-                px: 4, 
-                py: 1.2,
-                borderColor: "#0F52BA",
-                color: "#0F52BA",
-                "&:hover": {
-                  borderColor: "#0A3C8A",
-                  backgroundColor: "rgba(15, 82, 186, 0.04)",
-                },
-                borderRadius: 2,
-                textTransform: "none",
-                fontWeight: 600
-              }}
+              <div className="absolute inset-0 bg-white/20 backdrop-blur-[1px]"></div>
+              <span className="relative text-[120px] font-light opacity-10 select-none">
+                404
+              </span>
+            </motion.div>
+
+            {/* Error Message */}
+            <div className="flex flex-col items-center gap-4 text-center">
+              <motion.div
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.2 }}
+                className="flex flex-col gap-2"
+              >
+                <h2 className="text-3xl font-bold leading-tight tracking-tight text-[#0d1b11] md:text-4xl">
+                  Peaceful detours happen.
+                </h2>
+                <p className="text-[#4c9a5f] text-sm font-normal uppercase tracking-[0.2em] font-sans">
+                  Lost in the Garden
+                </p>
+              </motion.div>
+
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.4 }}
+                className="text-[#0d1b11]/70 text-base md:text-lg leading-relaxed max-w-[540px] px-4 font-sans"
+              >
+                It seems this path has come to a gentle end. Take a breath,
+                savor the moment, and let’s guide you back to your wellness
+                ritual.
+              </motion.p>
+            </div>
+
+            {/* Actions */}
+            <motion.div
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.6 }}
+              className="flex flex-col justify-center w-full gap-4 px-4 mt-8 sm:flex-row"
             >
-              Go Back
-            </Button>
-          </Box>
-        </Paper>
-      </motion.div>
-    </Box>
+              <Link
+                to="/"
+                className="flex min-w-[180px] items-center justify-center rounded-lg h-12 px-6 bg-[#228B22] text-white text-sm font-bold uppercase tracking-widest hover:shadow-lg hover:shadow-[#228B22]/20 transition-all"
+              >
+                Return Home
+              </Link>
+              <button
+                onClick={() => window.history.back()}
+                className="flex min-w-[180px] items-center justify-center rounded-lg h-12 px-6 border border-[#228B22]/30 bg-transparent text-[#0d1b11] text-sm font-bold uppercase tracking-widest hover:bg-[#228B22]/5 transition-all"
+              >
+                Go Back
+              </button>
+            </motion.div>
+          </div>
+        </main>
+      </div>
+    </div>
   );
 };
 
-export default ErrorPage; 
+export default ErrorPage;

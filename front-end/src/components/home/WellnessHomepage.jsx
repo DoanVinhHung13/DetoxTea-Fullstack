@@ -44,7 +44,6 @@ const WellnessHomepage = () => {
         } else {
           imageUrl = "https://via.placeholder.com/400?text=No+Image";
         }
-
         return {
           ...product,
           imageUrl,
@@ -152,7 +151,6 @@ const WellnessHomepage = () => {
         </div>
       </section>
 
-      {/* Featured Products Section */}
       <section className="px-4 py-16 mx-auto max-w-7xl">
         <h2 className="mb-4 text-4xl text-center font-titleFont text-charcoal">
           FEATURED PRODUCTS:

@@ -277,56 +277,7 @@ const Home = () => {
   return (
     <main className="min-h-screen">
       <Hero />
-
-      {/* <ProductFilter
-        categories={categories}
-        selectedCategories={selectedCategories}
-        onCategoryChange={handleCategoryChange}
-        onResetCategories={handleResetCategories}
-      /> */}
-
       <WellnessHomepage />
-      {/* <section className="px-4 pb-12 mx-auto md:px-8 md:pb-8 max-w-7xl">
-        {products.length === 0 ? (
-          <div className="p-16 text-center rounded-lg bg-gray-50">
-            <h3 className="mb-4 text-2xl font-bold text-gray-700">
-              No products match your criteria
-            </h3>
-            <button
-              onClick={handleResetCategories}
-              className="px-8 py-3 font-semibold text-white bg-blue-600 rounded-full hover:bg-blue-700"
-            >
-              View all products
-            </button>
-          </div>
-        ) : (
-          <>
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-5">
-              {products.map((product, index) => (
-                <ProductCard
-                  key={product._id}
-                  product={product}
-                  index={index}
-                  isFavorite={favoriteProducts[product._id]}
-                  isAddingToCart={addingToCart[product._id]}
-                  onAddToCart={handleAddToCart}
-                  onToggleFavorite={handleToggleFavorite}
-                  onProductClick={handleProductClick}
-                  onImageError={handleImageError}
-                />
-              ))}
-            </div>
-
-            {totalPages > 1 && (
-              <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={handlePageChange}
-              />
-            )}
-          </>
-        )}
-      </section> */}
     </main>
   );
 };

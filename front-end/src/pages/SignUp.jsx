@@ -1,9 +1,8 @@
+// src/pages/SignUp.jsx
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { setCredentials } from "../features/auth/authSlice";
 import { register } from "../services/authService";
 
 // Icons
@@ -48,7 +47,6 @@ const EyeOffIcon = (props) => (
 
 const SignUp = () => {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
 
   const [formData, setFormData] = useState({
     username: "",
@@ -66,237 +64,223 @@ const SignUp = () => {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
+    if (formData.password !== formData.confirmPassword) {
+      toast.error("Passwords do not match!");
+      return;
+    }
 
-  if (formData.password !== formData.confirmPassword) {
-    toast.error("Passwords do not match");
-    return;
-  }
+    setIsLoading(true);
+    try {
+      await register({
+        username: formData.username,
+        fullname: formData.fullname,
+        email: formData.email,
+        password: formData.password,
+      });
+      toast.success("Registration successful! Please check your email.");
+      navigate("/verify-otp", { state: { email: formData.email } });
+    } catch (error) {
+      const msg =
+        error.response?.data?.message || error.message || "Registration failed";
+      toast.error(msg);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-  setIsLoading(true);
-
-  try {
-    const response = await register({
-      username: formData.username,
-      fullname: formData.fullname,
-      email: formData.email,
-      password: formData.password,
-    });
-
-    // Không dispatch setCredentials ở đây vì chưa verify OTP
-    toast.success("Registration successful! Please verify your email.");
-
-    // Redirect sang OTPVerification kèm email
-    navigate("/verify-otp", { state: { email: formData.email } });
-
-  } catch (error) {
-    // Lấy message từ response hoặc error.message
-    const msg = error.response?.data?.message || error.message || "Registration failed";
-    toast.error(msg);
-  } finally {
-    setIsLoading(false);
-  }
-};
-
+  // Define Forest Green color for consistency
+  const forestGreenClass =
+    "bg-[#228B22] hover:bg-[#1e7b1e] focus:ring-[#228B22]";
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-50 to-indigo-50 py-12 px-4 sm:px-6 lg:px-8">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="max-w-md w-full space-y-6 bg-white p-8 rounded-xl shadow-lg"
-      >
-        <div>
-          <h2 className="mt-2 text-center text-3xl font-extrabold text-gray-900">
-            Create Account
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            Join us today and start shopping
-          </p>
+    <div className="flex min-h-screen bg-cream">
+      {/* Left side: Image */}
+      <div className="relative flex-1 hidden w-0 lg:block">
+        <img
+          className="absolute inset-0 object-cover w-full h-full"
+          src="https://lh3.googleusercontent.com/aida-public/AB6AXuC48xQaRdOJsDXh26l5GfJ6coC2tvdXyjz6oeGBAROf0vT_Nk4X_Y1sZaHE0Hk1YFbazYsM9gRWtlpc5VVijQx3Tdb0E-MUqWuJCngMujsRFOhLQiMR0-hFIMM6m4Gu-g4Zi6Y4KnN-yUnnkKKVIWCONPsa9SKA2KkIUtmr2NOX1FfB4Wwcfuf3EEOHWr2vtqTgUXSvtVdGrdjv9_2uxYQY-OvWZINfRQtaKLBM4pf8st01cmgF0Qa-zQMAkPpQ6A2Y1YqbHhYta6Jb"
+          alt="Sign up background"
+        />
+        <div className="absolute inset-0 bg-[#228B22] mix-blend-multiply opacity-10" />
+        <div className="absolute inset-0 flex items-center justify-center p-12 text-white">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="text-center"
+          >
+            <h1 className="mb-4 text-4xl font-bold">Start Your Journey</h1>
+            <p className="text-lg text-gray-100">
+              Join our community and discover exclusive benefits.
+            </p>
+          </motion.div>
         </div>
+      </div>
 
-        <form className="mt-6 space-y-5" onSubmit={handleSubmit}>
-          <div className="rounded-md shadow-sm space-y-4">
-            {/* Username */}
-            <div>
-              <label
-                htmlFor="username"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Username
-              </label>
-              <input
-                id="username"
-                name="username"
-                type="text"
-                required
-                className="mt-1 appearance-none relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0F52BA] focus:border-[#0F52BA] sm:text-sm transition-all duration-200"
-                placeholder="Username"
-                value={formData?.username}
-                onChange={handleChange}
-              />
-            </div>
-
-            {/* Fullname */}
-            <div>
-              <label
-                htmlFor="fullname"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Full Name
-              </label>
-              <input
-                id="fullname"
-                name="fullname"
-                type="text"
-                required
-                className="mt-1 appearance-none relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0F52BA] focus:border-[#0F52BA] sm:text-sm transition-all duration-200"
-                placeholder="Your full name"
-                value={formData.fullname}
-                onChange={handleChange}
-              />
-            </div>
-
-            {/* Email */}
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Email
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                className="mt-1 appearance-none relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0F52BA] focus:border-[#0F52BA] sm:text-sm transition-all duration-200"
-                placeholder="you@example.com"
-                value={formData.email}
-                onChange={handleChange}
-              />
-            </div>
-
-            {/* Password */}
-            <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Password
-              </label>
-              <div className="mt-1 relative">
-                <input
-                  id="password"
-                  name="password"
-                  type={showPassword ? "text" : "password"}
-                  autoComplete="new-password"
-                  required
-                  className="appearance-none block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0F52BA] focus:border-[#0F52BA] sm:text-sm transition-all duration-200"
-                  placeholder="Password"
-                  value={formData.password}
-                  onChange={handleChange}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 px-3 flex items-center text-gray-500 hover:text-gray-700"
-                >
-                  {showPassword ? (
-                    <EyeOffIcon className="h-5 w-5" />
-                  ) : (
-                    <EyeIcon className="h-5 w-5" />
-                  )}
-                </button>
-              </div>
-            </div>
-
-            {/* Confirm Password */}
-            <div>
-              <label
-                htmlFor="confirmPassword"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Confirm Password
-              </label>
-              <div className="mt-1 relative">
-                <input
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  type={showConfirmPassword ? "text" : "password"}
-                  autoComplete="new-password"
-                  required
-                  className="appearance-none block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0F52BA] focus:border-[#0F52BA] sm:text-sm transition-all duration-200"
-                  placeholder="Confirm your password"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute inset-y-0 right-0 px-3 flex items-center text-gray-500 hover:text-gray-700"
-                >
-                  {showConfirmPassword ? (
-                    <EyeOffIcon className="h-5 w-5" />
-                  ) : (
-                    <EyeIcon className="h-5 w-5" />
-                  )}
-                </button>
-              </div>
-            </div>
-          </div>
-
+      {/* Right side: Form */}
+      <div className="flex flex-col justify-center flex-1 px-4 py-12 sm:px-6 lg:flex-none lg:px-20 xl:px-24">
+        <motion.div
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          className="w-full max-w-sm mx-auto lg:w-96"
+        >
           <div>
-            <button
-              type="submit"
-              disabled={isLoading}
-              className={`group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-[#0F52BA] hover:bg-[#0A3C8A] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0F52BA] transition-all duration-200 ${
-                isLoading ? "opacity-70 cursor-not-allowed" : ""
-              }`}
-            >
-              {isLoading ? (
-                <>
-                  <svg
-                    className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    ></circle>
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    ></path>
-                  </svg>
-                  Creating account...
-                </>
-              ) : (
-                "Sign Up"
-              )}
-            </button>
+            <h2 className="text-3xl font-extrabold tracking-tight text-gray-900">
+              Create an Account
+            </h2>
+            <p className="mt-2 text-sm text-gray-600">
+              Already have an account?{" "}
+              <Link
+                to="/signin"
+                className="font-medium text-[#228B22] hover:underline"
+              >
+                Sign in here
+              </Link>
+            </p>
           </div>
 
-          <div className="text-sm text-center mt-4">
-            <span className="text-gray-600">Already have an account? </span>
-            <Link
-              to="/signin"
-              className="font-medium text-[#0F52BA] hover:text-[#0A3C8A] transition-colors"
-            >
-              Sign In
-            </Link>
+          <div className="mt-8">
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {/* Username & Fullname Row */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Username
+                  </label>
+                  <input
+                    name="username"
+                    type="text"
+                    required
+                    className="block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:ring-[#228B22] focus:border-[#228B22] sm:text-sm"
+                    value={formData.username}
+                    onChange={handleChange}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Full Name
+                  </label>
+                  <input
+                    name="fullname"
+                    type="text"
+                    required
+                    className="block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:ring-[#228B22] focus:border-[#228B22] sm:text-sm"
+                    value={formData.fullname}
+                    onChange={handleChange}
+                  />
+                </div>
+              </div>
+
+              {/* Email */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Email address
+                </label>
+                <input
+                  name="email"
+                  type="email"
+                  required
+                  className="block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:ring-[#228B22] focus:border-[#228B22] sm:text-sm"
+                  placeholder="name@example.com"
+                  value={formData.email}
+                  onChange={handleChange}
+                />
+              </div>
+
+              {/* Password */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Password
+                </label>
+                <div className="relative mt-1">
+                  <input
+                    name="password"
+                    type={showPassword ? "text" : "password"}
+                    required
+                    className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[#228B22] focus:border-[#228B22] sm:text-sm"
+                    value={formData.password}
+                    onChange={handleChange}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400"
+                  >
+                    {showPassword ? (
+                      <EyeOffIcon className="w-5 h-5" />
+                    ) : (
+                      <EyeIcon className="w-5 h-5" />
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              {/* Confirm Password */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Confirm Password
+                </label>
+                <div className="relative mt-1">
+                  <input
+                    name="confirmPassword"
+                    type={showConfirmPassword ? "text" : "password"}
+                    required
+                    className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-[#228B22] focus:border-[#228B22] sm:text-sm"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400"
+                  >
+                    {showConfirmPassword ? (
+                      <EyeOffIcon className="w-5 h-5" />
+                    ) : (
+                      <EyeIcon className="w-5 h-5" />
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              <div className="pt-2">
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className={`flex justify-center w-full px-4 py-3 text-sm font-medium text-white transition-all border border-transparent rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 ${forestGreenClass}`}
+                >
+                  {isLoading ? (
+                    <div className="flex items-center">
+                      <svg
+                        className="w-5 h-5 mr-3 -ml-1 text-white animate-spin"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
+                      </svg>
+                      Creating Account...
+                    </div>
+                  ) : (
+                    "Create Account"
+                  )}
+                </button>
+              </div>
+            </form>
           </div>
-        </form>
-      </motion.div>
+        </motion.div>
+      </div>
     </div>
   );
 };
