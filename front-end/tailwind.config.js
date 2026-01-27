@@ -18,7 +18,7 @@ module.exports = {
         serif: ["Playfair Display", "serif"],
       },
       colors: {
-        cream: "#F7F5E8",
+        cream: "#fdfbf7",
         "forest-green": "#2D4F3E",
         "sage-green": "#8BA889",
         charcoal: "#1A1A1A",

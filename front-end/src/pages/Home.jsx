@@ -1,284 +1,46 @@
-import axios from "axios";
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useLocation, useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
-import {
-  Hero,
-  ProductFilter,
-  ProductSkeleton,
-  WellnessHomepage,
-} from "../components/home";
-import WatchlistService from "../services/api/WatchlistService";
+// Home.jsx
+import Header from "../components/home/Header/HeaderHomePage";
+import Hero from "../components/home/Hero";
+import WellnessHomepage from "../components/home/WellnessHomepage";
 
 const Home = () => {
-  const [products, setProducts] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [selectedCategories, setSelectedCategories] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [loadingCategories, setLoadingCategories] = useState(true);
-  const [addingToCart, setAddingToCart] = useState({});
-  const [minPrice, setMinPrice] = useState("");
-  const [maxPrice, setMaxPrice] = useState("");
-  const [sortOrder, setSortOrder] = useState("default");
-  const [favoriteProducts, setFavoriteProducts] = useState({});
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const location = useLocation();
-
-  const authState = useSelector((state) => state.auth);
-  const isAuthenticated = authState?.isAuthenticated || false;
-  const user = authState?.user || null;
-  const token = authState?.token || null;
-
-  const API_BASE_URL = (
-    process.env.REACT_APP_API_URL || "http://localhost:9999"
-  ).trim();
-
-  useEffect(() => {
-    const query = new URLSearchParams(window.location.search);
-    const paymentStatus = query.get("paymentStatus");
-
-    if (paymentStatus === "paid") {
-      toast.success("Payment successful!");
-      navigate("/", { replace: true });
-    } else if (paymentStatus === "failed") {
-      toast.error("Payment failed!");
-      navigate("/", { replace: true });
-    }
-  }, [navigate]);
-
-  const fetchCategories = async () => {
-    try {
-      setLoadingCategories(true);
-      const response = await axios.get(`${API_BASE_URL}/api/categories`);
-      setCategories(response.data.data || []);
-    } catch (error) {
-      toast.error("Error loading categories");
-      console.error(error);
-    } finally {
-      setLoadingCategories(false);
-    }
-  };
-
-  const fetchProducts = async () => {
-    try {
-      setLoading(true);
-      const params = new URLSearchParams(window.location.search);
-      const searchParam = params.get("search");
-
-      let url = `${API_BASE_URL}/api/products?page=${currentPage}&limit=9`;
-
-      if (searchParam) {
-        url += `&search=${encodeURIComponent(searchParam)}`;
-      }
-
-      if (selectedCategories.length > 0) {
-        const categoryIds = selectedCategories.join(",");
-        url += `&categories=${categoryIds}`;
-      }
-
-      if (minPrice) url += `&minPrice=${minPrice}`;
-      if (maxPrice) url += `&maxPrice=${maxPrice}`;
-
-      if (sortOrder !== "default") {
-        const serverSort = sortOrder.replace(/-/g, "_");
-        url += `&sort=${serverSort}`;
-      }
-
-      const response = await axios.get(url);
-      const { data, pagination } = response.data;
-      setTotalPages(pagination?.totalPages || 1);
-
-      const formattedProducts = data.map((product) => {
-        let imageUrl;
-        const img = String(product.image || "").trim();
-
-        if (img.startsWith("http://") || img.startsWith("https://")) {
-          imageUrl = img;
-        } else if (img) {
-          imageUrl = `${API_BASE_URL}/uploads/${img}`;
-        } else {
-          imageUrl = "https://via.placeholder.com/300?text=No+Image";
-        }
-
-        return {
-          ...product,
-          imageUrl,
-          categoryName: product.categoryId?.name || "Uncategorized",
-          sellerName: product.sellerId?.username || "Unknown Seller",
-          rating: product.rating || 0,
-          reviewCount: product.reviewCount || 0,
-        };
-      });
-
-      setProducts(formattedProducts);
-    } catch (error) {
-      toast.error("Error loading products");
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const categoriesParam = params.get("categories");
-
-    if (categoriesParam) {
-      const categoryIds = categoriesParam.split(",").filter((id) => id);
-      setSelectedCategories(categoryIds);
-    } else {
-      setSelectedCategories([]);
-    }
-
-    setCurrentPage(1);
-  }, [location.search]);
-
-  // Initial fetch
-  useEffect(() => {
-    fetchCategories();
-  }, []);
-
-  useEffect(() => {
-    fetchProducts();
-  }, [selectedCategories, currentPage, minPrice, maxPrice, sortOrder]);
-
-  // Reset page when filters change
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [selectedCategories, minPrice, maxPrice]);
-
-  // Handlers
-  const handleImageError = (e) => {
-    e.target.onerror = null;
-    e.target.src = "https://via.placeholder.com/300?text=No+Image";
-  };
-
-  const handleCategoryChange = (categoryId) => {
-    setSelectedCategories((prev) => {
-      if (prev.includes(categoryId)) {
-        return prev.filter((id) => id !== categoryId);
-      } else {
-        return [...prev, categoryId];
-      }
-    });
-  };
-
-  const handleResetCategories = () => {
-    setSelectedCategories([]);
-  };
-
-  const handleAddToCart = async (productId) => {
-    if (!isAuthenticated) {
-      toast.info("Please sign in to add products to cart");
-      navigate("/signin");
-      return;
-    }
-
-    const productToAdd = products.find((p) => p._id === productId);
-
-    if (
-      user?.role === "seller" &&
-      productToAdd &&
-      productToAdd.sellerId?._id === user?.id
-    ) {
-      toast.warning("You cannot add your own products to cart");
-      return;
-    }
-
-    try {
-      setAddingToCart((prev) => ({ ...prev, [productId]: true }));
-
-      const response = await axios.post(
-        `${API_BASE_URL}/api/buyers/cart/add`,
-        { productId, quantity: 1 },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
-
-      toast.success("Product added to cart!");
-    } catch (error) {
-      console.error("Error adding to cart:", error);
-      toast.error(error.response?.data?.message || "Failed to add to cart");
-    } finally {
-      setAddingToCart((prev) => ({ ...prev, [productId]: false }));
-    }
-  };
-
-  const handleToggleFavorite = async (productId) => {
-    if (!isAuthenticated) {
-      toast.info("Please sign in to favorite products");
-      navigate("/signin");
-      return;
-    }
-
-    try {
-      setFavoriteProducts((prev) => ({
-        ...prev,
-        [productId]: !prev[productId],
-      }));
-
-      const response = await WatchlistService.toggleWatchlist(productId);
-
-      if (response.isWatching) {
-        toast.success("Added to favorites!");
-      } else {
-        toast.info("Removed from favorites");
-      }
-    } catch (error) {
-      setFavoriteProducts((prev) => ({
-        ...prev,
-        [productId]: !prev[productId],
-      }));
-      console.error("Error toggling favorite:", error);
-      toast.error("Failed to update favorites.");
-    }
-  };
-
-  const handleProductClick = (product) => {
-    navigate(`/auth/product/${product._id}`, { state: { item: product } });
-  };
-
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-    setTimeout(() => {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }, 50);
-  };
-
-  // Loading state
-  if (loading || loadingCategories) {
-    return (
-      <main className="min-h-screen">
-        <Hero />
-        <ProductFilter
-          categories={categories}
-          selectedCategories={selectedCategories}
-          onCategoryChange={handleCategoryChange}
-          onResetCategories={handleResetCategories}
-        />
-        <section className="px-4 pb-12 mx-auto md:px-8 md:pb-8 max-w-7xl">
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-5">
-            <ProductSkeleton count={5} />
-          </div>
-        </section>
-      </main>
-    );
-  }
-
-  // Main render
   return (
-    <main className="min-h-screen">
-      <Hero />
-      <WellnessHomepage />
-    </main>
+    <div className="bg-[#fdfbf7] font-sans text-[#333333] antialiased">
+      <Header />
+
+      <main>
+        <Hero />
+        <div id="product-listing">
+          <WellnessHomepage />
+        </div>
+      </main>
+
+      {/* Footer */}
+      <footer className="bg-[#1E4D3B] text-white py-16">
+        <div className="container px-6 mx-auto">
+          <div className="flex flex-col items-center justify-between pb-12 mb-12 border-b md:flex-row border-white/10">
+            <div className="max-w-md mb-8 text-center md:text-left md:mb-0">
+              <p className="font-serif text-2xl">
+                Tham gia Verdant Glow Circle để nhận ưu đãi độc quyền.
+              </p>
+            </div>
+            <div className="flex w-full max-w-md p-1 bg-white rounded-full md:w-auto">
+              <input
+                type="email"
+                placeholder="Email của bạn"
+                className="flex-grow px-6 py-3 text-gray-800 border-none rounded-l-full outline-none focus:ring-0"
+              />
+              <button className="bg-[#1E4D3B] px-8 py-3 rounded-full font-bold uppercase text-xs tracking-widest hover:bg-[#15382B] transition-colors">
+                Đăng ký
+              </button>
+            </div>
+          </div>
+          <div className="text-center text-xs text-gray-400 uppercase tracking-[0.2em]">
+            © 2026 Verdant Glow. All Rights Reserved.
+          </div>
+        </div>
+      </footer>
+    </div>
   );
 };
 

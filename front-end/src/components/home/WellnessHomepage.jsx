@@ -153,7 +153,7 @@ const WellnessHomepage = () => {
 
       <section className="px-4 py-16 mx-auto max-w-7xl">
         <h2 className="mb-4 text-4xl text-center font-titleFont text-charcoal">
-          FEATURED PRODUCTS:
+          FEATURED PRODUCTS
         </h2>
         <h3 className="mb-12 text-3xl text-center font-titleFont text-forest-green">
           CURATED FOR WELLNESS

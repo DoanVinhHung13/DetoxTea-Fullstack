@@ -6,15 +6,6 @@ const ErrorPage = () => {
   const error = useRouteError();
   console.error(error);
 
-  // Forest Green Color Palette
-  const colors = {
-    primary: "#228B22", // Forest Green
-    primaryHover: "#1e7b1e",
-    backgroundLight: "#f6f8f6",
-    textDark: "#0d1b11",
-    accent: "#4c9a5f",
-  };
-
   return (
     <div className="min-h-screen flex flex-col transition-colors duration-300 bg-cream font-['Noto_Serif']">
       <div className="flex flex-col grow">
@@ -86,19 +77,6 @@ const ErrorPage = () => {
               >
                 Previous Page
               </button>
-            </motion.div>
-
-            {/* Subtle Footer Note */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.8 }}
-              className="flex flex-col items-center mt-12"
-            >
-              <div className="w-12 h-[1px] bg-[#228B22]/30 mb-4"></div>
-              <p className="text-[#4c9a5f] text-sm italic">
-                Lost? Check our site map or contact support.
-              </p>
             </motion.div>
           </div>
         </main>

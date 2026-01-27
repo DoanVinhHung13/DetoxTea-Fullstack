@@ -24,11 +24,13 @@ const ProductCard = ({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: index * 0.05 }}
-      className="relative overflow-hidden transition-all duration-300 border-2 group rounded-2xl hover:shadow-xl"
+      // THAY ĐỔI: Thêm border màu #C5A059 và hiệu ứng hover
+      className="relative overflow-hidden transition-all duration-300 border group rounded-2xl hover:shadow-2xl hover:-translate-y-1"
+      style={{ borderColor: "#C5A059" }} // Sử dụng inline style để đảm bảo màu chính xác
     >
       {/* Product Image */}
       <div
-        className="relative h-40 overflow-hidden cursor-pointer bg-gradient-to-br from-stone-50 to-stone-100"
+        className="relative h-48 overflow-hidden cursor-pointer bg-gradient-to-br from-stone-50 to-stone-100"
         onClick={() => onProductClick(product)}
       >
         <img
@@ -36,26 +38,9 @@ const ProductCard = ({
             product.imageUrl || "https://via.placeholder.com/300?text=No+Image"
           }
           alt={product.title || "Product"}
-          className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-110"
+          className="object-cover w-full h-full transition-transform duration-700 group-hover:scale-110"
           onError={onImageError}
         />
-
-        {/* Favorite Button */}
-        {/* <button
-          className={`absolute top-3 right-3 p-2.5 bg-white/90 backdrop-blur-sm rounded-full shadow-lg transition-all duration-300 hover:scale-110 ${
-            isFavorite ? "text-rose-500" : "text-gray-400 hover:text-rose-500"
-          }`}
-          onClick={(e) => {
-            e.stopPropagation();
-            onToggleFavorite(product._id);
-          }}
-        >
-          {isFavorite ? (
-            <FavoriteIcon style={{ fontSize: 20 }} />
-          ) : (
-            <FavoriteBorderIcon style={{ fontSize: 20 }} />
-          )}
-        </button> */}
 
         {/* View Details Overlay */}
         <div className="absolute inset-0 transition-opacity duration-300 opacity-0 bg-black/20 group-hover:opacity-100">
@@ -75,48 +60,31 @@ const ProductCard = ({
       </div>
 
       {/* Product Info */}
-      <div className="p-3 space-y-1.5">
-        {/* Title */}
+      <div className="p-4 space-y-2">
         <h3
-          className="text-base font-semibold text-gray-800 transition-colors cursor-pointer line-clamp-2 hover:text-stone-600"
+          className="text-base font-bold text-gray-800 transition-colors cursor-pointer line-clamp-1 hover:text-[#C5A059]"
           onClick={() => onProductClick(product)}
         >
           {product.title || "Untitled Product"}
         </h3>
 
-        {/* Category & Benefits */}
-        <p className="text-sm text-stone-500">{product.categoryName}</p>
+        <p className="text-xs font-medium tracking-wider uppercase text-stone-500">
+          {product.categoryName}
+        </p>
 
-        {/* Rating */}
-        {/* {product.rating > 0 && (
-          <div className="flex items-center gap-2">
-            <div className="flex text-amber-400">
-              {[...Array(5)].map((_, i) => (
-                <span key={i} className="text-base">
-                  {i < Math.floor(product.rating) ? "★" : "☆"}
-                </span>
-              ))}
-            </div>
-            <span className="text-sm font-medium text-gray-600">
-              {product.rating.toFixed(1)}
-              {product.reviewCount > 0 && ` (${product.reviewCount})`}
-            </span>
-          </div>
-        )} */}
-
-        {/* Price & Add to Cart */}
-        <div className="flex items-center justify-between ">
-          <div className="text-2xl font-bold text-gray-800">
+        <div className="flex items-center justify-between pt-2">
+          <div className="text-xl font-bold text-[#1E4D3B]">
             ${product.price?.toFixed(2)}
           </div>
 
           <button
             onClick={() => onAddToCart(product._id)}
             disabled={isAddingToCart}
-            className="flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-white transition-all duration-300 bg-[#6B8F4C]/80 rounded-xl hover:bg-[#6B8F4C] disabled:bg-stone-400 disabled:cursor-not-allowed"
+            // THAY ĐỔI: Đồng bộ màu nút bấm với thương hiệu nếu muốn (Tùy chọn)
+            className="flex items-center gap-2 px-4 py-2 text-xs font-bold text-white transition-all duration-300 bg-[#1E4D3B] rounded-lg hover:bg-[#15382B] disabled:bg-stone-400"
           >
-            <AddShoppingCartIcon style={{ fontSize: 18 }} />
-            Quick Add
+            <AddShoppingCartIcon style={{ fontSize: 16 }} />
+            ADD TO CART
           </button>
         </div>
       </div>
@@ -447,7 +415,7 @@ const ProductList = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#f9f5e9]">
+    <div className="min-h-screen bg-cream">
       {/* Header */}
       <div className="pt-12 pl-6 ">
         <div className="px-4 mx-auto max-w-7xl">

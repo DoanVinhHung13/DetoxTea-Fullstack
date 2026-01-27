@@ -22,6 +22,7 @@ const Header = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(
     !!localStorage.getItem("accessToken"),
   );
+  const [scrolled, setScrolled] = useState(false);
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -36,7 +37,16 @@ const Header = () => {
     0,
   );
 
-  // Đóng menu khi click ra ngoài
+  // 1. Logic phát hiện cuộn chuột để đổi màu Header
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 50);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // 2. Đóng menu khi click ra ngoài
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (userMenuRef.current && !userMenuRef.current.contains(e.target)) {
@@ -47,6 +57,7 @@ const Header = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // 3. Fetch thông tin user nếu đã đăng nhập
   const fetchUserData = useCallback(async () => {
     try {
       const token = localStorage.getItem("accessToken");
@@ -89,7 +100,13 @@ const Header = () => {
 
   return (
     <>
-      <header className="sticky top-0 left-0 w-full z-50 bg-[#fdfbf7] py-4 shadow-sm text-[#1E4D3B] border-b border-stone-100">
+      <header
+        className={`fixed top-0 left-0 w-full z-50 transition-all duration-500 ${
+          scrolled
+            ? "bg-[#fdfbf7]/95 backdrop-blur-md py-4 shadow-sm text-[#1E4D3B]"
+            : "bg-transparent py-8 text-white"
+        }`}
+      >
         <div className="container flex items-center justify-between px-6 mx-auto lg:px-12">
           {/* DESKTOP NAV LEFT */}
           <nav className="items-center hidden w-1/3 gap-8 text-xs font-bold tracking-widest uppercase lg:flex">
@@ -109,7 +126,9 @@ const Header = () => {
 
           {/* LOGO CENTER */}
           <Link to="/" className="flex flex-col items-center w-1/3 group">
-            <span className="text-2xl font-serif tracking-[0.3em] text-[#1E4D3B]">
+            <span
+              className={`text-2xl font-serif tracking-[0.3em] transition-colors ${scrolled ? "text-[#1E4D3B]" : "text-white"}`}
+            >
               VERDANT
             </span>
             <span className="text-[10px] tracking-[0.5em] opacity-80 uppercase">
@@ -166,21 +185,18 @@ const Header = () => {
                           <Link
                             to="/profile"
                             className="flex items-center gap-3 px-4 py-3 text-sm hover:bg-stone-50"
-                            onClick={() => setShowUser(false)}
                           >
                             <User size={14} /> Profile
                           </Link>
                           <Link
                             to="/order-history"
                             className="flex items-center gap-3 px-4 py-3 text-sm hover:bg-stone-50"
-                            onClick={() => setShowUser(false)}
                           >
                             <Package size={14} /> Orders
                           </Link>
                           <Link
                             to="/watchlist"
                             className="flex items-center gap-3 px-4 py-3 text-sm hover:bg-stone-50"
-                            onClick={() => setShowUser(false)}
                           >
                             <Heart size={14} /> Wishlist
                           </Link>
@@ -248,6 +264,7 @@ const Header = () => {
               >
                 <X size={24} />
               </button>
+
               <div className="flex flex-col mt-12 space-y-8">
                 <Link
                   to="/"
@@ -270,6 +287,7 @@ const Header = () => {
                 >
                   Story
                 </Link>
+
                 <div className="pt-8 border-t border-stone-200">
                   {!isAuthenticated && (
                     <Link

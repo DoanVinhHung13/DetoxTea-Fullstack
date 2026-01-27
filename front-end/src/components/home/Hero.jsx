@@ -1,80 +1,74 @@
-import cuptea from "../../assets/images/home/cuptea.webp";
-import mapvn from "../../assets/images/home/mapvn.png";
+// Hero.jsx
 import herohome from "../../assets/images/home/tea-garden.jpg";
 
 const Hero = () => {
   const scrollToProducts = () => {
-    window.scrollTo({ top: 600, behavior: "smooth" });
+    const productSection = document.getElementById("product-listing");
+    if (productSection) {
+      productSection.scrollIntoView({ behavior: "smooth" });
+    }
   };
 
   return (
-    <section className="relative bg-cream">
-      <div className="relative w-full h-80 md:h-[400px]  bg-cream ">
+    <section className="relative overflow-hidden">
+      {/* UPPER HERO SECTION */}
+      <div className="relative w-full h-[600px] md:h-[700px] lg:h-[100vh]">
         <div
-          className="absolute inset-0 bg-center bg-cover"
-          style={{
-            backgroundImage: `url(${herohome})`,
-            backgroundPosition: "center",
-          }}
+          className="absolute inset-0 z-0 bg-top bg-cover"
+          style={{ backgroundImage: `url(${herohome})` }}
         >
-          <div className="absolute inset-0 bg-black/20"></div>
+          <div className="absolute inset-0 bg-black/30 bg-gradient-to-b from-black/50 via-transparent to-transparent"></div>
         </div>
 
-        {/* Content - Positioned at Top */}
-        <div className="relative z-10 flex flex-col items-center h-full px-4 pt-12 text-center md:pt-16">
-          <h6 className="mb-4 font-serif text-4xl font-bold leading-tight text-white md:text-5xl lg:text-6xl">
-            PREMIUM PRODUCT COLLECTION
-          </h6>
-          <p className="mb-8 text-base font-light text-white/90 md:text-lg">
-            Discover The Best Products From Trusted Sellers Around The World
-          </p>
-          <button
-            className="px-8 py-3 font-medium text-white transition-colors bg-[#8BA899] rounded-full hover:bg-[#486456]"
-            onClick={() => (window.location.href = "/products")}
-          >
-            SHOP NOW
-          </button>
-        </div>
-
-        {/* MIDDLE ELEMENT - Overlapping Product Image */}
-        <div className="absolute bottom-0 z-20 -translate-x-1/2 translate-y-1/2 left-1/2">
-          <div className="drop-shadow-2xl">
-            <img
-              src={cuptea}
-              alt="Premium product"
-              className="object-contain rounded-full w-[50vw] max-w-[480px] min-w-[160px]"
-            />
+        {/* Hero Content */}
+        <div className="container relative z-10 flex flex-col items-start justify-center h-full px-6 mx-auto lg:px-12">
+          <div className="max-w-3xl">
+            <h1 className="font-serif text-5xl md:text-7xl lg:text-[6rem] text-white leading-[1.1] drop-shadow-lg mb-6">
+              Verdant Glow
+            </h1>
+            <p className="max-w-md mb-10 text-lg font-light leading-relaxed text-white md:text-xl opacity-90 drop-shadow-md">
+              Awaken Your Inner Radiance <br className="hidden md:block" />
+              Through Nature's Purest Detox.
+            </p>
+            <button
+              onClick={scrollToProducts}
+              className="px-12 py-4 bg-[#1E4D3B] text-white rounded-full font-bold uppercase text-xs tracking-[0.2em] hover:bg-[#15382B] transition-all transform hover:-translate-y-1 shadow-xl"
+            >
+              Shop Collection
+            </button>
           </div>
         </div>
       </div>
 
-      {/* BOTTOM PART - Hero Description Section */}
-      <div className="relative pt-32 pb-12 md:pt-40 md:pb-16">
-        <div className="px-4 mx-auto max-w-7xl md:px-8">
-          <div className="grid items-center grid-cols-1 gap-12 md:grid-cols-2">
-            {/* Left Column - Story */}
-            <div className="space-y-6">
-              <h3 className="font-serif text-3xl md:text-4xl font-bold text-[#3D3528]">
-                The Story of Our Marketplace
-              </h3>
-              <p className="text-[#6B5D52] leading-relaxed text-lg font-light">
-                Handcrafted from the best suppliers worldwide, our premium
-                collection offers a variety of quality products. We believe in
-                delivering authentic value straight to your doorstep. Experience
-                the craftsmanship and quality of premium products.
+      {/* LOWER DESCRIPTION SECTION */}
+      <div className="relative pt-24 pb-24 bg-[#fdfbf7]">
+        <div className="container px-6 mx-auto lg:px-16">
+          <div className="grid items-center grid-cols-1 gap-16 lg:grid-cols-2">
+            <div className="order-2 space-y-8 lg:order-1">
+              <div className="space-y-2">
+                <h2 className="font-serif text-sm tracking-[0.3em] text-[#1E4D3B] uppercase font-bold">
+                  Our Philosophy
+                </h2>
+                <h3 className="font-serif text-4xl md:text-5xl text-[#15382B] leading-tight">
+                  The Story of <br />{" "}
+                  <span className="italic">Pure Wellness</span>
+                </h3>
+              </div>
+              <p className="text-[#333333]/80 leading-relaxed text-lg font-light max-w-xl">
+                Born from ancient traditions and curated with modern wellness...
               </p>
-              <button className="border-2 border-[#8BA899] text-[#8BA899] px-8 py-3 rounded-full font-medium hover:bg-[#8BA899] hover:text-white transition-colors">
-                Read More
+              <button className="group flex items-center gap-4 font-bold text-xs tracking-[0.2em] text-[#1E4D3B] uppercase">
+                <span>Explore Our Journal</span>
+                <div className="w-12 h-[1px] bg-[#1E4D3B] transition-all group-hover:w-20"></div>
               </button>
             </div>
 
-            {/* Right Column - Decorative Element */}
-            <div className="items-center justify-center hidden pb-10 pl-20 md:flex">
-              <div className="relative w-full h-80">
+            <div className="relative flex justify-center order-1 lg:order-2">
+              <div className="relative w-full max-w-md overflow-hidden transition-transform shadow-2xl aspect-square rounded-2xl rotate-2 hover:rotate-0">
                 <img
-                  src={mapvn}
-                  alt="Products showcase"
-                  className="object-contain object-top -translate-y-10 w-100 h-100 md:w-120 md:h-120"
+                  src="https://images.unsplash.com/photo-1564890369478-c89ca6d9cde9?q=80&w=1000&auto=format&fit=crop"
+                  className="object-cover w-full h-full"
+                  alt="Tea"
                 />
               </div>
             </div>
@@ -84,5 +78,4 @@ const Hero = () => {
     </section>
   );
 };
-
 export default Hero;

@@ -213,7 +213,7 @@ const Cart = () => {
   }
 
   return (
-    <Box sx={{ backgroundColor: palette.cream, minHeight: "100vh" }}>
+    <Box className="bg-cream" sx={{ minHeight: "100vh" }}>
       <Container maxWidth="lg" sx={{ py: 6 }}>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
