@@ -7,7 +7,7 @@ const productSchema = new Schema(
     description: { type: String, required: true },
     price: { type: Number, required: true },
 
-    image: { type: String },
+    image: { type: String, default: null },
 
     categoryId: {
       type: Schema.Types.ObjectId,
@@ -28,7 +28,7 @@ const productSchema = new Schema(
     isAuction: { type: Boolean, default: false },
     auctionEndTime: { type: Date },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 module.exports = mongoose.model("Product", productSchema);

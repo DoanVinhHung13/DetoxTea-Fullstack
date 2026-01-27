@@ -14,6 +14,16 @@ import { useDispatch } from "react-redux";
 import "react-toastify/dist/ReactToastify.css";
 import { fetchCart } from "./features/cart/cartSlice";
 import OverviewA from "./pages/DashboardAdmin/Overview/Overview";
+import ManageDispute from "./pages/DashboardSeller/ManageDispute/ManageDispute";
+import ManageOrder from "./pages/DashboardSeller/ManageOrder/ManageOrderHistory";
+import ManageInventory from "./pages/DashboardSeller/ManageProduct/ManageInventory";
+import ManageProduct from "./pages/DashboardSeller/ManageProduct/ManageProduct";
+import ProductDetail from "./pages/DashboardSeller/ManageProduct/ProductDetail";
+import ManagerDashboardSellerLaydout from "./pages/DashboardSeller/ManagerDashboardSellerLaydout";
+import ManageReturnRequest from "./pages/DashboardSeller/ManageReturnRequest/ManageReturnRequest";
+import ManageShipping from "./pages/DashboardSeller/ManageShipping/ManageShipping";
+import ManageStoreProfile from "./pages/DashboardSeller/ManageStoreProfile/ManageStoreProfile";
+import Overview from "./pages/DashboardSeller/Overview/Overview";
 import OTPVerification from "./pages/OTPVerification"; // import component OTP
 
 import "react-toastify/dist/ReactToastify.css";
@@ -85,9 +95,9 @@ const Layout = () => {
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route errorElement={<ErrorPage />}>
-      {/* Annoymus route */}
       <Route index element={<Home />}></Route>
 
+      {/* Annoymus route */}
       <Route path="/" element={<Layout />}>
         <Route path="/products" element={<ProductList />}></Route>
         <Route path="/cart" element={<Cart />}></Route>
@@ -126,7 +136,25 @@ const router = createBrowserRouter(
         ></Route>
       </Route>
       {/* Seller route */}
-
+      <Route
+        path="/"
+        element={<ManagerDashboardSellerLaydout />}
+        errorElement={<ErrorPage />}
+      >
+        <Route path="overview" element={<Overview />}></Route>
+        <Route path="manage-product" element={<ManageProduct />}></Route>
+        <Route path="manage-inventory" element={<ManageInventory />} />
+        <Route path="manage-store" element={<ManageStoreProfile />}></Route>
+        <Route
+          path="product/:id"
+          element={<ProductDetail />}
+          errorElement={<ErrorPage />}
+        />
+        <Route path="manage-order" element={<ManageOrder />}></Route>
+        <Route path="manage-shipping" element={<ManageShipping />}></Route>
+        <Route path="manage-dispute" element={<ManageDispute />} />
+        <Route path="manage-return-request" element={<ManageReturnRequest />} />
+      </Route>
       {/* Admin route */}
       <Route path="/admin" element={<AdminDashboardLayout />}>
         <Route path="/admin" element={<OverviewA />}></Route>
