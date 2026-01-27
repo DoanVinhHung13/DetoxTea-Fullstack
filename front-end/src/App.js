@@ -65,7 +65,7 @@ import ProductList from "./pages/ProductList/ProductList.jsx";
 
 const Layout = () => {
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen overscroll-none">
       <ToastContainer
         position="top-right"
         autoClose={1000}

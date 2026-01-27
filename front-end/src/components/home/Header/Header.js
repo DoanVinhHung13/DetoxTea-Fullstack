@@ -5,7 +5,6 @@ import {
   Heart,
   Menu,
   Package,
-  Search,
   ShoppingCart,
   Star,
   User,
@@ -414,28 +413,6 @@ const Header = () => {
           </div>
 
           {/* Mobile Search */}
-          <div className="mt-4 lg:hidden">
-            <div className="relative">
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyPress={(e) => {
-                  if (e.key === "Enter") {
-                    handleSearchSubmit();
-                  }
-                }}
-                placeholder="Search for anything..."
-                className="w-full py-2.5 pl-4 pr-12 text-sm border-2 border-stone-200 rounded-xl outline-none focus:border-amber-500"
-              />
-              <button
-                onClick={handleSearchSubmit}
-                className="absolute flex items-center justify-center text-white transition-all duration-300 transform -translate-y-1/2 rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 w-9 h-9 right-2 top-1/2"
-              >
-                <Search className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
         </div>
       </header>
 
@@ -451,11 +428,11 @@ const Header = () => {
               className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm lg:hidden"
             />
             <motion.div
-              initial={{ x: "-100%" }}
+              initial={{ x: "100%" }}
               animate={{ x: 0 }}
-              exit={{ x: "-100%" }}
+              exit={{ x: "100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="fixed top-0 left-0 z-50 w-64 h-full overflow-y-auto bg-white shadow-2xl lg:hidden"
+              className="fixed top-0 right-0 z-50 w-64 h-full overflow-y-auto bg-white shadow-2xl lg:hidden"
             >
               <div className="p-6">
                 <div className="flex items-center justify-between mb-8">

@@ -57,7 +57,7 @@ exports.register = async (req, res) => {
     await sendEmail(
       email,
       "Mã OTP đăng ký",
-      `Mã OTP của bạn là: ${otp}. Hết hạn trong 10 phút.`
+      `Mã OTP của bạn là: ${otp}. Hết hạn trong 10 phút.`,
     );
 
     res.status(201).json({
@@ -144,7 +144,7 @@ exports.resendOTP = async (req, res) => {
     await sendEmail(
       user.email,
       "Resend OTP",
-      `Mã OTP mới của bạn là: ${otp}. Hết hạn trong 10 phút.`
+      `Mã OTP mới của bạn là: ${otp}. Hết hạn trong 10 phút.`,
     );
 
     return res.status(200).json({
@@ -179,7 +179,7 @@ exports.login = async (req, res) => {
     const token = jwt.sign(
       { id: user._id, role: user.role },
       process.env.JWT_SECRET,
-      { expiresIn: "1d" }
+      { expiresIn: "1d" },
     );
 
     // ✅ TRẢ ĐẦY ĐỦ THÔNG TIN USER
@@ -191,7 +191,7 @@ exports.login = async (req, res) => {
         username: user.username,
         fullname: user.fullname,
         email: user.email,
-        avatarURL: user.avatarURL, // QUAN TRỌNG
+        avatarURL: user.avatarURL,
         role: user.role,
       },
     });
@@ -201,7 +201,6 @@ exports.login = async (req, res) => {
   }
 };
 
-
 // ------------------ LOGIN BY GOOGLE ------------------
 exports.googleCallback = async (req, res) => {
   try {
@@ -210,7 +209,7 @@ exports.googleCallback = async (req, res) => {
     const token = jwt.sign(
       { id: user._id, role: user.role },
       process.env.JWT_SECRET,
-      { expiresIn: "1d" }
+      { expiresIn: "1d" },
     );
 
     const userData = encodeURIComponent(
@@ -221,18 +220,17 @@ exports.googleCallback = async (req, res) => {
         email: user.email,
         avatarURL: user.avatarURL,
         role: user.role,
-      })
+      }),
     );
 
     res.redirect(
-      `${process.env.CLIENT_URL}/auth/callback?token=${token}&user=${userData}`
+      `${process.env.CLIENT_URL}/auth/callback?token=${token}&user=${userData}`,
     );
   } catch (err) {
     console.error("Google login error:", err);
     res.status(500).json({ message: "Google login failed" });
   }
 };
-
 
 // ------------------ FORGOT PASSWORD ------------------
 exports.forgotPassword = async (req, res) => {
@@ -256,7 +254,7 @@ exports.forgotPassword = async (req, res) => {
     await sendEmail(
       user.email,
       "Mật khẩu mới của bạn",
-      `Mật khẩu mới của bạn là: ${newPassword}`
+      `Mật khẩu mới của bạn là: ${newPassword}`,
     );
     res.json({
       success: true,
@@ -295,7 +293,7 @@ exports.changeRole = async (req, res) => {
     const token = jwt.sign(
       { id: user._id, role: user.role },
       process.env.JWT_SECRET,
-      { expiresIn: "1d" }
+      { expiresIn: "1d" },
     );
 
     res.json({
