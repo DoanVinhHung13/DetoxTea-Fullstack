@@ -21,7 +21,7 @@ const ErrorPage = () => {
         {/* Main Content */}
         <main className="flex items-center justify-center flex-1 px-4 py-10">
           <div className="flex flex-col max-w-[960px] w-full items-center">
-            {/* Calming Illustration with Animation */}
+            {/* 404 Visual with Animation */}
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -39,7 +39,7 @@ const ErrorPage = () => {
               </span>
             </motion.div>
 
-            {/* Error Message */}
+            {/* Error Message Section */}
             <div className="flex flex-col items-center gap-4 text-center">
               <motion.div
                 initial={{ y: 20, opacity: 0 }}
@@ -48,10 +48,10 @@ const ErrorPage = () => {
                 className="flex flex-col gap-2"
               >
                 <h2 className="text-3xl font-bold leading-tight tracking-tight text-[#0d1b11] md:text-4xl">
-                  Peaceful detours happen.
+                  Page Not Found
                 </h2>
                 <p className="text-[#4c9a5f] text-sm font-normal uppercase tracking-[0.2em] font-sans">
-                  Lost in the Garden
+                  The path is hidden in mist
                 </p>
               </motion.div>
 
@@ -61,9 +61,9 @@ const ErrorPage = () => {
                 transition={{ delay: 0.4 }}
                 className="text-[#0d1b11]/70 text-base md:text-lg leading-relaxed max-w-[540px] px-4 font-sans"
               >
-                It seems this path has come to a gentle end. Take a breath,
-                savor the moment, and let’s guide you back to your wellness
-                ritual.
+                We're sorry, but the page you are looking for doesn't exist or
+                has been moved. Take a moment to breathe and let us guide you
+                back to safety.
               </motion.p>
             </div>
 
@@ -78,14 +78,27 @@ const ErrorPage = () => {
                 to="/"
                 className="flex min-w-[180px] items-center justify-center rounded-lg h-12 px-6 bg-[#228B22] text-white text-sm font-bold uppercase tracking-widest hover:shadow-lg hover:shadow-[#228B22]/20 transition-all"
               >
-                Return Home
+                Return to Home
               </Link>
               <button
                 onClick={() => window.history.back()}
                 className="flex min-w-[180px] items-center justify-center rounded-lg h-12 px-6 border border-[#228B22]/30 bg-transparent text-[#0d1b11] text-sm font-bold uppercase tracking-widest hover:bg-[#228B22]/5 transition-all"
               >
-                Go Back
+                Previous Page
               </button>
+            </motion.div>
+
+            {/* Subtle Footer Note */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.8 }}
+              className="flex flex-col items-center mt-12"
+            >
+              <div className="w-12 h-[1px] bg-[#228B22]/30 mb-4"></div>
+              <p className="text-[#4c9a5f] text-sm italic">
+                Lost? Check our site map or contact support.
+              </p>
             </motion.div>
           </div>
         </main>

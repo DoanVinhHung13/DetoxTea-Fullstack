@@ -304,7 +304,7 @@ const Header = () => {
                   onClick={() => setShowUser(!showUser)}
                   className="flex items-center gap-2 p-2 transition-all duration-300 rounded-full text-stone-700 hover:bg-stone-100"
                 >
-                  <div className="flex items-center justify-center w-8 h-8 text-sm font-bold text-white rounded-full bg-gradient-to-br from-amber-500 to-orange-500">
+                  <div className="flex items-center justify-center w-8 h-8 text-sm font-bold text-white rounded-full bg-[#228B22]">
                     {isAuthenticated ? (
                       userName?.[0]?.toUpperCase() ||
                       user?.username?.[0]?.toUpperCase() ||
@@ -384,7 +384,7 @@ const Header = () => {
                           <Link
                             to="/signin"
                             onClick={() => setShowUser(false)}
-                            className="block px-4 py-3 text-sm font-medium text-center text-white transition-all duration-300 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600"
+                            className="block px-4 py-3 text-sm font-medium text-center text-white transition-all duration-300 bg-[#228B22] "
                           >
                             Sign in
                           </Link>
