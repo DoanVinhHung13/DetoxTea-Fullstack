@@ -129,10 +129,10 @@ const Header = () => {
             <span
               className={`text-2xl font-serif tracking-[0.3em] transition-colors ${scrolled ? "text-[#1E4D3B]" : "text-white"}`}
             >
-              VERDANT
+              YÊN
             </span>
             <span className="text-[10px] tracking-[0.5em] opacity-80 uppercase">
-              GLOW
+              DETOX TEAS
             </span>
           </Link>
 

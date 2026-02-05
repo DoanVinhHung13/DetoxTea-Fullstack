@@ -1,6 +1,10 @@
 // Home.jsx
+import Features from "../components/home/features";
+import GiftSet from "../components/home/gift-set";
 import Header from "../components/home/Header/HeaderHomePage";
 import Hero from "../components/home/Hero";
+import NewsSection from "../components/home/news-section";
+import TeaQuiz from "../components/home/tea-quiz";
 import WellnessHomepage from "../components/home/WellnessHomepage";
 
 const Home = () => {
@@ -11,7 +15,11 @@ const Home = () => {
       <main>
         <Hero />
         <div id="product-listing">
+          <GiftSet />
+          <NewsSection />
+          <TeaQuiz />
           <WellnessHomepage />
+          <Features />
         </div>
       </main>
 

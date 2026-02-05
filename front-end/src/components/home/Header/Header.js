@@ -110,10 +110,10 @@ const Header = () => {
           {/* LOGO CENTER */}
           <Link to="/" className="flex flex-col items-center w-1/3 group">
             <span className="text-2xl font-serif tracking-[0.3em] text-[#1E4D3B]">
-              VERDANT
+              YÊN
             </span>
             <span className="text-[10px] tracking-[0.5em] opacity-80 uppercase">
-              GLOW
+              DETOX TEAS
             </span>
           </Link>
 

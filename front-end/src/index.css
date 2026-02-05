@@ -131,7 +131,7 @@
   h4,
   h5,
   h6 {
-    @apply font-bold font-serif;
+    @apply font-serif font-bold;
   }
 }
 
@@ -245,6 +245,6 @@ html::-webkit-scrollbar {
 
 /* Hide scrollbar for IE, Edge and Firefox */
 html {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 }

@@ -83,12 +83,7 @@ const Layout = () => {
         <ScrollRestoration />
         <Outlet />
       </main>
-      {/* <HeaderBottom /> */}
-      {/* <SpecialCase /> */}
-
       <Footer />
-      {/* <FooterBottom /> */}
-      {/* <Chatbot /> */}
     </div>
   );
 };

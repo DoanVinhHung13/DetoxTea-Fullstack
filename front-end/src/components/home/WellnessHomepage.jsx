@@ -124,9 +124,9 @@ const WellnessHomepage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-cream">
+    <div className=" bg-cream">
       {/* Benefits Section */}
-      <section className="px-4 py-16 mx-auto max-w-7xl">
+      {/* <section className="px-4 py-16 mx-auto max-w-7xl">
         <h2 className="mb-4 text-4xl text-center font-titleFont text-charcoal">
           BENEFITS:
         </h2>
@@ -149,15 +149,13 @@ const WellnessHomepage = () => {
             </div>
           ))}
         </div>
-      </section>
+      </section> */}
 
-      <section className="px-4 py-16 mx-auto max-w-7xl">
+      <section className="px-4 pb-16 mx-auto max-w-7xl">
         <h2 className="mb-4 text-4xl text-center font-titleFont text-charcoal">
-          FEATURED PRODUCTS
+          Sản phẩm nổi bật
         </h2>
-        <h3 className="mb-12 text-3xl text-center font-titleFont text-forest-green">
-          CURATED FOR WELLNESS
-        </h3>
+        <h3 className="mb-12 text-3xl text-center font-titleFont text-forest-green"></h3>
 
         {loading ? (
           <div className="text-center text-charcoal/90">
@@ -221,7 +219,7 @@ const WellnessHomepage = () => {
                 onClick={() => (window.location.href = "/products")}
                 className="px-12 py-4 text-lg font-semibold transition-colors rounded-full shadow-lg font-bodyFont bg-forest-green text-cream hover:bg-forest-green/90"
               >
-                EXPLORE ALL TEAS
+                Tất cả sản phẩm
               </button>
             </div>
           </>
