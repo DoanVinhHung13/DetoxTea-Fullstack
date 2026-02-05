@@ -274,6 +274,7 @@ const SignIn = () => {
             {/* <p className="text-lg text-indigo-100">
               Khám phá hàng ngàn sản phẩm chất lượng ngay hôm nay.
             </p> */}
+            {/* <p className="text-lg text-indigo-100">)</p> */}
           </motion.div>
         </div>
       </div>
