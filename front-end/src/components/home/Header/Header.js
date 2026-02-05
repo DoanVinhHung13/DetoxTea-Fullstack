@@ -197,13 +197,13 @@ const Header = () => {
                             to="/signin"
                             className="px-4 py-4 text-center text-sm font-bold bg-[#1E4D3B] text-white"
                           >
-                            Sign In
+                            Đăng nhập
                           </Link>
                           <Link
                             to="/signup"
                             className="px-4 py-3 text-sm text-center hover:bg-stone-50"
                           >
-                            Create Account
+                            Đăng ký
                           </Link>
                         </div>
                       )}

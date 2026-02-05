@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import loginpng from "../assets/images/login.png";
 import { setCredentials } from "../features/auth/authSlice";
 import { login } from "../services/authService";
 
@@ -127,12 +128,12 @@ const SignIn = () => {
         >
           <div>
             <h2 className="mt-6 text-3xl font-extrabold tracking-tight text-gray-900">
-              Welcome Back!
+              Chào mừng trở lại
             </h2>
             <p className="mt-2 text-sm text-gray-600">
-              Don't have an account?{" "}
+              Chưa có tài khoản?{" "}
               <Link to="/signup" className="font-medium text-[#228B22] ">
-                Sign Up
+                Đăng ký
               </Link>
             </p>
           </div>
@@ -145,7 +146,7 @@ const SignIn = () => {
                     htmlFor="email"
                     className="block text-sm font-medium text-gray-700"
                   >
-                    Email address
+                    Địa chỉ Email
                   </label>
                   <div className="mt-1">
                     <input
@@ -166,7 +167,7 @@ const SignIn = () => {
                     htmlFor="password"
                     className="block text-sm font-medium text-gray-700"
                   >
-                    Password
+                    Mật khẩu
                   </label>
                   <div className="relative mt-1">
                     <input
@@ -205,7 +206,7 @@ const SignIn = () => {
                       htmlFor="remember-me"
                       className="block ml-2 text-sm text-gray-900"
                     >
-                      Remember Me
+                      Ghi nhớ mật khẩu
                     </label>
                   </div>
                   <div className="text-sm">
@@ -214,7 +215,7 @@ const SignIn = () => {
                       opacity-75
                       className="font-medium text-forest-green-600 hover:text-forest-green-500"
                     >
-                      Forget Password?
+                      Quên mật khẩu?
                     </Link>
                   </div>
                 </div>
@@ -225,26 +226,26 @@ const SignIn = () => {
                     disabled={isLoading}
                     className="flex justify-center w-full px-4 py-3 text-sm font-medium text-white transition-all border border-transparent rounded-md shadow-sm bg-[#228B22]  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
                   >
-                    {isLoading ? "Processing..." : "Login"}
+                    {isLoading ? "Đang tải..." : "Đăng nhập"}
                   </button>
 
-                  <div className="relative">
+                  {/* <div className="relative">
                     <div className="absolute inset-0 flex items-center">
                       <div className="w-full border-t border-gray-300" />
                     </div>
                     <div className="relative flex justify-center text-sm">
                       <span className="px-2 text-gray-500 bg-cream">Or</span>
                     </div>
-                  </div>
+                  </div> */}
 
-                  <button
+                  {/* <button
                     type="button"
                     onClick={handleGoogleLogin}
                     className="inline-flex justify-center w-full px-4 py-3 text-sm font-medium text-gray-700 transition-colors bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50"
                   >
                     <GoogleIcon />
                     <span>Google</span>
-                  </button>
+                  </button> */}
                 </div>
               </form>
             </div>
@@ -256,7 +257,7 @@ const SignIn = () => {
       <div className="relative flex-1 hidden w-0 lg:block">
         <img
           className="absolute inset-0 object-cover w-full h-full"
-          src="https://lh3.googleusercontent.com/aida-public/AB6AXuC48xQaRdOJsDXh26l5GfJ6coC2tvdXyjz6oeGBAROf0vT_Nk4X_Y1sZaHE0Hk1YFbazYsM9gRWtlpc5VVijQx3Tdb0E-MUqWuJCngMujsRFOhLQiMR0-hFIMM6m4Gu-g4Zi6Y4KnN-yUnnkKKVIWCONPsa9SKA2KkIUtmr2NOX1FfB4Wwcfuf3EEOHWr2vtqTgUXSvtVdGrdjv9_2uxYQY-OvWZINfRQtaKLBM4pf8st01cmgF0Qa-zQMAkPpQ6A2Y1YqbHhYta6Jb"
+          src={loginpng}
           alt="Sign in background"
         />
         <div className="absolute inset-0 bg-indigo-600 mix-blend-multiply opacity-20" />
@@ -270,9 +271,9 @@ const SignIn = () => {
             <h1 className="mb-4 text-4xl font-bold">
               Trải nghiệm mua sắm tuyệt vời
             </h1>
-            <p className="text-lg text-indigo-100">
+            {/* <p className="text-lg text-indigo-100">
               Khám phá hàng ngàn sản phẩm chất lượng ngay hôm nay.
-            </p>
+            </p> */}
           </motion.div>
         </div>
       </div>

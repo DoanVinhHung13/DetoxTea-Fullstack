@@ -109,10 +109,12 @@ const SignUp = () => {
             animate={{ opacity: 1, scale: 1 }}
             className="text-center"
           >
-            <h1 className="mb-4 text-4xl font-bold">Start Your Journey</h1>
-            <p className="text-lg text-gray-100">
+            <h1 className="mb-4 text-4xl font-bold">
+              Bắt đầu hành trình của bạn
+            </h1>
+            {/* <p className="text-lg text-gray-100">
               Join our community and discover exclusive benefits.
-            </p>
+            </p> */}
           </motion.div>
         </div>
       </div>
@@ -126,15 +128,15 @@ const SignUp = () => {
         >
           <div>
             <h2 className="text-3xl font-extrabold tracking-tight text-gray-900">
-              Create an Account
+              Đăng ký tài khoản
             </h2>
             <p className="mt-2 text-sm text-gray-600">
-              Already have an account?{" "}
+              Đã có tài khoản?{" "}
               <Link
                 to="/signin"
                 className="font-medium text-[#228B22] hover:underline"
               >
-                Sign in here
+                Đăng nhập
               </Link>
             </p>
           </div>
@@ -158,7 +160,7 @@ const SignUp = () => {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700">
-                    Full Name
+                    Họ và tên
                   </label>
                   <input
                     name="fullname"
@@ -174,7 +176,7 @@ const SignUp = () => {
               {/* Email */}
               <div>
                 <label className="block text-sm font-medium text-gray-700">
-                  Email address
+                  Đại chỉ Email
                 </label>
                 <input
                   name="email"
@@ -190,7 +192,7 @@ const SignUp = () => {
               {/* Password */}
               <div>
                 <label className="block text-sm font-medium text-gray-700">
-                  Password
+                  Mật khẩu
                 </label>
                 <div className="relative mt-1">
                   <input
@@ -218,7 +220,7 @@ const SignUp = () => {
               {/* Confirm Password */}
               <div>
                 <label className="block text-sm font-medium text-gray-700">
-                  Confirm Password
+                  Xác nhận mật khẩu
                 </label>
                 <div className="relative mt-1">
                   <input
@@ -270,10 +272,10 @@ const SignUp = () => {
                           d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                         ></path>
                       </svg>
-                      Creating Account...
+                      Đang tạo tài khoản...
                     </div>
                   ) : (
-                    "Create Account"
+                    "Tạo tài khoản"
                   )}
                 </button>
               </div>
