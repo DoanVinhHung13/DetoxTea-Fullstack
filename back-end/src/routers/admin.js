@@ -105,9 +105,7 @@ router.put("/stores/:storeId/status", updateStoreStatusByAdmin);
 
 // --- Product Management by Admin Routes ---
 router.get("/products", getAllProductsAdmin); // danh sách
-router.post(
-  "/products", createProductAdmin
-);
+router.post("/products", createProductAdmin); // tạo sản phẩm
 router.get("/products/:id", getProductDetailsAdmin); // chi tiết sản phẩm
 router.put("/products/:id/status", updateProductStatusAdmin); // cập nhật trạng thái
 router.delete("/products/:id", deleteProductAdmin); // xoá sản phẩm

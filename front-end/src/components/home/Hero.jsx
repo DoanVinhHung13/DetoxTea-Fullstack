@@ -1,5 +1,7 @@
 // Hero.jsx
 import herohome from "../../assets/images/home/tea-garden.jpg";
+import { useRef, useState, useEffect } from "react";
+
 
 const Hero = () => {
   const scrollToProducts = () => {
@@ -8,6 +10,23 @@ const Hero = () => {
       productSection.scrollIntoView({ behavior: "smooth" });
     }
   };
+
+  const titleRef = useRef(null);
+  const [titleWidth, setTitleWidth] = useState(0);
+
+  useEffect(() => {
+  const updateWidth = () => {
+    if (titleRef.current) {
+      setTitleWidth(titleRef.current.offsetWidth);
+    }
+  };
+
+  updateWidth();
+  window.addEventListener("resize", updateWidth);
+
+  return () => window.removeEventListener("resize", updateWidth);
+}, []);
+
 
   return (
     <section className="relative overflow-hidden">
@@ -21,26 +40,40 @@ const Hero = () => {
         </div>
 
         {/* Hero Content */}
-        <div className="container relative z-10 flex flex-col items-start justify-center h-full px-6 mx-auto lg:px-12">
-          <div className="max-w-3xl">
-            <h1 className="font-sans italic  lg:text-[3rem] text-[#F8EFD8] leading-[1.1] drop-shadow-lg mb-6">
-              SỨ MỆNH TỪ <br className="hidden md:block" /> NHỮNG LÁ TRÀ BỊ BỎ
-              LỠ
-            </h1>
-            <p className="font-sans  max-w-md mb-10 text-lg font-light leading-relaxed text-[#F8EFD8] md:text-[1rem] opacity-90 drop-shadow-md">
-              Khi dáng hình lệch chuẩn gặp gỡ tâm hồn thuần khiết, Yên ra đời.
-              Chúng mình đánh thức những lá trà bị bỏ lỡ, chắt chiu thành dòng
-              trà detox nguyên bản để thanh lọc cơ thể, nơi hương vị thực lên
-              tiếng thay cho những chuẩn mực phù du.
-            </p>
-            <button
-              onClick={scrollToProducts}
-              className="px-12 py-4 bg-[#1E4D3B] text-white rounded-full font-bold uppercase text-xs tracking-[0.2em] hover:bg-[#15382B] transition-all transform hover:-translate-y-1 shadow-xl"
-            >
-              Shop Collection
-            </button>
-          </div>
+        <div className="container relative z-10 flex flex-col items-center justify-center h-full px-6 mx-auto lg:px-12">
+
+        <div className="flex flex-col items-center">
+
+          {/* TITLE */}
+          <h1
+            ref={titleRef}
+            className="font-sans italic text-2xl md:text-4xl lg:text-[3rem] text-[#F8EFD8] leading-[1.1] drop-shadow-lg whitespace-nowrap mb-6"
+          >
+            SỨ MỆNH TỪ NHỮNG LÁ TRÀ BỊ BỎ LỠ
+          </h1>
+
+          {/* PARAGRAPH */}
+          <p
+            style={{ width: titleWidth }}
+            className="font-sans text-left text-base md:text-lg text-[#F8EFD8] leading-relaxed opacity-80"
+          >
+            Trên những đồi cao, hàng tấn trà tốt bị bỏ lại chỉ vì "lệch chuẩn ngoại hình", dù phẩm chất bên trong vẫn vẹn nguyên tinh túy.
+
+Dưới phố thị, người trẻ khao khát sự thanh lọc nhưng lại lạc lối giữa ma trận hương liệu và những lời hứa sáo rỗng.
+
+YÊN ra đời từ nghịch lý ấy. Chúng tôi hàn gắn đứt gãy này bằng cách đánh thức những chiếc lá bị lãng quên, mang đến cho bạn dòng detox từ trọn vẹn "chất trà" thật – nơi giá trị nội tại chiến thắng vẻ hào nhoáng bên ngoài.
+          </p>
+
+          <button
+            onClick={scrollToProducts}
+            className="mt-6 px-12 py-4 bg-[#1E4D3B] text-white rounded-full font-bold uppercase text-xs tracking-[0.2em] hover:bg-[#15382B] transition-all transform hover:-translate-y-1 shadow-xl"
+          >
+            Bộ sưu tập
+          </button>
+
         </div>
+      </div>
+
       </div>
 
       {/* LOWER DESCRIPTION SECTION */}

@@ -14,6 +14,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { logout } from "../../../features/auth/authSlice";
 import { resetUserInfo, setUserInfo } from "../../../redux/orebiSlice";
+import logo from "../../../assets/images/home/logo-trang.png";
 
 const Header = () => {
   const [sidenav, setSidenav] = useState(false);
@@ -114,25 +115,30 @@ const Header = () => {
               to="/products"
               className="transition-colors hover:text-emerald-600"
             >
-              Shop
+              Cửa hàng
             </Link>
             <Link
               to="/about-us"
               className="transition-colors hover:text-emerald-600"
             >
-              About Us
+              Về chúng tôi
             </Link>
           </nav>
 
           {/* LOGO CENTER */}
           <Link to="/" className="flex flex-col items-center w-1/3 group">
-            <span
+            <img
+              src={logo}
+              alt="Yên Detox Tea"
+              className="h-10 w-auto object-contain"
+            />
+            {/* <span
               className={`text-2xl font-serif tracking-[0.3em] transition-colors ${scrolled ? "text-[#1E4D3B]" : "text-white"}`}
             >
               YÊN
-            </span>
+            </span> */}
             <span className="text-[10px] tracking-[0.5em] opacity-80 uppercase">
-              DETOX TEAS
+              DETOX TEA
             </span>
           </Link>
 

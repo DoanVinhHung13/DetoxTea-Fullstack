@@ -2,6 +2,9 @@
 
 import { ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
+import haGiangImg from "../../assets/images/home/doi-che-co-thu-ha-giang.jpg";
+import phaTraImg from "../../assets/images/home/nghe-thuat-pha-tra.jpg";
+import matchaImg from "../../assets/images/home/matcha-cao-cap.jpeg";
 
 const newsArticles = [
   {
@@ -10,7 +13,7 @@ const newsArticles = [
     title: "Hành Trình Khám Phá Những Đồi Chè Cổ Thụ Tại Hà Giang",
     excerpt:
       "Khám phá vẻ đẹp hùng vĩ và hương vị đặc trưng của những búp chè Shan Tuyết hàng trăm năm tuổi giữa mây ngàn Đông Bắc.",
-    image: "/green-tea-matcha-powder.jpg",
+    image: haGiangImg,
     slug: "kham-pha-doi-che-co-thu-ha-giang",
   },
   {
@@ -19,7 +22,7 @@ const newsArticles = [
     title: "Nghệ Thuật Pha Trà: Khơi Nguồn Tinh Hoa Từ Tâm Thức",
     excerpt:
       "Học cách kiểm soát nhiệt độ và thời gian để đánh thức mọi giác quan, mang lại sự bình yên trong từng ngụm trà đậm đà.",
-    image: "/premium-tea-cup-with-brewed-tea.jpg",
+    image: phaTraImg,
     slug: "nghe-thuat-pha-tra-tinh-hoa",
   },
   {
@@ -28,7 +31,7 @@ const newsArticles = [
     title: "Matcha Cao Cấp: Xu Hướng Thưởng Thức Trà Hiện Đại",
     excerpt:
       "Sự kết hợp hoàn hảo giữa truyền thống Nhật Bản và phong cách sống mới, mang lại nguồn năng lượng sạch cho tâm trí.",
-    image: "/tea-garden-landscape-green-fields.jpg",
+    image: matchaImg,
     slug: "matcha-cao-cap-xu-huong-hien-dai",
   },
 ];

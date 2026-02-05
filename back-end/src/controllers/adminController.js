@@ -545,14 +545,13 @@ exports.createProductAdmin = async (req, res) => {
       title,
       description,
       price,
-      inventory,
       categoryId,
       image,
+      inventory = 0,
       isAuction,
       auctionEndTime,
     } = req.body;
 
-    // ✅ validate
     if (!title || !price || !categoryId) {
       return res.status(400).json({
         success: false,
@@ -560,25 +559,29 @@ exports.createProductAdmin = async (req, res) => {
       });
     }
 
-    const category = await Category.findById(categoryId);
-    if (!category) {
+    const safeInventory = Number(inventory);
+    if (safeInventory < 0) {
       return res.status(400).json({
         success: false,
-        message: "Danh mục không tồn tại",
+        message: "Tồn kho không hợp lệ",
       });
     }
 
+    // 1️⃣ Create product
     const product = await Product.create({
       title,
       description,
       price,
       image,
       categoryId,
-      inventory: Number(inventory) || 0, // ✅ QUAN TRỌNG
       isAuction: Boolean(isAuction),
       auctionEndTime: isAuction ? auctionEndTime : null,
-      sellerId: null, // admin tạo
-      status: "available",
+    });
+
+    // 2️⃣ Create inventory
+    await Inventory.create({
+      productId: product._id,
+      quantity: safeInventory,
     });
 
     res.status(201).json({
