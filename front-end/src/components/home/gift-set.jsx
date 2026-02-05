@@ -129,24 +129,18 @@ export default function GiftSet() {
               <LabelText>LIMITED EDITION COLLECTION</LabelText>
 
               <TeaTitle>
-                Bộ Quà Tặng
-                <br />
-                Trà
-                <br />
-                Thượng Hạng
+                YÊN TẾT: Nồng đậm vị trà, ngọt thanh bánh xưa
               </TeaTitle>
 
               <DescriptionText>
-                Khám phá sự tiếp hợp hoàn hảo giữa nghệ thuật thủ công và hương
-                vị trà thượng hạng. Hộp quà gồ cao cấp được chế tác tỉ mỉ từ gỗ
-                sồi tự nhiên, mang đậm dấu ấn tinh hoa văn hóa trà Việt.
+                Gói trọn sự giao thoa giữa mỹ nghệ ép kim lộng lẫy và cốt cách trà Việt nguyên bản. Nơi những lá trà được "hồi sinh" sánh đôi cùng vị bánh đậu xanh thủ công tan mịn, gửi trao lời chúc an yên và thịnh vượng trong một kiệt tác tinh xảo.
               </DescriptionText>
 
-              <DescriptionText>
-                Bên trong là bộ chiết gồm sự hòa cùng được nung ở nhiệt độ cao,
-                đi cùng hai hộa trà đặc sản được tuyển chọn từ những vùng nguyên
-                liệu danh tiếng nhất, giữ trọn hương vị nguyên bản và tinh túy.
-              </DescriptionText>
+              {/* <DescriptionText>
+                Khám phá sự tiếp hợp giữa mỹ nghệ ép kim lộng lẫy và cốt cách trà Việt nguyên bản. Phiên bản giới hạn dành riêng cho mùa lễ hội, nơi những lá trà được "hồi sinh" sánh đôi cùng vị bánh đậu xanh thủ công tan mịn, gói trọn lời chúc an yên và thịnh vượng trong một kiệt tác tinh xảo.
+              </DescriptionText> */}
+
+              
 
               <Box sx={{ display: "flex", gap: 3, mt: 4 }}>
                 <LuxuryButton variant="contained">MUA NGAY</LuxuryButton>

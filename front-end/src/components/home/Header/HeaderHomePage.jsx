@@ -14,7 +14,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { logout } from "../../../features/auth/authSlice";
 import { resetUserInfo, setUserInfo } from "../../../redux/orebiSlice";
-import logo from "../../../assets/images/home/logo-trang.png";
+import logoTrang from "../../../assets/images/home/logo-trang.png";
+import logoXanh from "../../../assets/images/home/logo-xanh.png";
 
 const Header = () => {
   const [sidenav, setSidenav] = useState(false);
@@ -110,7 +111,8 @@ const Header = () => {
       >
         <div className="container flex items-center justify-between px-6 mx-auto lg:px-12">
           {/* DESKTOP NAV LEFT */}
-          <nav className="items-center hidden w-1/3 gap-8 text-xs font-bold tracking-widest uppercase lg:flex">
+          <nav className="items-center hidden w-1/3 gap-8 ml-4 text-xs font-bold tracking-widest uppercase lg:flex">
+
             <Link
               to="/products"
               className="transition-colors hover:text-emerald-600"
@@ -127,20 +129,22 @@ const Header = () => {
 
           {/* LOGO CENTER */}
           <Link to="/" className="flex flex-col items-center w-1/3 group">
+
             <img
-              src={logo}
+              src={scrolled ? logoXanh : logoTrang}
               alt="Yên Detox Tea"
-              className="h-10 w-auto object-contain"
+              className="h-20 w-auto object-contain transition-all duration-300"
             />
-            {/* <span
-              className={`text-2xl font-serif tracking-[0.3em] transition-colors ${scrolled ? "text-[#1E4D3B]" : "text-white"}`}
+
+            <span
+              className={`text-[10px] tracking-[0.5em] uppercase transition-colors duration-300 
+              ${scrolled ? "text-[#1E4D3B]" : "text-white"}`}
             >
-              YÊN
-            </span> */}
-            <span className="text-[10px] tracking-[0.5em] opacity-80 uppercase">
               DETOX TEA
             </span>
+
           </Link>
+
 
           {/* ACTION ICONS RIGHT */}
           <div className="flex items-center justify-end w-1/3 gap-4 lg:gap-8">
