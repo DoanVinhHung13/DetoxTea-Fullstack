@@ -136,10 +136,9 @@ export default function GiftSet() {
                 Gói trọn sự giao thoa giữa mỹ nghệ ép kim lộng lẫy và cốt cách trà Việt nguyên bản. Nơi những lá trà được "hồi sinh" sánh đôi cùng vị bánh đậu xanh thủ công tan mịn, gửi trao lời chúc an yên và thịnh vượng trong một kiệt tác tinh xảo.
               </DescriptionText>
 
-              {/* <DescriptionText>
-                Khám phá sự tiếp hợp giữa mỹ nghệ ép kim lộng lẫy và cốt cách trà Việt nguyên bản. Phiên bản giới hạn dành riêng cho mùa lễ hội, nơi những lá trà được "hồi sinh" sánh đôi cùng vị bánh đậu xanh thủ công tan mịn, gói trọn lời chúc an yên và thịnh vượng trong một kiệt tác tinh xảo.
-              </DescriptionText> */}
-
+              <DescriptionText>
+                Nối dài mạch nguồn tri ân thông qua từng chi tiết nhỏ được chăm chút tỉ mỉ. Mỗi hộp quà không chỉ chứa đựng tinh túy từ đất mẹ Lâm Đồng, mà còn là nhịp cầu kết nối những tấm chân tình, biến khoảnh khắc sum vầy ngày Tết thành một kỷ niệm trọn vẹn và đậm đà nghĩa tình.
+              </DescriptionText>
               
 
               <Box sx={{ display: "flex", gap: 3, mt: 4 }}>
