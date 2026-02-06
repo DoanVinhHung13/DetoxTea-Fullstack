@@ -12,10 +12,10 @@ import {
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { logout } from "../../../features/auth/authSlice";
-import { resetUserInfo, setUserInfo } from "../../../redux/orebiSlice";
 import logoTrang from "../../../assets/images/home/logo-trang.png";
 import logoXanh from "../../../assets/images/home/logo-xanh.png";
+import { logout } from "../../../features/auth/authSlice";
+import { resetUserInfo, setUserInfo } from "../../../redux/orebiSlice";
 
 const Header = () => {
   const [sidenav, setSidenav] = useState(false);
@@ -112,7 +112,6 @@ const Header = () => {
         <div className="container flex items-center justify-between px-6 mx-auto lg:px-12">
           {/* DESKTOP NAV LEFT */}
           <nav className="items-center hidden w-1/3 gap-8 ml-4 text-xs font-bold tracking-widest uppercase lg:flex">
-
             <Link
               to="/products"
               className="transition-colors hover:text-emerald-600"
@@ -129,11 +128,10 @@ const Header = () => {
 
           {/* LOGO CENTER */}
           <Link to="/" className="flex flex-col items-center w-1/3 group">
-
             <img
               src={scrolled ? logoXanh : logoTrang}
               alt="Yên Detox Tea"
-              className="h-20 w-auto object-contain transition-all duration-300"
+              className="object-contain w-auto transition-all duration-300 h-14"
             />
 
             <span
@@ -142,9 +140,7 @@ const Header = () => {
             >
               DETOX TEA
             </span>
-
           </Link>
-
 
           {/* ACTION ICONS RIGHT */}
           <div className="flex items-center justify-end w-1/3 gap-4 lg:gap-8">

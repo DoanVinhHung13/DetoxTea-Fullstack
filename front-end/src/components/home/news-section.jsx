@@ -2,35 +2,35 @@
 
 import { ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
+import phaTraImg from "../../assets/images/home/anh2.jpg";
+import matchaImg from "../../assets/images/home/anh3.jpg";
 import haGiangImg from "../../assets/images/home/doi-che-co-thu-ha-giang.jpg";
-import phaTraImg from "../../assets/images/home/nghe-thuat-pha-tra.jpg";
-import matchaImg from "../../assets/images/home/matcha-cao-cap.jpeg";
 
 const newsArticles = [
   {
     id: 1,
-    category: "Khám phá",
-    title: "Hành Trình Khám Phá Những Đồi Chè Cổ Thụ Tại Hà Giang",
+    category: "HÀNH TRÌNH",
+    title: "Trở về với những nương chè lặng lẽ Lâm Đồng",
     excerpt:
-      "Khám phá vẻ đẹp hùng vĩ và hương vị đặc trưng của những búp chè Shan Tuyết hàng trăm năm tuổi giữa mây ngàn Đông Bắc.",
+      "Bước chân lên những đồi chè lâu năm, nơi từng có những búp trà lỡ hẹn với thời gian. Giờ đây, chúng kể tiếp câu chuyện về hương vị nguyên bản và sự tử tế của đất lành. Một hành trình vừa tìm lại nguồn cội, vừa cảm nhận sự yên bình giữa thiên nhiên.",
     image: haGiangImg,
     slug: "kham-pha-doi-che-co-thu-ha-giang",
   },
   {
     id: 2,
-    category: "Văn hóa",
-    title: "Nghệ Thuật Pha Trà: Khơi Nguồn Tinh Hoa Từ Tâm Thức",
+    category: "VĂN HÓA",
+    title: "Thưởng trà - Khoảnh khắc tĩnh lặng giữa nhịp sống hối hả",
     excerpt:
-      "Học cách kiểm soát nhiệt độ và thời gian để đánh thức mọi giác quan, mang lại sự bình yên trong từng ngụm trà đậm đà.",
+      "Nhấm nháp từng ngụm trà, cảm nhận hương thơm dịu dàng và hơi thở của lá trà. Những nghi thức giản đơn, tinh tế không chỉ giúp điều chỉnh nhiệt độ hay thời gian, mà còn dạy ta cách chậm lại, lắng nghe bản thân và tìm thấy bình yên trong những khoảnh khắc tưởng chừng nhỏ bé.",
     image: phaTraImg,
     slug: "nghe-thuat-pha-tra-tinh-hoa",
   },
   {
     id: 3,
-    category: "Đời sống",
-    title: "Matcha Cao Cấp: Xu Hướng Thưởng Thức Trà Hiện Đại",
+    category: "ĐỜI SỐNG",
+    title: "Trà và những câu chuyện bất ngờ",
     excerpt:
-      "Sự kết hợp hoàn hảo giữa truyền thống Nhật Bản và phong cách sống mới, mang lại nguồn năng lượng sạch cho tâm trí.",
+      "Bạn có biết mỗi loại lá trà đều mang một câu chuyện riêng? Từ chè xanh thanh mát, trà ô long nồng nàn, đến trà thảo mộc dịu dàng… Mỗi tách trà mở ra một hành trình nhỏ, để bạn vừa nhấm nháp hương vị, vừa khám phá những điều thú vị quanh thế giới trà.",
     image: matchaImg,
     slug: "matcha-cao-cap-xu-huong-hien-dai",
   },

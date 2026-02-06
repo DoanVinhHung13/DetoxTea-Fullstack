@@ -97,13 +97,13 @@ const Header = () => {
               to="/products"
               className="transition-colors hover:text-emerald-600"
             >
-              Shop
+              Cửa hàng
             </Link>
             <Link
               to="/about-us"
               className="transition-colors hover:text-emerald-600"
             >
-              About Us
+              Về chúng tôi
             </Link>
           </nav>
 
@@ -113,7 +113,7 @@ const Header = () => {
               YÊN
             </span>
             <span className="text-[10px] tracking-[0.5em] opacity-80 uppercase">
-              DETOX TEAS
+              DETOX TEA
             </span>
           </Link>
 
