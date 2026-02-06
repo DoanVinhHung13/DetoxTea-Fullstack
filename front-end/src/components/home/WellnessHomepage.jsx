@@ -1,9 +1,10 @@
 import axios from "axios";
 import { Heart, Leaf, Sparkles, Zap } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { addToCart } from "../../features/cart/cartSlice";
 
 const WellnessHomepage = () => {
   const [products, setProducts] = useState([]);
@@ -11,6 +12,7 @@ const WellnessHomepage = () => {
   const [addingToCart, setAddingToCart] = useState({});
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const authState = useSelector((state) => state.auth);
   const isAuthenticated = authState?.isAuthenticated || false;
@@ -58,33 +60,14 @@ const WellnessHomepage = () => {
     }
   };
 
-  const handleAddToCart = async (productId, product) => {
+  const handleAddToCart = (productId, product) => {
     if (!isAuthenticated) {
       toast.info("Please sign in to add products to cart");
       navigate("/signin");
       return;
     }
 
-    try {
-      setAddingToCart((prev) => ({ ...prev, [productId]: true }));
-
-      const response = await axios.post(
-        `${API_BASE_URL}/api/buyers/cart/add`,
-        { productId, quantity: 1 },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
-
-      toast.success("Product added to cart!");
-    } catch (error) {
-      console.error("Error adding to cart:", error);
-      toast.error(error.response?.data?.message || "Failed to add to cart");
-    } finally {
-      setAddingToCart((prev) => ({ ...prev, [productId]: false }));
-    }
+    dispatch(addToCart({ productId, quantity: 1 }));
   };
 
   const handleProductClick = (product) => {

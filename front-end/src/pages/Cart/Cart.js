@@ -65,17 +65,16 @@ const Cart = () => {
     body: "'Montserrat', sans-serif",
   };
 
-  // Fetch cart on mount and when token changes
   useEffect(() => {
     if (token) {
       dispatch(fetchCart());
     } else {
-      navigate("/signin");
-      toast.info("Please login to view your cart");
+      navigate("/signin", {
+        state: { message: "Please login to view your cart" },
+      });
     }
   }, [dispatch, token, navigate]);
 
-  // Calculate total amount for selected items
   useEffect(() => {
     let price = 0;
     cartItems.forEach((item) => {
@@ -244,7 +243,7 @@ const Cart = () => {
             }}
           >
             <ShoppingCartIcon sx={{ mr: 1, verticalAlign: "middle" }} />
-            Shopping Cart
+            Giỏ hàng
           </Typography>
 
           {cartItems.length > 0 ? (
@@ -277,7 +276,7 @@ const Cart = () => {
                         }}
                       />
                       <Typography fontFamily={fonts.body} fontWeight={500}>
-                        Select All ({cartItems.length} items)
+                        Chọn tất cả ({cartItems.length} sản phẩm)
                       </Typography>
                     </Box>
 
@@ -288,7 +287,7 @@ const Cart = () => {
                       size="small"
                       sx={{ color: palette.softGold, fontFamily: fonts.body }}
                     >
-                      Clear Cart
+                      Xóa tất cả
                     </Button>
                   </Box>
 
@@ -370,10 +369,10 @@ const Cart = () => {
                             color="text.secondary"
                             sx={{ mb: 1, fontFamily: fonts.body }}
                           >
-                            Unit Price: $
-                            {item.productId?.price?.toFixed(2) || "0.00"}
+                            Đơn giá:{" "}
+                            {item.productId?.price?.toFixed(2) || "0.00"}đ
                           </Typography>
-                          {item.productId.inventoryQuantity !== undefined && (
+                          {/* {item.productId.inventoryQuantity !== undefined && (
                             <Typography
                               variant="body2"
                               color="text.secondary"
@@ -382,7 +381,7 @@ const Cart = () => {
                               Available: {item.productId.inventoryQuantity} in
                               stock
                             </Typography>
-                          )}
+                          )} */}
                           <Box
                             sx={{
                               display: "flex",
@@ -459,10 +458,10 @@ const Cart = () => {
                               color={palette.forestGreen}
                               sx={{ fontFamily: fonts.body }}
                             >
-                              $
                               {(
                                 item.quantity * (item.productId?.price || 0)
                               ).toFixed(2)}
+                              đ
                             </Typography>
                           </Box>
                         </CardContent>
@@ -500,8 +499,8 @@ const Cart = () => {
                         sx={{ fontFamily: fonts.body }}
                       >
                         {isProcessing
-                          ? "Removing..."
-                          : `Remove Selected (${selectedItems.length})`}
+                          ? "Đang xóa..."
+                          : `Xóa sản phẩm đã chọn (${selectedItems.length})`}
                       </Button>
                     </Box>
                   )}
@@ -525,7 +524,7 @@ const Cart = () => {
                     mb={3}
                     fontFamily={fonts.title}
                   >
-                    Order Summary
+                    Thành giá
                   </Typography>
 
                   <Divider sx={{ mb: 3 }} />
@@ -539,7 +538,7 @@ const Cart = () => {
                       }}
                     >
                       <Typography fontFamily={fonts.body}>
-                        Selected Items:
+                        Sản phẩm đã chọn:
                       </Typography>
                       <Typography fontFamily={fonts.body}>
                         {selectedItems.length}
@@ -553,9 +552,11 @@ const Cart = () => {
                         mb: 1,
                       }}
                     >
-                      <Typography fontFamily={fonts.body}>Subtotal:</Typography>
                       <Typography fontFamily={fonts.body}>
-                        ${totalAmt.toFixed(2)}
+                        Thành giá:
+                      </Typography>
+                      <Typography fontFamily={fonts.body}>
+                        {totalAmt.toFixed(2)}đ
                       </Typography>
                     </Box>
 
@@ -581,7 +582,7 @@ const Cart = () => {
                         color={palette.forestGreen}
                         fontFamily={fonts.body}
                       >
-                        ${totalAmt.toFixed(2)}
+                        {totalAmt.toFixed(2)}đ
                       </Typography>
                     </Box>
                   </Box>

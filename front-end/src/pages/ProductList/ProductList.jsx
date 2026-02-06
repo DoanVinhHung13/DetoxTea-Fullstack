@@ -5,9 +5,10 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import axios from "axios";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { addToCart } from "../../features/cart/cartSlice";
 
 const ProductCard = ({
   product,
@@ -182,6 +183,7 @@ const ProductList = () => {
 
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch = useDispatch();
 
   const authState = useSelector((state) => state.auth);
   const isAuthenticated = authState?.isAuthenticated || false;
@@ -323,7 +325,7 @@ const ProductList = () => {
     setSelectedCategories([]);
   };
 
-  const handleAddToCart = async (productId) => {
+  const handleAddToCart = (productId) => {
     if (!isAuthenticated) {
       toast.info("Please sign in to add products to cart");
       navigate("/signin");
@@ -341,26 +343,7 @@ const ProductList = () => {
       return;
     }
 
-    try {
-      setAddingToCart((prev) => ({ ...prev, [productId]: true }));
-
-      await axios.post(
-        `${API_BASE_URL}/api/buyers/cart/add`,
-        { productId, quantity: 1 },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
-
-      toast.success("Product added to cart!");
-    } catch (error) {
-      console.error("Error adding to cart:", error);
-      toast.error(error.response?.data?.message || "Failed to add to cart");
-    } finally {
-      setAddingToCart((prev) => ({ ...prev, [productId]: false }));
-    }
+    dispatch(addToCart({ productId, quantity: 1 }));
   };
 
   const handleToggleFavorite = async (productId) => {

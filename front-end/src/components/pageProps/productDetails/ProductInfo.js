@@ -1,12 +1,32 @@
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { addToCart } from "../../../redux/orebiSlice";
+import { addToCart } from "../../../features/cart/cartSlice";
 
 const ProductInfo = ({ productInfo }) => {
+  const [quantity, setQuantity] = useState(1);
+  const dispatch = useDispatch();
+
+  const handleAddToCart = () => {
+    if (isOutOfStock) {
+      return;
+    }
+
+    const cartItem = {
+      productId: productInfo._id,
+      quantity: quantity,
+      price: productInfo.price,
+      name: productInfo.name,
+      image: productInfo.images[0], // Assuming the first image is the main one
+      stock: productInfo.inStock.find((s) => s.color === selectedColor)
+        ?.quantity,
+    };
+    dispatch(addToCart(cartItem));
+  };
   const highlightStyle = {
     color: "#d0121a",
     fontWeight: "bold",
   };
+
 
   const renderDescription = () => {
     if (!productInfo.description) {
@@ -131,22 +151,26 @@ const ProductInfo = ({ productInfo }) => {
           </button>
         ))}
       </p>
+      <div className="flex items-center gap-4">
+        <p className="font-semibold">Quantity:</p>
+        <div className="flex items-center border rounded">
+          <button
+            onClick={() => setQuantity(Math.max(1, quantity - 1))}
+            className="px-3 py-1 border-r"
+          >
+            -
+          </button>
+          <span className="px-4">{quantity}</span>
+          <button
+            onClick={() => setQuantity(quantity + 1)}
+            className="px-3 py-1 border-l"
+          >
+            +
+          </button>
+        </div>
+      </div>
       <button
-        onClick={() =>
-          dispatch(
-            addToCart({
-              _id: productInfo._id,
-              name: productInfo.name,
-              quantity: 1,
-              images: productInfo.images,
-              isDeleted: productInfo.isDeleted,
-              price: productInfo.price,
-              inStock: productInfo.inStock,
-              color: selectedColor,
-              cost: productInfo.cost,
-            }),
-          )
-        }
+        onClick={handleAddToCart}
         className={`w-full py-4 bg-blue-500 hover:bg-blue-600 duration-300 text-white text-lg font-titleFont ${
           productInfo.isDeleted || isOutOfStock
             ? "opacity-50 cursor-not-allowed"

@@ -1,8 +1,8 @@
 // src/pages/SignIn.jsx
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import loginpng from "../assets/images/login.png";
 import { setCredentials } from "../features/auth/authSlice";
@@ -76,6 +76,15 @@ const GoogleIcon = () => (
 const SignIn = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.state?.message) {
+      toast.info(location.state.message, { toastId: "login-required" });
+      // Clear the state so the toast doesn't show up again on refresh
+      navigate(".", { replace: true, state: {} });
+    }
+  }, [location, navigate]);
 
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);

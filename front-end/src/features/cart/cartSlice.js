@@ -180,6 +180,38 @@ export const removeSelectedItems = createAsyncThunk(
     }
   },
 );
+// Thêm sản phẩm vào giỏ hàng
+export const addToCart = createAsyncThunk(
+  "cart/addToCart",
+  async (
+    { productId, quantity, price, name, image, stock },
+    { getState, dispatch, rejectWithValue },
+  ) => {
+    try {
+      const token = getState().auth.token;
+      if (!token) {
+        return rejectWithValue("Authentication token not found.");
+      }
+
+      const response = await axios.post(
+        `${API_URL}/api/buyers/cart/add`,
+        { productId, quantity, price, name, image, stock },
+        { headers: { Authorization: `Bearer ${token}` } },
+      );
+
+      dispatch(fetchCart());
+      toast.success("Sản phẩm đã được thêm vào giỏ hàng!");
+      return response.data;
+    } catch (error) {
+      toast.error(
+        `Không thể thêm sản phẩm: ${error.response?.data?.message || "Lỗi không xác định"}`,
+      );
+      return rejectWithValue(
+        error.response?.data?.message || "Could not add item to cart.",
+      );
+    }
+  },
+);
 // Thêm initial state
 const initialState = {
   items: [],
@@ -265,6 +297,18 @@ const cartSlice = createSlice({
         state.loading = false;
       })
       .addCase(removeSelectedItems.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(addToCart.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(addToCart.fulfilled, (state, action) => {
+        state.loading = false;
+        // Optionally, you can optimistically update the state here
+        // or rely on the fetchCart dispatch to sync the state.
+      })
+      .addCase(addToCart.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });
