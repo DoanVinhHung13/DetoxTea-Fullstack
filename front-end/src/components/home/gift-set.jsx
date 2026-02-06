@@ -8,6 +8,7 @@ const palette = {
   charcoal: "#1A1A1A",
   softGold: "#C5A059",
   white: "#FFFFFF",
+  //
 };
 // Styled Components
 const MainSection = styled(Box)({
@@ -128,18 +129,22 @@ export default function GiftSet() {
             <ContentBox>
               <LabelText>LIMITED EDITION COLLECTION</LabelText>
 
-              <TeaTitle>
-                YÊN TẾT: Nồng đậm vị trà, ngọt thanh bánh xưa
-              </TeaTitle>
+              <TeaTitle>YÊN TẾT: Nồng đậm vị trà, ngọt thanh bánh xưa</TeaTitle>
 
               <DescriptionText>
-                Gói trọn sự giao thoa giữa mỹ nghệ ép kim lộng lẫy và cốt cách trà Việt nguyên bản. Nơi những lá trà được "hồi sinh" sánh đôi cùng vị bánh đậu xanh thủ công tan mịn, gửi trao lời chúc an yên và thịnh vượng trong một kiệt tác tinh xảo.
+                Gói trọn sự giao thoa giữa mỹ nghệ ép kim lộng lẫy và cốt cách
+                trà Việt nguyên bản. Nơi những lá trà được "hồi sinh" sánh đôi
+                cùng vị bánh đậu xanh thủ công tan mịn, gửi trao lời chúc an yên
+                và thịnh vượng trong một kiệt tác tinh xảo.
               </DescriptionText>
 
               <DescriptionText>
-                Nối dài mạch nguồn tri ân thông qua từng chi tiết nhỏ được chăm chút tỉ mỉ. Mỗi hộp quà không chỉ chứa đựng tinh túy từ đất mẹ Lâm Đồng, mà còn là nhịp cầu kết nối những tấm chân tình, biến khoảnh khắc sum vầy ngày Tết thành một kỷ niệm trọn vẹn và đậm đà nghĩa tình.
+                Nối dài mạch nguồn tri ân thông qua từng chi tiết nhỏ được chăm
+                chút tỉ mỉ. Mỗi hộp quà không chỉ chứa đựng tinh túy từ đất mẹ
+                Lâm Đồng, mà còn là nhịp cầu kết nối những tấm chân tình, biến
+                khoảnh khắc sum vầy ngày Tết thành một kỷ niệm trọn vẹn và đậm
+                đà nghĩa tình.
               </DescriptionText>
-              
 
               <Box sx={{ display: "flex", gap: 3, mt: 4 }}>
                 <LuxuryButton variant="contained">MUA NGAY</LuxuryButton>
