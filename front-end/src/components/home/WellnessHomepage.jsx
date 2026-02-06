@@ -65,15 +65,6 @@ const WellnessHomepage = () => {
       return;
     }
 
-    if (
-      user?.role === "seller" &&
-      product &&
-      product.sellerId?._id === user?.id
-    ) {
-      toast.warning("You cannot add your own products to cart");
-      return;
-    }
-
     try {
       setAddingToCart((prev) => ({ ...prev, [productId]: true }));
 

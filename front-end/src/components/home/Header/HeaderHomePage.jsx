@@ -39,7 +39,6 @@ const Header = () => {
     0,
   );
 
-  // 1. Logic phát hiện cuộn chuột để đổi màu Header
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
@@ -48,7 +47,6 @@ const Header = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // 2. Đóng menu khi click ra ngoài
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (userMenuRef.current && !userMenuRef.current.contains(e.target)) {

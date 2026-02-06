@@ -21,8 +21,7 @@ const MainSection = styled(Box)({
 const ElegantImageCard = styled(Paper)({
   padding: "40px",
   borderRadius: 0,
-  backgroundColor: palette.charcoal,
-  border: `1px solid ${palette.softGold}`,
+  backgroundColor: palette.cream,
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
@@ -42,12 +41,10 @@ const ElegantImageCard = styled(Paper)({
 
 const ContentBox = styled(Box)({
   backgroundColor: palette.cream,
-  padding: "80px 60px",
   display: "flex",
   flexDirection: "column",
   justifyContent: "center",
   height: "600px",
-  borderLeft: `1px solid ${palette.softGold}`,
 });
 
 const LabelText = styled(Typography)({
@@ -90,7 +87,6 @@ const LuxuryButton = styled(Button)(({ variant }) => ({
   backgroundColor:
     variant === "contained" ? palette.forestGreen : "transparent",
   borderColor: palette.forestGreen,
-  border: `2px solid ${palette.forestGreen}`,
   color: variant === "contained" ? palette.cream : palette.forestGreen,
   fontFamily: '"Montserrat", sans-serif',
   "&:hover": {

@@ -125,11 +125,7 @@ export default function Stores({ stores: initialStores, onStoreUpdated }) {
       filtered = filtered.filter(
         (store) =>
           (store.storeName &&
-            store.storeName.toLowerCase().includes(keywordLower)) ||
-          (store.sellerId?.username &&
-            store.sellerId.username.toLowerCase().includes(keywordLower)) ||
-          (store.sellerId?.email &&
-            store.sellerId.email.toLowerCase().includes(keywordLower))
+            store.storeName.toLowerCase().includes(keywordLower))
       );
     }
 
@@ -484,8 +480,6 @@ export default function Stores({ stores: initialStores, onStoreUpdated }) {
                     }}
                   >
                     <TableCell>Store Name</TableCell>
-                    <TableCell>Seller Full Name</TableCell>
-                    <TableCell>Seller Email</TableCell>
                     <TableCell>Status</TableCell>
                     <TableCell>Rating</TableCell>
                     <TableCell align="right">Actions</TableCell>
@@ -514,8 +508,6 @@ export default function Stores({ stores: initialStores, onStoreUpdated }) {
                           <Typography fontWeight={500}>{store.storeName}</Typography>
                         </Box>
                       </TableCell>
-                      <TableCell>{store.sellerId?.username || "N/A"}</TableCell>
-                      <TableCell>{store.sellerId?.email}</TableCell>
                       <TableCell>
                         <Chip 
                           label={store.status} 

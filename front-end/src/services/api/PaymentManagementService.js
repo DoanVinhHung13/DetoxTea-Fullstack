@@ -25,13 +25,13 @@ class PaymentManagementService {
     }
   }
 
-  // Release payment to seller
-  static async releasePaymentToSeller(orderId, sellerId) {
+  // Release payment for an order
+  static async releasePayment(orderId) {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.put(
         `${API_URL}/api/admin/orders/${orderId}/release-payment`,
-        { sellerId },
+        {},
         {
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -41,7 +41,7 @@ class PaymentManagementService {
       );
       return response.data;
     } catch (error) {
-      console.error('Error releasing payment to seller:', error);
+      console.error('Error releasing payment:', error);
       throw error;
     }
   }

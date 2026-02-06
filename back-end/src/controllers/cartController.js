@@ -18,14 +18,6 @@ const addToCart = async (req, res) => {
       return res.status(404).json({ message: 'Product not found' });
     }
 
-    // Check if the user is a seller trying to add their own product
-    if (req.user.role === 'seller' && product.sellerId.toString() === userId) {
-      return res.status(403).json({ 
-        success: false,
-        message: 'Sellers cannot add their own products to cart' 
-      });
-    }
-
     // Tìm giỏ hàng của người dùng
     let cart = await Cart.findOne({ userId });
     if (cart) {
@@ -64,6 +56,16 @@ const viewCart = async (req, res) => {
       // Trả về giỏ hàng rỗng thay vì 404
       return res.status(200).json({ items: [] });
     }
+
+    // Lọc ra những sản phẩm không tồn tại
+    const originalItemCount = cart.items.length;
+    cart.items = cart.items.filter(item => item.productId);
+
+    // Nếu có sự thay đổi, lưu lại giỏ hàng
+    if (cart.items.length !== originalItemCount) {
+      await cart.save();
+    }
+    
     res.status(200).json(cart);
   } catch (error) {
     console.error(error);

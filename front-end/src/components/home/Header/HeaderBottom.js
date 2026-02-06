@@ -197,7 +197,6 @@ const HeaderBottom = () => {
         price: item.price,
         description: item.description,
         category: item.categoryId?.name || "",
-        seller: item.sellerId?.username || "",
       }));
 
     setFilteredProducts(filtered);

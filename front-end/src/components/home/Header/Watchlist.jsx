@@ -127,8 +127,6 @@ const Watchlist = () => {
                                         <Link to={`/auth/product/${product._id}`} className="hover:text-forest-green transition-colors duration-200">
                                             <h2 className="text-lg font-bold font-titleFont text-charcoal line-clamp-2">{product.title}</h2>
                                         </Link>
-                                        <p className="text-charcoal/70 text-sm mt-1 mb-2">By: {product.sellerId?.username || 'Unknown'}</p> 
-
                                         <div className="mt-auto flex justify-between items-center pt-3 border-t border-black/5">
                                             <p className="text-forest-green text-xl font-bold">${product.price ? product.price.toFixed(2) : 'N/A'}</p>
                                             

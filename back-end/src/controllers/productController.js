@@ -62,86 +62,52 @@ const listAllProducts = async (req, res) => {
     const totalItems = await Product.countDocuments(query);
     const skip = (Number(page) - 1) * Number(limit);
 
-    // Get products
-    const products = await Product.find(query)
-      .populate("categoryId")
-      .populate("sellerId")
-      .sort(sortOptions)
-      .skip(skip)
-      .limit(Number(limit));
-
-    console.log(`Found ${products.length} products before filtering`);
-
-    // Get all stores to filter by status
-    const stores = await Store.find({});
-    const storeMap = {};
-    stores?.forEach((store) => {
-      if (store.sellerId) {
-        storeMap[store.sellerId.toString()] = store;
-      }
-    });
-
-    // Get all reviews to calculate ratings
-    const reviews = await Review.find({ parentId: null });
-
-    // Create a map for product ratings
-    const productRatings = {};
-    reviews.forEach((review) => {
-      const productId = review.productId.toString();
-      if (!productRatings[productId]) {
-        productRatings[productId] = { totalRating: 0, count: 0 };
-      }
-      productRatings[productId].totalRating += review.rating || 0;
-      productRatings[productId].count += 1;
-    });
-
-    // Filter out products from rejected stores and locked users
-    const filteredProducts = products.filter((product) => {
-      if (product.sellerId && product.sellerId.action === "lock") {
-        console.log(`Filtered out product ${product._id} - seller locked`);
-        return false;
-      }
-
-      const sellerIdStr = product.sellerId
-        ? product.sellerId._id.toString()
-        : null;
-      if (
-        sellerIdStr &&
-        storeMap[sellerIdStr] &&
-        storeMap[sellerIdStr].status === "rejected"
-      ) {
-        console.log(`Filtered out product ${product._id} - store rejected`);
-        return false;
-      }
-      return true;
-    });
-
-    console.log(`After filtering: ${filteredProducts.length} products`);
-
-    // Add rating information to products
-    const productsWithRatings = filteredProducts.map((product) => {
-      const productObj = product.toObject();
-      const productId = productObj._id.toString();
-
-      if (productRatings[productId]) {
-        productObj.rating =
-          productRatings[productId].totalRating /
-          productRatings[productId].count;
-        productObj.reviewCount = productRatings[productId].count;
-      } else {
-        productObj.rating = 0;
-        productObj.reviewCount = 0;
-      }
-
-      return productObj;
-    });
-
-    const totalPages = Math.ceil(totalItems / Number(limit));
-
-    res.status(200).json({
-      success: true,
-      data: productsWithRatings,
-      pagination: {
+        // Get products
+        const products = await Product.find(query)
+          .populate("categoryId")
+          .sort(sortOptions)
+          .skip(skip)
+          .limit(Number(limit));
+    
+        console.log(`Found ${products.length} products`);
+    
+        // Get all reviews to calculate ratings
+        const reviews = await Review.find({ parentId: null });
+    
+        // Create a map for product ratings
+        const productRatings = {};
+        reviews.forEach((review) => {
+          const productId = review.productId.toString();
+          if (!productRatings[productId]) {
+            productRatings[productId] = { totalRating: 0, count: 0 };
+          }
+          productRatings[productId].totalRating += review.rating || 0;
+          productRatings[productId].count += 1;
+        });
+    
+        // Add rating information to products
+        const productsWithRatings = products.map((product) => {
+          const productObj = product.toObject();
+          const productId = productObj._id.toString();
+    
+          if (productRatings[productId]) {
+            productObj.rating =
+              productRatings[productId].totalRating /
+              productRatings[productId].count;
+            productObj.reviewCount = productRatings[productId].count;
+          } else {
+            productObj.rating = 0;
+            productObj.reviewCount = 0;
+          }
+    
+          return productObj;
+        });
+    
+        const totalPages = Math.ceil(totalItems / Number(limit));
+    
+        res.status(200).json({
+          success: true,
+          data: productsWithRatings,      pagination: {
         currentPage: Number(page),
         totalPages,
         totalItems,
@@ -161,8 +127,7 @@ const getProductDetail = async (req, res) => {
     const { productId } = req.params;
 
     const product = await Product.findById(productId)
-      .populate("categoryId")
-      .populate("sellerId");
+      .populate("categoryId");
 
     if (!product) {
       return res.status(404).json({
@@ -171,11 +136,7 @@ const getProductDetail = async (req, res) => {
       });
     }
 
-    let store = null;
-
-    if (product.sellerId && product.sellerId._id) {
-      store = await Store.findOne({ sellerId: product.sellerId._id });
-    }
+    const store = null;
     const inventory = await Inventory.findOne({ productId });
 
     const reviews = await Review.find({ productId, parentId: null })

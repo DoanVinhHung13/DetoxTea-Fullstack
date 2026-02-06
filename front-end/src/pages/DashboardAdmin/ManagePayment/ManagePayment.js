@@ -73,15 +73,16 @@ const ManagePayment = () => {
     fetchOrders();
   }, [filterStatus]);
 
-  // Release payment to seller
-  const handleReleasePayment = async (orderId, sellerId) => {
+  // Release payment for an order
+  const handleReleaseOrderPayment = async (orderId) => {
     try {
-      await PaymentManagementService.releasePaymentToSeller(orderId, sellerId);
-      message.success('Chuyển tiền cho seller thành công');
+      await PaymentManagementService.releasePayment(orderId);
+      message.success('Chuyển tiền thành công');
       fetchOrders(pagination.current, filterStatus);
+      setDetailModalVisible(false); // Close modal on success
     } catch (error) {
       console.error('Error releasing payment:', error);
-      message.error('Lỗi khi chuyển tiền cho seller');
+      message.error('Lỗi khi chuyển tiền');
     }
   };
 
@@ -283,7 +284,16 @@ const ManagePayment = () => {
         title="Chi tiết đơn hàng"
         open={detailModalVisible}
         onCancel={() => setDetailModalVisible(false)}
-        footer={null}
+        footer={[
+          <Button key="back" onClick={() => setDetailModalVisible(false)}>
+            Đóng
+          </Button>,
+          selectedOrder && selectedOrder.paymentStatus === 'held' && (
+            <Button key="release" type="primary" onClick={() => handleReleaseOrderPayment(selectedOrder._id)}>
+              Chuyển tiền cho tất cả Sellers
+            </Button>
+          ),
+        ]}
         width={800}
       >
         {selectedOrder && (
@@ -333,17 +343,6 @@ const ManagePayment = () => {
                       <Text strong style={{ color: '#1890ff', fontSize: '16px' }}>
                         {formatCurrency(sellerData.amount)}
                       </Text>
-                    </Col>
-                    <Col>
-                      {selectedOrder.paymentStatus === 'held' && (
-                        <Button
-                          type="primary"
-                          icon={<CheckOutlined />}
-                          onClick={() => handleReleasePayment(selectedOrder._id, sellerData.seller._id)}
-                        >
-                          Chuyển tiền
-                        </Button>
-                      )}
                     </Col>
                   </Row>
                   

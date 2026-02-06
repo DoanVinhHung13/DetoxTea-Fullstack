@@ -71,7 +71,6 @@
     );
     const [selectedStores, setSelectedStores] = React.useState([]);
     const [selectedRatingRanges, setSelectedRatingRanges] = React.useState([]);
-    const [storeSearch, setStoreSearch] = React.useState("");
     const [productRatings, setProductRatings] = React.useState({});
     const [creatingProduct, setCreatingProduct] = React.useState(false);
     const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
@@ -148,31 +147,6 @@
       setViewingReviewsProduct(null);
       setReviews([]);
     };
-
-    // Compute unique stores/sellers from products
-    const stores = React.useMemo(() => {
-      const storeMap = new Map();
-      products.forEach((product) => {
-        if (product.sellerId) {
-          const sellerId = product.sellerId._id;
-          const sellerName =
-            product.sellerId?.username || product.sellerId?.username || "Unknown";
-          if (!storeMap.has(sellerId)) {
-            storeMap.set(sellerId, sellerName);
-          }
-        }
-      });
-      return Array.from(storeMap, ([id, name]) => ({ id, name }));
-    }, [products]);
-
-    // Filtered stores based on storeSearch
-    const filteredStores = React.useMemo(() => {
-      if (!storeSearch.trim()) return stores;
-      const searchLower = storeSearch.trim().toLowerCase();
-      return stores.filter((store) =>
-        store.name.toLowerCase().includes(searchLower)
-      );
-    }, [stores, storeSearch]);
 
     // Define rating ranges
     const ratingRanges = [
@@ -256,13 +230,6 @@
         });
       }
 
-      // 3. Filter by selected stores (sellerId)
-      if (selectedStores.length > 0) {
-        filtered = filtered.filter((product) =>
-          selectedStores.includes(product.sellerId?._id)
-        );
-      }
-
       // 4. Filter by selected rating ranges
       if (selectedRatingRanges.length > 0) {
         filtered = filtered.filter((product) => {
@@ -279,7 +246,6 @@
       products,
       keywords,
       selectedActiveStatuses,
-      selectedStores,
       selectedRatingRanges,
       productRatings,
     ]);
@@ -287,23 +253,13 @@
 
     React.useEffect(() => {
    // Reset to first page when filters change
-    }, [selectedActiveStatuses, selectedStores, selectedRatingRanges, keywords]);
+    }, [selectedActiveStatuses, selectedRatingRanges, keywords]);
 
     const handleActiveStatusChange = (status) => {
       setSelectedActiveStatuses((prev) =>
         prev.includes(status)
           ? prev.filter((s) => s !== status)
           : [...prev, status]
-      );
-    };
-
-    const handleStoreChange = (event) => {
-      const {
-        target: { value },
-      } = event;
-      setSelectedStores(
-        // On autofill we get a stringified value.
-        typeof value === "string" ? value.split(",") : value
       );
     };
 
@@ -428,10 +384,8 @@
                       size="small"
                       onClick={() => {
                         setSelectedActiveStatuses([]);
-                        setSelectedStores([]);
                         setSelectedRatingRanges([]);
                         setKeywords("");
-                        setStoreSearch("");
                       }}
                     >
                       <ClearAllIcon fontSize="small" />
@@ -485,51 +439,6 @@
                       />
                     ))}
                   </FormGroup>
-                </Box>
-              </Box>
-
-              {/* Store Filter - Dropdown with search */}
-              <Box mb={2}>
-                <Typography
-                  variant="caption"
-                  color="text.secondary"
-                  sx={{ fontWeight: 600 }}
-                >
-                  STORE
-                </Typography>
-                <Box mt={1}>
-                  <Autocomplete
-                    multiple
-                    options={filteredStores}
-                    disableCloseOnSelect
-                    getOptionLabel={(option) => option.name}
-                    value={stores.filter((s) => selectedStores.includes(s.id))}
-                    onChange={(event, newValue) => {
-                      const selectedIds = newValue.map((store) => store.id);
-                      setSelectedStores(selectedIds);
-                    }}
-                    isOptionEqualToValue={(option, value) =>
-                      option.id === value.id
-                    }
-                    renderOption={(props, option, { selected }) => (
-                      <li {...props}>
-                        <Checkbox
-                          icon={icon}
-                          checkedIcon={checkedIcon}
-                          style={{ marginRight: 8 }}
-                          checked={selected}
-                        />
-                        {option.name}
-                      </li>
-                    )}
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        label="Select stores"
-                        placeholder="Search..."
-                      />
-                    )}
-                  />
                 </Box>
               </Box>
 
