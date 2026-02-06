@@ -12,6 +12,7 @@ import {
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import logoXanh from "../../../assets/images/home/logo-xanh.png";
 import { logout } from "../../../features/auth/authSlice";
 import { resetUserInfo, setUserInfo } from "../../../redux/orebiSlice";
 
@@ -108,10 +109,12 @@ const Header = () => {
           </nav>
 
           {/* LOGO CENTER */}
-          <Link to="/" className="flex flex-col items-center w-1/3 group">
-            <span className="text-2xl font-serif tracking-[0.3em] text-[#1E4D3B]">
-              YÊN
-            </span>
+          <Link to="/" className="flex flex-col items-center group">
+            <img
+              src={logoXanh}
+              alt="Yên Detox Tea"
+              className="object-contain mb-1 h-14"
+            />
             <span className="text-[10px] tracking-[0.5em] opacity-80 uppercase">
               DETOX TEA
             </span>
