@@ -2,7 +2,6 @@ import axios from "axios";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   ChevronDown,
-  Heart,
   Menu,
   Package,
   ShoppingCart,
@@ -77,7 +76,7 @@ const Header = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
     } catch (error) {
-      console.error("Logout error", error);
+      console.error("Lỗi đăng xuất", error);
     } finally {
       localStorage.removeItem("accessToken");
       dispatch(resetUserInfo());
@@ -92,7 +91,7 @@ const Header = () => {
     <>
       <header className="sticky top-0 left-0 w-full z-50 bg-[#fdfbf7] py-4 shadow-sm text-[#1E4D3B] border-b border-stone-100">
         <div className="container flex items-center justify-between px-6 mx-auto lg:px-12">
-          {/* DESKTOP NAV LEFT */}
+          {/* NAV TRÁI (DESKTOP) */}
           <nav className="items-center hidden w-1/3 gap-8 text-xs font-bold tracking-widest uppercase lg:flex">
             <Link
               to="/products"
@@ -108,7 +107,7 @@ const Header = () => {
             </Link>
           </nav>
 
-          {/* LOGO CENTER */}
+          {/* LOGO GIỮA */}
           <Link to="/" className="flex flex-col items-center group">
             <img
               src={logoXanh}
@@ -120,9 +119,9 @@ const Header = () => {
             </span>
           </Link>
 
-          {/* ACTION ICONS RIGHT */}
+          {/* ICON HÀNH ĐỘNG PHẢI */}
           <div className="flex items-center justify-end w-1/3 gap-4 lg:gap-8">
-            {/* Cart Icon */}
+            {/* Giỏ hàng */}
             <Link
               to="/cart"
               className="relative p-1 transition-colors hover:text-emerald-600"
@@ -136,7 +135,7 @@ const Header = () => {
             </Link>
 
             <div className="flex items-center gap-3 lg:gap-5">
-              {/* User Menu */}
+              {/* Menu Người dùng */}
               <div className="relative" ref={userMenuRef}>
                 <button
                   onClick={() => setShowUser(!showUser)}
@@ -160,7 +159,7 @@ const Header = () => {
                         <div className="flex flex-col">
                           <div className="px-4 py-3 border-b bg-stone-50">
                             <p className="text-xs font-bold tracking-widest uppercase text-stone-400">
-                              Welcome
+                              Xin chào
                             </p>
                             <p className="text-sm font-serif text-[#1E4D3B] truncate">
                               {userName || user?.username}
@@ -171,27 +170,27 @@ const Header = () => {
                             className="flex items-center gap-3 px-4 py-3 text-sm hover:bg-stone-50"
                             onClick={() => setShowUser(false)}
                           >
-                            <User size={14} /> Profile
+                            <User size={14} /> Hồ sơ của tôi
                           </Link>
                           <Link
                             to="/order-history"
                             className="flex items-center gap-3 px-4 py-3 text-sm hover:bg-stone-50"
                             onClick={() => setShowUser(false)}
                           >
-                            <Package size={14} /> Orders
+                            <Package size={14} /> Đơn hàng đã mua
                           </Link>
-                          <Link
+                          {/* <Link
                             to="/watchlist"
                             className="flex items-center gap-3 px-4 py-3 text-sm hover:bg-stone-50"
                             onClick={() => setShowUser(false)}
                           >
-                            <Heart size={14} /> Wishlist
-                          </Link>
+                            <Heart size={14} /> Sản phẩm yêu thích
+                          </Link> */}
                           <button
                             onClick={handleLogout}
                             className="px-4 py-3 text-sm font-bold text-left text-red-600 border-t hover:bg-red-50"
                           >
-                            Logout
+                            Đăng xuất
                           </button>
                         </div>
                       ) : (
@@ -215,7 +214,7 @@ const Header = () => {
                 </AnimatePresence>
               </div>
 
-              {/* Mobile Menu Toggle */}
+              {/* Toggle Menu Mobile */}
               <button
                 className="p-1 lg:hidden"
                 onClick={() => setSidenav(true)}
@@ -257,21 +256,21 @@ const Header = () => {
                   onClick={() => setSidenav(false)}
                   className="text-2xl font-serif text-[#1E4D3B]"
                 >
-                  Home
+                  Trang chủ
                 </Link>
                 <Link
                   to="/products"
                   onClick={() => setSidenav(false)}
                   className="text-2xl font-serif text-[#1E4D3B]"
                 >
-                  Shop
+                  Cửa hàng
                 </Link>
                 <Link
                   to="/about-us"
                   onClick={() => setSidenav(false)}
                   className="text-2xl font-serif text-[#1E4D3B]"
                 >
-                  Story
+                  Câu chuyện
                 </Link>
                 <div className="pt-8 border-t border-stone-200">
                   {!isAuthenticated && (
@@ -279,7 +278,7 @@ const Header = () => {
                       to="/signin"
                       className="block py-4 px-6 bg-[#1E4D3B] text-white text-center rounded-full font-bold"
                     >
-                      Sign In
+                      Đăng nhập
                     </Link>
                   )}
                 </div>

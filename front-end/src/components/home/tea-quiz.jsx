@@ -4,9 +4,8 @@ import { useState } from "react";
 
 const QUIZ_DATA = {
   label: "TÌM KIẾM HƯƠNG VỊ HOÀN HẢO",
-  question: "Hôm nay bạn cảm thấy thế nào?",
-  subtitle:
-    "Hãy chọn một tâm trạng bên dưới để chúng tôi gợi ý loại trà phù hợp nhất với bạn.",
+  question: "Hôm nay bạn cần gì?",
+  subtitle: "Chọn cảm giác bạn muốn tìm, Yên gợi ý loại trà phù hợp.",
   answers: [
     {
       id: "energetic",

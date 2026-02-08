@@ -75,7 +75,7 @@ const ProductCard = ({
 
         <div className="flex items-center justify-between pt-2">
           <div className="text-xl font-bold text-[#1E4D3B]">
-            ${product.price?.toFixed(2)}
+            {product.price?.toFixed(2)}đ
           </div>
 
           <button
@@ -85,7 +85,7 @@ const ProductCard = ({
             className="flex items-center gap-2 px-4 py-2 text-xs font-bold text-white transition-all duration-300 bg-[#1E4D3B] rounded-lg hover:bg-[#15382B] disabled:bg-stone-400"
           >
             <AddShoppingCartIcon style={{ fontSize: 16 }} />
-            ADD TO CART
+            Thêm sản phẩm
           </button>
         </div>
       </div>
@@ -400,15 +400,15 @@ const ProductList = () => {
   return (
     <div className="min-h-screen bg-cream">
       {/* Header */}
-      <div className="pt-12 pl-6 ">
-        <div className="px-4 mx-auto max-w-7xl">
+      <div className="pt-12 ">
+        <div className="max-w-full px-4 mx-20">
           <h1 className="text-3xl tracking-tight text-left text-gray-800 md:text-3xl">
-            SHOP ALL DETOX TEAS
+            Trà Dextox
           </h1>
         </div>
       </div>
 
-      <div className="px-4 pt-4 pb-12 mx-auto max-w-7xl">
+      <div className="px-4 pt-4 pb-12 mx-20 8">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-4">
           {/* Sidebar - Filters */}
           <div className="lg:col-span-1">
@@ -416,7 +416,7 @@ const ProductList = () => {
               {/* Category Filter */}
               <div className="mb-6">
                 <h3 className="mb-4 text-sm font-semibold tracking-wide text-gray-700 uppercase">
-                  Category
+                  Danh mục
                 </h3>
                 <div className="space-y-3">
                   <label className="flex items-center cursor-pointer group">
@@ -427,7 +427,7 @@ const ProductList = () => {
                       className="w-4 h-4 border-2 rounded text-stone-700 border-stone-300 focus:ring-stone-500"
                     />
                     <span className="ml-3 text-gray-700 transition-colors group-hover:text-stone-800">
-                      All Products
+                      Tất cả danh mục
                     </span>
                   </label>
 
@@ -485,9 +485,9 @@ const ProductList = () => {
               </div> */}
 
               {/* Sort Filter */}
-              <div className="pt-6 border-t border-stone-200">
+              {/* <div className="pt-6 border-t border-stone-200">
                 <h3 className="mb-4 text-sm font-semibold tracking-wide text-gray-700 uppercase">
-                  Sort By
+                  Sắp xếp
                 </h3>
                 <select
                   value={sortOrder}
@@ -500,7 +500,7 @@ const ProductList = () => {
                   <option value="name-asc">Name: A to Z</option>
                   <option value="name-desc">Name: Z to A</option>
                 </select>
-              </div>
+              </div> */}
 
               {/* Reset Button */}
               {(selectedCategories.length > 0 ||
@@ -516,7 +516,7 @@ const ProductList = () => {
                   }}
                   className="w-full px-4 py-2 mt-6 text-sm font-medium transition-colors border-2 rounded-lg text-stone-700 border-[#6B8F4C] hover:bg-[#6B8F4C] hover:text-white"
                 >
-                  Clear All Filters
+                  Xóa bộ lọc
                 </button>
               )}
             </div>
@@ -532,11 +532,9 @@ const ProductList = () => {
               <div className="flex flex-col items-center justify-center py-20 text-center rounded-2xl">
                 <div className="mb-4 text-6xl">🔍</div>
                 <h3 className="mb-2 text-2xl font-bold text-gray-800">
-                  No products found
+                  Không tìm thấy sản phẩm.
                 </h3>
-                <p className="mb-6 text-stone-600">
-                  Try adjusting your filters or search criteria
-                </p>
+                <p className="mb-6 text-stone-600"></p>
                 <button
                   onClick={() => {
                     handleResetCategories();
@@ -546,7 +544,7 @@ const ProductList = () => {
                   }}
                   className="px-8 py-3 font-medium text-white transition-colors rounded-xl bg-stone-700 hover:bg-stone-800"
                 >
-                  View All Products
+                  Tất cả sản phẩm
                 </button>
               </div>
             ) : (

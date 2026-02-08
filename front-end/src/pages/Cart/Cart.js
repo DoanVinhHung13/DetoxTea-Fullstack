@@ -1,707 +1,295 @@
-import AddIcon from "@mui/icons-material/Add";
-import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import DeleteIcon from "@mui/icons-material/Delete";
-import DeleteSweepIcon from "@mui/icons-material/DeleteSweep";
-import RemoveIcon from "@mui/icons-material/Remove";
-import ShoppingBagIcon from "@mui/icons-material/ShoppingBag";
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
-import {
-  Alert,
-  Box,
-  Button,
-  Card,
-  CardContent,
-  CardMedia,
-  Checkbox,
-  CircularProgress,
-  Container,
-  Divider,
-  Fade,
-  Grid,
-  IconButton,
-  Paper,
-  Typography,
-} from "@mui/material";
-import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { Box, Container, Grid, Typography } from "@mui/material";
+import { Checkbox, ConfigProvider, Divider, InputNumber } from "antd";
+import { AnimatePresence, motion } from "framer-motion";
+import { ArrowRight, Trash2 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
+
+import { useEffect, useState } from "react";
+import { FaShoppingBag } from "react-icons/fa";
+import { useDispatch, useSelector } from "react-redux";
+
 import {
   fetchCart,
   removeCartItem,
   removeSelectedItems,
-  resetCart,
   updateCartItem,
 } from "../../features/cart/cartSlice";
 
 const Cart = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
   const { token } = useSelector((state) => state.auth) || {};
-  const {
-    items: cartItems,
-    loading,
-    error,
-  } = useSelector((state) => state.cart);
+  const { items: cartItems } = useSelector((state) => state.cart);
 
-  const [totalAmt, setTotalAmt] = useState(0);
   const [selectedItems, setSelectedItems] = useState([]);
-  const [selectAll, setSelectAll] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
+  const [totalAmt, setTotalAmt] = useState(0);
 
-  // Define colors and fonts for easy access
-  const palette = {
-    cream: "#F7F6E8",
-    forestGreen: "#2D4F3E",
-    sageGreen: "#8BA889",
-    charcoal: "#1A1A1A",
-    softGold: "#C5A059",
-  };
-
-  const fonts = {
-    title: "'Playfair Display', serif",
-    body: "'Montserrat', sans-serif",
+  const colors = {
+    cream: "#FDFBF7",
+    forestGreen: "#1E4D3B",
+    deepGreen: "#15382B",
+    gold: "#C5A059",
+    border: "#EAE6DF",
   };
 
   useEffect(() => {
-    if (token) {
-      dispatch(fetchCart());
-    } else {
-      navigate("/signin", {
-        state: { message: "Please login to view your cart" },
-      });
-    }
+    if (token) dispatch(fetchCart());
+    else navigate("/signin");
   }, [dispatch, token, navigate]);
 
   useEffect(() => {
-    let price = 0;
-    cartItems.forEach((item) => {
-      if (selectedItems.includes(item.productId._id)) {
-        if (item.productId && item.productId.price) {
-          price += item.productId.price * item.quantity;
-        }
+    const price = cartItems.reduce((acc, item) => {
+      if (selectedItems.includes(item.productId?._id)) {
+        return acc + (item.productId?.price || 0) * item.quantity;
       }
-    });
+      return acc;
+    }, 0);
     setTotalAmt(price);
   }, [cartItems, selectedItems]);
 
-  // Handle select/deselect all
-  useEffect(() => {
-    if (cartItems.length > 0) {
-      if (selectAll) {
-        const allItemIds = cartItems.map((item) => item.productId._id);
-        setSelectedItems(allItemIds);
-      } else {
-        // This should not clear selection if some items are manually selected
-        // We only clear if the user deselects the "Select All" checkbox itself
-      }
-    }
-  }, [selectAll, cartItems]);
-
-  useEffect(() => {
-    if (cartItems.length > 0 && selectedItems.length === cartItems.length) {
-      setSelectAll(true);
-    } else {
-      setSelectAll(false);
-    }
-  }, [selectedItems, cartItems]);
-
-  // Handle reset cart
-  const handleResetCart = () => {
-    if (window.confirm("Are you sure you want to reset your cart?")) {
-      dispatch(resetCart());
-      setSelectedItems([]);
-      setSelectAll(false);
-    }
-  };
-
-  // Handle remove selected items
-  const handleRemoveSelected = () => {
-    if (selectedItems.length === 0) {
-      toast.warn("No items selected");
-      return;
-    }
-
-    setIsProcessing(true);
-    dispatch(removeSelectedItems(selectedItems))
-      .then(() => {
-        setSelectedItems([]);
-        setSelectAll(false);
-        toast.success("Selected items removed");
-      })
-      .finally(() => {
-        setIsProcessing(false);
-      });
-  };
-
-  // Handle update quantity
-  const handleUpdateQuantity = (productId, quantity) => {
-    const item = cartItems.find((item) => item.productId._id === productId);
-    if (
-      item &&
-      item.productId &&
-      item.productId.inventoryQuantity !== undefined
-    ) {
-      if (quantity > item.productId.inventoryQuantity) {
-        toast.warning(
-          `Cannot add more than ${item.productId.inventoryQuantity} items (available in stock)`,
-        );
-        return;
-      }
-    }
-    dispatch(updateCartItem({ productId, quantity }));
-  };
-
-  // Handle remove item
-  const handleRemoveItem = (productId) => {
-    dispatch(removeCartItem(productId));
-    setSelectedItems((prev) => prev.filter((id) => id !== productId));
-  };
-
-  // Toggle item selection
-  const toggleItemSelection = (itemId) => {
-    setSelectedItems((prev) => {
-      if (prev.includes(itemId)) {
-        return prev.filter((id) => id !== itemId);
-      } else {
-        return [...prev, itemId];
-      }
-    });
-  };
-
-  // Proceed to checkout
-  const handleProceedToCheckout = () => {
-    if (selectedItems.length === 0) {
-      toast.error("Please select products to checkout");
-      return;
-    }
-    navigate("/checkout", { state: { selectedItems } });
-  };
-
-  if (loading) {
-    return (
-      <Box sx={{ backgroundColor: palette.cream, minHeight: "100vh" }}>
-        <Container maxWidth="lg" sx={{ py: 6 }}>
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              height: "60vh",
-            }}
-          >
-            <CircularProgress sx={{ color: palette.forestGreen }} />
-          </Box>
-        </Container>
-      </Box>
-    );
-  }
-
-  if (error) {
-    return (
-      <Box sx={{ backgroundColor: palette.cream, minHeight: "100vh" }}>
-        <Container maxWidth="lg" sx={{ py: 6 }}>
-          <Alert severity="error" sx={{ mb: 3 }}>
-            {error}
-          </Alert>
-        </Container>
-      </Box>
-    );
-  }
-
   return (
-    <Box className="bg-cream" sx={{ minHeight: "100vh" }}>
-      <Container maxWidth="lg" sx={{ py: 6 }}>
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <Typography
-            variant="h4"
-            component="h1"
-            gutterBottom
-            sx={{
-              fontFamily: fonts.title,
-              fontWeight: 700,
-              color: palette.charcoal,
-              position: "relative",
-              pb: 2,
-              mb: 4,
-              "&:after": {
-                content: '""',
-                position: "absolute",
-                bottom: 0,
-                left: 0,
-                width: "60px",
-                height: "4px",
-                backgroundColor: palette.forestGreen,
-                borderRadius: "2px",
-              },
-            }}
-          >
-            <ShoppingCartIcon sx={{ mr: 1, verticalAlign: "middle" }} />
-            Giỏ hàng
-          </Typography>
-
+    <ConfigProvider
+      theme={{
+        token: {
+          colorPrimary: colors.forestGreen,
+          borderRadius: 2,
+          fontFamily: "'Montserrat', sans-serif",
+        },
+      }}
+    >
+      <Box
+        sx={{
+          backgroundColor: colors.cream,
+          minHeight: "100vh",
+          py: { xs: 4, md: 10 },
+        }}
+      >
+        <Container maxWidth="lg">
           {cartItems.length > 0 ? (
-            <Grid container spacing={4}>
-              <Grid item xs={12} md={8}>
-                <Paper
-                  elevation={0}
-                  sx={{
-                    p: 3,
-                    borderRadius: 2,
-                    mb: { xs: 3, md: 0 },
-                    border: "1px solid #00000010",
-                  }}
-                >
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      mb: 2,
-                    }}
+            <Grid container spacing={{ xs: 4, md: 8 }}>
+              {/* DANH SÁCH SẢN PHẨM */}
+              <Grid item xs={12} md={7} lg={8}>
+                <div className="mb-6 pb-4 border-b border-[#EAE6DF] flex justify-between items-center">
+                  <Checkbox
+                    indeterminate={
+                      selectedItems.length > 0 &&
+                      selectedItems.length < cartItems.length
+                    }
+                    checked={selectedItems.length === cartItems.length}
+                    onChange={(e) =>
+                      setSelectedItems(
+                        e.target.checked
+                          ? cartItems.map((i) => i.productId._id)
+                          : [],
+                      )
+                    }
                   >
-                    <Box sx={{ display: "flex", alignItems: "center" }}>
-                      <Checkbox
-                        checked={selectAll}
-                        onChange={(e) => setSelectAll(e.target.checked)}
-                        sx={{
-                          color: palette.forestGreen,
-                          "&.Mui-checked": { color: palette.forestGreen },
-                        }}
-                      />
-                      <Typography fontFamily={fonts.body} fontWeight={500}>
-                        Chọn tất cả ({cartItems.length} sản phẩm)
-                      </Typography>
-                    </Box>
-
-                    <Button
-                      variant="text"
-                      startIcon={<DeleteSweepIcon />}
-                      onClick={handleResetCart}
-                      size="small"
-                      sx={{ color: palette.softGold, fontFamily: fonts.body }}
+                    <span className="uppercase tracking-widest text-[10px] md:text-[11px] font-bold ml-2">
+                      Chọn tất cả
+                    </span>
+                  </Checkbox>
+                  {selectedItems.length > 0 && (
+                    <button
+                      onClick={() =>
+                        dispatch(removeSelectedItems(selectedItems))
+                      }
+                      className="text-red-500 text-[10px] font-bold uppercase tracking-widest flex items-center gap-1"
                     >
-                      Xóa tất cả
-                    </Button>
-                  </Box>
+                      <Trash2 size={12} />{" "}
+                      <span className="hidden sm:inline">Xóa đã chọn</span> (
+                      {selectedItems.length})
+                    </button>
+                  )}
+                </div>
 
-                  <Divider sx={{ mb: 2 }} />
-
+                <AnimatePresence mode="popLayout">
                   {cartItems.map((item) => (
-                    <Fade key={item.productId?._id || Math.random()} in={true}>
-                      <Card
-                        sx={{
-                          mb: 2,
-                          display: "flex",
-                          position: "relative",
-                          borderRadius: 2,
-                          boxShadow: "none",
-                          border: "1px solid #eee",
-                        }}
-                      >
-                        <Box
-                          sx={{ display: "flex", alignItems: "center", pl: 1 }}
-                        >
-                          <Checkbox
-                            checked={selectedItems.includes(item.productId._id)}
-                            onChange={() =>
-                              toggleItemSelection(item.productId._id)
-                            }
-                            sx={{
-                              color: palette.forestGreen,
-                              "&.Mui-checked": { color: palette.forestGreen },
-                            }}
-                          />
-                        </Box>
+                    <motion.div
+                      key={item.productId?._id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, x: -50 }}
+                      className="flex gap-3 md:gap-8 py-6 md:py-8 border-b border-[#F0EEEA] group relative"
+                    >
+                      <div className="pt-2">
+                        <Checkbox
+                          checked={selectedItems.includes(item.productId?._id)}
+                          onChange={() =>
+                            setSelectedItems((prev) =>
+                              prev.includes(item.productId._id)
+                                ? prev.filter((id) => id !== item.productId._id)
+                                : [...prev, item.productId._id],
+                            )
+                          }
+                        />
+                      </div>
 
-                        <Box
-                          sx={{
-                            width: 100,
-                            height: 100,
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            p: 1,
-                          }}
-                        >
-                          <CardMedia
-                            component="img"
-                            image={item.productId?.image}
-                            alt={item.productId?.name || "Product"}
-                            sx={{
-                              width: "100%",
-                              height: "100%",
-                              objectFit: "contain",
-                            }}
-                          />
-                        </Box>
+                      {/* Ảnh sản phẩm: Co giãn theo màn hình */}
+                      <div className="w-20 h-28 md:w-32 md:h-40 bg-white overflow-hidden rounded-sm border border-[#F0EEEA] flex-shrink-0">
+                        <img
+                          src={item.productId?.image}
+                          className="object-cover w-full h-full transition-transform duration-700 group-hover:scale-105"
+                          alt={item.productId?.title}
+                        />
+                      </div>
 
-                        <CardContent
-                          sx={{
-                            flex: "1 0 auto",
-                            display: "flex",
-                            flexDirection: "column",
-                            justifyContent: "center",
-                          }}
-                        >
-                          <Typography
-                            variant="subtitle1"
-                            fontWeight={600}
-                            sx={{
-                              mb: 0.5,
-                              fontFamily: fonts.body,
-                              color: palette.charcoal,
-                            }}
-                          >
-                            {item.productId?.title ||
-                              item.productId?.name ||
-                              "Product Name"}
-                          </Typography>
-
-                          <Typography
-                            variant="body2"
-                            color="text.secondary"
-                            sx={{ mb: 1, fontFamily: fonts.body }}
-                          >
-                            Đơn giá:{" "}
-                            {item.productId?.price?.toFixed(2) || "0.00"}đ
-                          </Typography>
-                          {/* {item.productId.inventoryQuantity !== undefined && (
+                      {/* Chi tiết sản phẩm */}
+                      <div className="flex flex-col justify-between flex-1 min-w-0">
+                        <div className="flex justify-between gap-2">
+                          <div className="overflow-hidden">
                             <Typography
-                              variant="body2"
-                              color="text.secondary"
-                              sx={{ mb: 1, fontFamily: fonts.body }}
+                              variant="h6"
+                              className="font-serif text-base md:text-xl text-[#15382B] mb-1 truncate md:whitespace-normal"
                             >
-                              Available: {item.productId.inventoryQuantity} in
-                              stock
+                              {item.productId?.title || item.productId?.name}
                             </Typography>
-                          )} */}
-                          <Box
-                            sx={{
-                              display: "flex",
-                              justifyContent: "space-between",
-                              alignItems: "center",
-                            }}
+                            <p className="text-[10px] md:text-xs font-medium tracking-widest text-gray-400 uppercase">
+                              {item.productId?.price?.toLocaleString()}đ / đơn
+                              vị
+                            </p>
+                          </div>
+                          <button
+                            onClick={() =>
+                              dispatch(removeCartItem(item.productId._id))
+                            }
+                            className="flex-shrink-0 text-gray-300 transition-colors hover:text-red-500"
                           >
-                            <Box sx={{ display: "flex", alignItems: "center" }}>
-                              <IconButton
-                                size="small"
-                                onClick={() =>
-                                  item.quantity > 1 &&
-                                  handleUpdateQuantity(
-                                    item.productId._id,
-                                    item.quantity - 1,
-                                  )
-                                }
-                                disabled={item.quantity <= 1}
-                                sx={{
-                                  border: "1px solid #e0e0e0",
-                                  borderRadius: "4px 0 0 4px",
-                                  p: 0.5,
-                                }}
-                              >
-                                <RemoveIcon fontSize="small" />
-                              </IconButton>
+                            <Trash2 size={18} strokeWidth={1.5} />
+                          </button>
+                        </div>
 
-                              <Box
-                                sx={{
-                                  px: 2,
-                                  py: 0.5,
-                                  minWidth: 40,
-                                  textAlign: "center",
-                                  border: "1px solid #e0e0e0",
-                                  borderLeft: 0,
-                                  borderRight: 0,
-                                  fontFamily: fonts.body,
-                                }}
-                              >
-                                {item.quantity}
-                              </Box>
+                        <div className="flex flex-col items-start justify-between gap-3 mt-4 sm:flex-row sm:items-end">
+                          {/* Số lượng */}
+                          <div className="inline-flex items-center border border-[#EAE6DF] rounded-sm bg-white scale-90 origin-left md:scale-100">
+                            <InputNumber
+                              min={1}
+                              max={item.productId?.inventoryQuantity}
+                              value={item.quantity}
+                              onChange={(val) =>
+                                dispatch(
+                                  updateCartItem({
+                                    productId: item.productId._id,
+                                    quantity: val,
+                                  }),
+                                )
+                              }
+                              bordered={false}
+                              className="w-16 font-bold text-center md:w-24"
+                              controls={true}
+                            />
+                          </div>
 
-                              <IconButton
-                                size="small"
-                                onClick={() =>
-                                  handleUpdateQuantity(
-                                    item.productId._id,
-                                    item.quantity + 1,
-                                  )
-                                }
-                                disabled={
-                                  item.quantity >=
-                                  (item.productId.inventoryQuantity || 0)
-                                }
-                                sx={{
-                                  border: "1px solid #e0e0e0",
-                                  borderRadius: "0 4px 4px 0",
-                                  p: 0.5,
-                                }}
-                                title={
-                                  item.quantity >=
-                                  (item.productId.inventoryQuantity || 0)
-                                    ? "Maximum available quantity reached"
-                                    : ""
-                                }
-                              >
-                                <AddIcon fontSize="small" />
-                              </IconButton>
-                            </Box>
-
-                            <Typography
-                              variant="subtitle1"
-                              fontWeight={600}
-                              color={palette.forestGreen}
-                              sx={{ fontFamily: fonts.body }}
-                            >
+                          {/* Thành tiền */}
+                          <div className="w-full text-left sm:text-right">
+                            <p className="text-[9px] uppercase tracking-[0.2em] text-gray-400 mb-1 font-bold">
+                              Thành tiền
+                            </p>
+                            <Typography className="font-bold text-base md:text-lg text-[#1E4D3B]">
                               {(
                                 item.quantity * (item.productId?.price || 0)
-                              ).toFixed(2)}
+                              ).toLocaleString()}
                               đ
                             </Typography>
-                          </Box>
-                        </CardContent>
-
-                        <IconButton
-                          size="small"
-                          onClick={() => handleRemoveItem(item.productId._id)}
-                          sx={{
-                            position: "absolute",
-                            top: 8,
-                            right: 8,
-                            color: "#d32f2f",
-                          }}
-                        >
-                          <DeleteIcon fontSize="small" />
-                        </IconButton>
-                      </Card>
-                    </Fade>
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
                   ))}
-
-                  {selectedItems.length > 0 && (
-                    <Box
-                      sx={{
-                        display: "flex",
-                        justifyContent: "flex-end",
-                        mt: 2,
-                      }}
-                    >
-                      <Button
-                        variant="outlined"
-                        color="error"
-                        startIcon={<DeleteIcon />}
-                        onClick={handleRemoveSelected}
-                        disabled={isProcessing}
-                        sx={{ fontFamily: fonts.body }}
-                      >
-                        {isProcessing
-                          ? "Đang xóa..."
-                          : `Xóa sản phẩm đã chọn (${selectedItems.length})`}
-                      </Button>
-                    </Box>
-                  )}
-                </Paper>
+                </AnimatePresence>
               </Grid>
 
-              <Grid item xs={12} md={4}>
-                <Paper
-                  elevation={0}
-                  sx={{
-                    p: 3,
-                    borderRadius: 2,
-                    position: "sticky",
-                    top: 24,
-                    border: "1px solid #00000010",
-                  }}
-                >
+              {/* TÓM TẮT THANH TOÁN */}
+              <Grid item xs={12} md={5} lg={4}>
+                <div className="bg-white p-6 md:p-10 border border-[#EAE6DF] sticky top-32">
                   <Typography
                     variant="h5"
-                    fontWeight={600}
-                    mb={3}
-                    fontFamily={fonts.title}
+                    className="font-serif mb-6 md:mb-8 text-[#15382B] text-xl md:text-2xl text-center"
                   >
-                    Thành giá
+                    Tóm tắt đơn hàng
                   </Typography>
 
-                  <Divider sx={{ mb: 3 }} />
+                  <div className="space-y-4 md:space-y-5 text-[10px] md:text-[11px] uppercase tracking-[0.2em] font-bold text-gray-400">
+                    <div className="flex justify-between">
+                      <span>Tạm tính ({selectedItems.length})</span>
+                      <span className="text-black">
+                        {totalAmt.toLocaleString()}đ
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Phí vận chuyển</span>
+                      <span className="text-[9px] italic text-gray-300">
+                        Tính tại bước sau
+                      </span>
+                    </div>
+                  </div>
 
-                  <Box sx={{ mb: 3 }}>
-                    <Box
-                      sx={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        mb: 1,
-                      }}
-                    >
-                      <Typography fontFamily={fonts.body}>
-                        Sản phẩm đã chọn:
-                      </Typography>
-                      <Typography fontFamily={fonts.body}>
-                        {selectedItems.length}
-                      </Typography>
-                    </Box>
+                  <Divider className="my-6 md:my-8 border-[#F0EEEA]" />
 
-                    <Box
-                      sx={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        mb: 1,
-                      }}
-                    >
-                      <Typography fontFamily={fonts.body}>
-                        Thành giá:
-                      </Typography>
-                      <Typography fontFamily={fonts.body}>
-                        {totalAmt.toFixed(2)}đ
-                      </Typography>
-                    </Box>
-
-                    <Divider sx={{ my: 2 }} />
-
-                    <Box
-                      sx={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        mb: 1,
-                      }}
-                    >
+                  <div className="flex items-baseline justify-between mb-8 md:mb-10">
+                    <span className="font-serif text-lg md:text-xl text-[#15382B]">
+                      Tổng
+                    </span>
+                    <div className="text-right">
                       <Typography
-                        variant="h6"
-                        fontWeight={600}
-                        fontFamily={fonts.body}
+                        variant="h4"
+                        className="font-bold text-[#1E4D3B] text-2xl md:text-3xl"
                       >
-                        Total:
+                        {totalAmt.toLocaleString()}đ
                       </Typography>
-                      <Typography
-                        variant="h6"
-                        fontWeight={700}
-                        color={palette.forestGreen}
-                        fontFamily={fonts.body}
-                      >
-                        {totalAmt.toFixed(2)}đ
-                      </Typography>
-                    </Box>
-                  </Box>
+                      <p className="text-[9px] text-gray-400 uppercase tracking-tighter">
+                        * Đã bao gồm thuế VAT
+                      </p>
+                    </div>
+                  </div>
 
-                  <Button
-                    variant="contained"
-                    fullWidth
-                    size="large"
-                    endIcon={<ArrowForwardIcon />}
-                    onClick={handleProceedToCheckout}
+                  <button
                     disabled={selectedItems.length === 0}
-                    sx={{
-                      py: 1.5,
-                      backgroundColor: palette.forestGreen,
-                      color: palette.cream,
-                      fontFamily: fonts.body,
-                      fontWeight: 600,
-                      "&:hover": {
-                        backgroundColor: "#213B2F", // Darker green
-                      },
-                    }}
+                    onClick={() =>
+                      navigate("/checkout", { state: { selectedItems } })
+                    }
+                    className={`w-full py-4 md:py-5 flex items-center justify-center gap-3 font-bold uppercase tracking-[0.3em] text-[10px] md:text-xs transition-all
+                      ${
+                        selectedItems.length > 0
+                          ? "bg-[#1E4D3B] text-white hover:bg-[#15382B] shadow-xl active:scale-[0.98]"
+                          : "bg-gray-100 text-gray-400 cursor-not-allowed"
+                      }`}
                   >
-                    Proceed to Checkout
-                  </Button>
+                    Thanh toán <ArrowRight size={16} />
+                  </button>
 
-                  <Box sx={{ mt: 3, textAlign: "center" }}>
-                    <Link to="/" style={{ textDecoration: "none" }}>
-                      <Button
-                        startIcon={<ShoppingBagIcon />}
-                        sx={{
-                          color: palette.forestGreen,
-                          fontFamily: fonts.body,
-                          "&:hover": {
-                            backgroundColor: "rgba(45, 79, 62, 0.04)",
-                          },
-                        }}
-                      >
-                        Continue Shopping
-                      </Button>
-                    </Link>
-                  </Box>
-                </Paper>
+                  <div className="mt-6 text-center">
+                    <p className="text-[9px] text-gray-400 leading-relaxed uppercase tracking-widest">
+                      Đảm bảo bảo mật 100%
+                    </p>
+                  </div>
+                </div>
               </Grid>
             </Grid>
           ) : (
-            <Paper
-              elevation={0}
-              sx={{
-                p: 6,
-                textAlign: "center",
-                borderRadius: 2,
-                border: "1px solid #00000010",
-              }}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="max-w-lg p-12 mx-auto text-center bg-white border shadow-sm rounded-xl"
             >
-              <motion.div
-                initial={{ scale: 0.8 }}
-                animate={{ scale: 1 }}
-                transition={{
-                  type: "spring",
-                  stiffness: 200,
-                  damping: 15,
-                }}
+              <div className="flex items-center justify-center w-20 h-20 mx-auto mb-6 rounded-full bg-forest-green/10">
+                <FaShoppingBag className="text-3xl text-forest-green" />
+              </div>
+              <h2 className="mb-4 text-2xl font-bold text-charcoal font-titleFont">
+                Túi hàng đang trống
+              </h2>
+
+              <Link
+                to="/products"
+                className="inline-flex items-center gap-2 px-6 py-3 font-medium transition-colors rounded-lg bg-forest-green text-cream hover:bg-forest-green/90"
               >
-                <ShoppingCartIcon
-                  sx={{
-                    fontSize: 80,
-                    color: palette.forestGreen,
-                    opacity: 0.3,
-                    mb: 2,
-                  }}
-                />
-
-                <Typography
-                  variant="h5"
-                  fontWeight={600}
-                  gutterBottom
-                  fontFamily={fonts.title}
-                >
-                  Your Cart is Empty
-                </Typography>
-
-                <Typography
-                  variant="body1"
-                  color="text.secondary"
-                  sx={{
-                    mb: 4,
-                    maxWidth: 500,
-                    mx: "auto",
-                    fontFamily: fonts.body,
-                  }}
-                >
-                  Your shopping cart lives to serve. Give it purpose - fill it
-                  with our finest teas and wellness products!
-                </Typography>
-
-                <Button
-                  variant="contained"
-                  component={Link}
-                  to="/"
-                  startIcon={<ShoppingBagIcon />}
-                  sx={{
-                    px: 4,
-                    py: 1.2,
-                    backgroundColor: palette.forestGreen,
-                    color: palette.cream,
-                    fontFamily: fonts.body,
-                    "&:hover": {
-                      backgroundColor: "#213B2F",
-                    },
-                  }}
-                >
-                  Start Shopping
-                </Button>
-              </motion.div>
-            </Paper>
+                <FaShoppingBag className="text-sm" />
+                Bắt đầu mua sắm
+              </Link>
+            </motion.div>
           )}
-        </motion.div>
-      </Container>
-    </Box>
+        </Container>
+      </Box>
+    </ConfigProvider>
   );
 };
 

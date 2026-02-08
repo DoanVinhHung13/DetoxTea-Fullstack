@@ -10,10 +10,10 @@ const Feedback = require("../models/Feedback");
 const Dispute = require("../models/Dispute");
 const Category = require("../models/Category");
 const bcrypt = require("bcryptjs");
-const jwt = require('jsonwebtoken');
-const ReturnRequest = require('../models/ReturnRequest');
-const Address = require('../models/Address');
-const Payment = require('../models/Payment');
+const jwt = require("jsonwebtoken");
+const ReturnRequest = require("../models/ReturnRequest");
+const Address = require("../models/Address");
+const Payment = require("../models/Payment");
 
 // Tạo cửa hàng mới
 exports.createStore = async (req, res) => {
@@ -24,21 +24,30 @@ exports.createStore = async (req, res) => {
     // Kiểm tra xem người dùng có vai trò seller không
     const user = await User.findById(sellerId);
     if (!user) {
-      return res.status(404).json({ success: false, message: "User not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Không tìm thấy người dùng" });
     }
     if (user.role !== "seller") {
-      return res.status(403).json({ success: false, message: "User is not a seller" });
+      return res.status(403).json({
+        success: false,
+        message: "Người dùng không phải là người bán",
+      });
     }
 
     // Kiểm tra xem người dùng đã có store chưa
     const existingStore = await Store.findOne({ sellerId });
     if (existingStore) {
-      return res.status(400).json({ success: false, message: "User already has a store" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Người dùng đã có cửa hàng" });
     }
 
     // Validate input
     if (!storeName) {
-      return res.status(400).json({ success: false, message: "Store name is required" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Tên cửa hàng là bắt buộc" });
     }
 
     // Tạo mới store
@@ -47,15 +56,15 @@ exports.createStore = async (req, res) => {
       storeName,
       description,
       bannerImageURL,
-      status: "pending" // Mặc định là pending, chờ admin duyệt
+      status: "pending", // Mặc định là pending, chờ admin duyệt
     });
 
     await newStore.save();
 
     res.status(201).json({
       success: true,
-      message: "Store created successfully and is pending approval",
-      data: newStore
+      message: "Cửa hàng đã được tạo thành công và đang chờ phê duyệt",
+      data: newStore,
     });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -69,41 +78,46 @@ exports.loginAndSwitch = async (req, res) => {
     const user = await User.findOne({ username });
 
     if (!user) {
-      return res.status(401).json({ success: false, message: "Invalid credentials" });
+      return res
+        .status(401)
+        .json({ success: false, message: "Thông tin đăng nhập không hợp lệ" });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(401).json({ success: false, message: "Invalid credentials" });
+      return res
+        .status(401)
+        .json({ success: false, message: "Thông tin đăng nhập không hợp lệ" });
     }
 
     // Kiểm tra role
     if (user.role !== "seller") {
-      return res.status(403).json({ success: false, message: "User is not a seller" });
+      return res.status(403).json({
+        success: false,
+        message: "Người dùng không phải là người bán",
+      });
     }
 
     // Generate JWT token
     const payload = {
       id: user._id,
       username: user.username,
-      role: user.role
+      role: user.role,
     };
-    
-    const token = jwt.sign(
-      payload,
-      process.env.JWT_SECRET,
-      { expiresIn: '7d' }
-    );
+
+    const token = jwt.sign(payload, process.env.JWT_SECRET, {
+      expiresIn: "7d",
+    });
 
     res.json({
       success: true,
-      message: "Logged in as seller",
+      message: "Đăng nhập thành công với quyền người bán",
       token,
       user: {
         id: user._id,
         username: user.username,
-        role: user.role
-      }
+        role: user.role,
+      },
     });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -113,27 +127,34 @@ exports.loginAndSwitch = async (req, res) => {
 exports.getProfileStoreAndSeller = async (req, res) => {
   try {
     const sellerId = req.user.id;
-    const store = await Store.findOne({ sellerId }).populate('sellerId');
+    const store = await Store.findOne({ sellerId }).populate("sellerId");
     if (!store) {
-      return res.status(404).json({ success: false, message: "Store profile not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Không tìm thấy hồ sơ cửa hàng" });
     }
 
     // Lấy tất cả product của store này
-    const products = await Product.find({ sellerId }, '_id');
-    const productIds = products.map(p => p._id);
+    const products = await Product.find({ sellerId }, "_id");
+    const productIds = products.map((p) => p._id);
 
     // Lấy review gốc (parentId == null) của tất cả product
     const reviews = await Review.find(
       { productId: { $in: productIds }, parentId: null },
-      'rating'
+      "rating",
     );
     const totalReviews = reviews.length;
     const avgRating = totalReviews
-      ? (reviews.reduce((sum, r) => sum + (r.rating || 0), 0) / totalReviews).toFixed(1)
+      ? (
+          reviews.reduce((sum, r) => sum + (r.rating || 0), 0) / totalReviews
+        ).toFixed(1)
       : 0;
 
     // Lấy địa chỉ mặc định của user
-    const address = await Address.findOne({ userId: store.sellerId._id, isDefault: true });
+    const address = await Address.findOne({
+      userId: store.sellerId._id,
+      isDefault: true,
+    });
 
     // Trả về response gồm địa chỉ
     res.json({
@@ -142,8 +163,8 @@ exports.getProfileStoreAndSeller = async (req, res) => {
         ...store.toObject(),
         avgRating: Number(avgRating),
         totalReviews,
-        address // có thể null nếu user chưa khai báo
-      }
+        address, // có thể null nếu user chưa khai báo
+      },
     });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -159,7 +180,7 @@ exports.updateStoreProfile = async (req, res) => {
     const store = await Store.findOneAndUpdate(
       { sellerId },
       { storeName, description, bannerImageURL },
-      { new: true, upsert: true }
+      { new: true, upsert: true },
     );
 
     res.json({ success: true, data: store });
@@ -171,17 +192,29 @@ exports.updateSellerProfile = async (req, res) => {
   try {
     const sellerId = req.user.id;
     // Lấy các trường user và address từ body
-    const { username, fullname, email, avatar, phone, street, city, state, country } = req.body;
+    const {
+      username,
+      fullname,
+      email,
+      avatar,
+      phone,
+      street,
+      city,
+      state,
+      country,
+    } = req.body;
 
     // 1. Cập nhật User
     const updatedUser = await User.findByIdAndUpdate(
       sellerId,
       { username, fullname, email, avatarURL: avatar }, // Lưu ý: avatar hay avatarURL
-      { new: true }
+      { new: true },
     ).select("-password"); // Không trả về password
 
     if (!updatedUser) {
-      return res.status(404).json({ success: false, message: "Seller not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Không tìm thấy người bán" });
     }
 
     // 2. Cập nhật địa chỉ mặc định
@@ -191,9 +224,15 @@ exports.updateSellerProfile = async (req, res) => {
       updatedAddress = await Address.findOneAndUpdate(
         { userId: sellerId, isDefault: true },
         {
-          phone, street, city, state, country, fullName: fullname || updatedUser.fullname, isDefault: true
+          phone,
+          street,
+          city,
+          state,
+          country,
+          fullName: fullname || updatedUser.fullname,
+          isDefault: true,
         },
-        { new: true, upsert: true }
+        { new: true, upsert: true },
       );
     }
 
@@ -201,8 +240,8 @@ exports.updateSellerProfile = async (req, res) => {
       success: true,
       data: {
         ...updatedUser.toObject(),
-        address: updatedAddress
-      }
+        address: updatedAddress,
+      },
     });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -214,7 +253,9 @@ exports.getAllCategories = async (req, res) => {
   try {
     const categories = await Category.find();
     if (!categories || categories.length === 0) {
-      return res.status(404).json({ success: false, message: "No categories found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Không tìm thấy danh mục nào" });
     }
     res.json({ success: true, data: categories });
   } catch (error) {
@@ -228,21 +269,23 @@ exports.addNewCategory = async (req, res) => {
     // Kiểm tra xem category đã tồn tại chưa
     const existingCategory = await Category.findOne({ name });
     if (existingCategory) {
-      return res.status(400).json({ success: false, message: "Category already exists" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Danh mục đã tồn tại" });
     }
 
     // Tạo mới category
     const newCategory = new Category({
       name,
-      description
+      description,
     });
 
     await newCategory.save();
 
     res.status(201).json({
       success: true,
-      message: "Category added successfully!",
-      data: newCategory
+      message: "Thêm danh mục thành công!",
+      data: newCategory,
     });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -252,7 +295,16 @@ exports.addNewCategory = async (req, res) => {
 // Đăng bán sản phẩm mới
 exports.createProduct = async (req, res) => {
   try {
-    const { title, description, price, image, categoryId, isAuction, auctionEndTime, quantity } = req.body;
+    const {
+      title,
+      description,
+      price,
+      image,
+      categoryId,
+      isAuction,
+      auctionEndTime,
+      quantity,
+    } = req.body;
 
     const product = new Product({
       title,
@@ -262,7 +314,7 @@ exports.createProduct = async (req, res) => {
       categoryId,
       sellerId: req.user.id,
       isAuction,
-      auctionEndTime
+      auctionEndTime,
     });
 
     await product.save();
@@ -270,7 +322,7 @@ exports.createProduct = async (req, res) => {
     // Tạo bản ghi tồn kho
     const inventory = new Inventory({
       productId: product._id,
-      quantity: quantity || 0
+      quantity: quantity || 0,
     });
     await inventory.save();
 
@@ -284,27 +336,33 @@ exports.createProduct = async (req, res) => {
 exports.getProducts = async (req, res) => {
   try {
     console.log("Getting products for seller:", req.user.id);
-    
+
     // Tìm sản phẩm của seller
     const products = await Product.find({ sellerId: req.user.id });
-    
+
     if (!products || products.length === 0) {
       console.log("No products found for seller:", req.user.id);
-      return res.json({ success: true, data: [], message: "No products found" });
+      return res.json({
+        success: true,
+        data: [],
+        message: "Không tìm thấy sản phẩm nào",
+      });
     }
-    
+
     console.log(`Found ${products.length} products for seller`);
-    const productIds = products.map(p => p._id);
+    const productIds = products.map((p) => p._id);
 
     // Lấy tất cả inventory records hiện có
-    const existingInventories = await Inventory.find({ productId: { $in: productIds } });
-    
+    const existingInventories = await Inventory.find({
+      productId: { $in: productIds },
+    });
+
     // Tạo map để kiểm tra nhanh sản phẩm nào đã có inventory
     const inventoryMap = {};
-    existingInventories.forEach(inv => {
+    existingInventories.forEach((inv) => {
       inventoryMap[inv.productId.toString()] = inv;
     });
-    
+
     // Kiểm tra và tạo inventory records cho các sản phẩm chưa có
     const inventoryPromises = [];
     for (const product of products) {
@@ -313,42 +371,47 @@ exports.getProducts = async (req, res) => {
         inventoryPromises.push(
           new Inventory({
             productId: product._id,
-            quantity: 0
-          }).save()
+            quantity: 0,
+          }).save(),
         );
       }
     }
-    
+
     // Nếu có inventory mới cần tạo
     if (inventoryPromises.length > 0) {
       await Promise.all(inventoryPromises);
     }
-    
+
     // Lấy lại tất cả inventory sau khi đã tạo đủ
-    const allInventories = await Inventory.find({ productId: { $in: productIds } })
-      .populate({ 
-        path: "productId", 
-        populate: { path: "categoryId" } 
-      });
-    
+    const allInventories = await Inventory.find({
+      productId: { $in: productIds },
+    }).populate({
+      path: "productId",
+      populate: { path: "categoryId" },
+    });
+
     // Log products with missing categoryId
     for (const inventory of allInventories) {
       if (inventory.productId && !inventory.productId.categoryId) {
-        console.warn(`Warning: Product ${inventory.productId._id} has null categoryId`);
+        console.warn(
+          `Warning: Product ${inventory.productId._id} has null categoryId`,
+        );
       }
     }
-    
+
     // Đảm bảo thứ tự trả về khớp với thứ tự của products
     const sortedInventories = [];
     for (const product of products) {
-      const inventory = allInventories.find(inv => 
-        inv.productId && inv.productId._id.toString() === product._id.toString()
+      const inventory = allInventories.find(
+        (inv) =>
+          inv.productId &&
+          inv.productId._id.toString() === product._id.toString(),
       );
       if (inventory) {
         sortedInventories.push(inventory);
       }
     }
-    
+
     res.json({ success: true, data: sortedInventories });
   } catch (error) {
     console.error("Error in getProducts:", error.message);
@@ -359,34 +422,38 @@ exports.getProducts = async (req, res) => {
 exports.getProductById = async (req, res) => {
   try {
     const { id } = req.params;
-    const product = await Product.findById(id).populate('categoryId');
-    
+    const product = await Product.findById(id).populate("categoryId");
+
     if (!product) {
-      return res.status(404).json({ success: false, message: "Product not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Không tìm thấy sản phẩm" });
     }
-    
+
     // Kiểm tra sản phẩm thuộc về seller hiện tại
     if (product.sellerId.toString() !== req.user.id) {
-      return res.status(403).json({ success: false, message: "Not authorized" });
+      return res
+        .status(403)
+        .json({ success: false, message: "Không có quyền truy cập" });
     }
-    
+
     // Tìm hoặc tạo inventory
     let inventory = await Inventory.findOne({ productId: id });
-    
+
     // Nếu không có inventory, tạo mới
     if (!inventory) {
       inventory = new Inventory({
         productId: id,
-        quantity: 0
+        quantity: 0,
       });
       await inventory.save();
     }
-    
+
     // Tạo đối tượng kết quả
     const result = {
       product,
       inventory,
-      categoryName: product.categoryId ? product.categoryId.name : null
+      categoryName: product.categoryId ? product.categoryId.name : null,
     };
 
     res.json({ success: true, data: result });
@@ -400,20 +467,20 @@ exports.getReviewsByProductId = async (req, res) => {
 
     // Lấy tất cả review & populate user
     const reviews = await Review.find({ productId: id })
-      .populate('reviewerId', 'username role')
+      .populate("reviewerId", "username role")
       .sort({ createdAt: -1 });
 
     // Lấy userIds là seller để tìm cửa hàng
     const sellerUserIds = reviews
-      .filter(r => r.reviewerId && r.reviewerId.role === "seller")
-      .map(r => r.reviewerId._id);
+      .filter((r) => r.reviewerId && r.reviewerId.role === "seller")
+      .map((r) => r.reviewerId._id);
 
     // Map: userId -> { storeName, bannerImageURL }
     let storeMap = {};
     if (sellerUserIds.length) {
       const stores = await Store.find(
         { sellerId: { $in: sellerUserIds } },
-        "sellerId storeName bannerImageURL"
+        "sellerId storeName bannerImageURL",
       );
       storeMap = stores.reduce((acc, s) => {
         acc[s.sellerId.toString()] = {
@@ -425,7 +492,7 @@ exports.getReviewsByProductId = async (req, res) => {
     }
 
     // Gắn thêm storeName và bannerImageURL vào review nếu reviewer là seller
-    const reviewsWithStore = reviews.map(r => {
+    const reviewsWithStore = reviews.map((r) => {
       let reviewObj = r.toObject();
       if (r.reviewerId && r.reviewerId.role === "seller") {
         const storeInfo = storeMap[r.reviewerId._id.toString()] || {};
@@ -447,25 +514,29 @@ exports.updateProduct = async (req, res) => {
     const product = await Product.findOneAndUpdate(
       { _id: req.params.id, sellerId: req.user.id },
       req.body,
-      { new: true }
+      { new: true },
     );
 
     if (!product) {
-      return res.status(404).json({ success: false, message: "Product not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Không tìm thấy sản phẩm" });
     }
 
     // 2. Nếu request có quantity thì cập nhật Inventory
-    if (typeof req.body.quantity !== 'undefined') {
+    if (typeof req.body.quantity !== "undefined") {
       await Inventory.findOneAndUpdate(
         { productId: product._id },
         { quantity: req.body.quantity },
-        { new: true }
+        { new: true },
       );
     }
 
     // 3. Lấy lại product và populate categoryId
-    const populatedProduct = await Product.findById(product._id)
-      .populate('categoryId', 'name');
+    const populatedProduct = await Product.findById(product._id).populate(
+      "categoryId",
+      "name",
+    );
 
     // 4. Lấy quantity trong Inventory
     const inventory = await Inventory.findOne({ productId: product._id });
@@ -475,8 +546,8 @@ exports.updateProduct = async (req, res) => {
       data: {
         product: populatedProduct,
         categoryName: populatedProduct.categoryId?.name || null,
-        quantity: inventory ? inventory.quantity : 0
-      }
+        quantity: inventory ? inventory.quantity : 0,
+      },
     });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -487,17 +558,19 @@ exports.deleteProduct = async (req, res) => {
   try {
     const product = await Product.findOneAndDelete({
       _id: req.params.id,
-      sellerId: req.user.id
+      sellerId: req.user.id,
     });
 
     if (!product) {
-      return res.status(404).json({ success: false, message: "Product not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Không tìm thấy sản phẩm" });
     }
 
     // Xóa inventory liên quan
     await Inventory.findOneAndDelete({ productId: req.params.id });
 
-    res.json({ success: true, message: "Product deleted" });
+    res.json({ success: true, message: "Đã xóa sản phẩm" });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -508,11 +581,12 @@ exports.getInventory = async (req, res) => {
   try {
     // Lấy tất cả sản phẩm của seller
     const products = await Product.find({ sellerId: req.user.id });
-    const productIds = products.map(p => p._id);
+    const productIds = products.map((p) => p._id);
 
     // Lấy inventory của các sản phẩm đó
-    const inventory = await Inventory.find({ productId: { $in: productIds } })
-      .populate("productId", "title");
+    const inventory = await Inventory.find({
+      productId: { $in: productIds },
+    }).populate("productId", "title");
 
     res.json({ success: true, data: inventory });
   } catch (error) {
@@ -527,17 +601,19 @@ exports.updateInventory = async (req, res) => {
     // Kiểm tra sản phẩm thuộc về seller
     const product = await Product.findOne({
       _id: req.params.productId,
-      sellerId: req.user.id
+      sellerId: req.user.id,
     });
 
     if (!product) {
-      return res.status(404).json({ success: false, message: "Product not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Không tìm thấy sản phẩm" });
     }
 
     const inventory = await Inventory.findOneAndUpdate(
       { productId: req.params.productId },
       { quantity },
-      { new: true, upsert: true }
+      { new: true, upsert: true },
     );
 
     res.json({ success: true, data: inventory });
@@ -552,41 +628,45 @@ exports.confirmOrder = async (req, res) => {
     const orderId = req.params.orderId;
 
     // Kiểm tra đơn hàng có sản phẩm của seller
-    const orderItems = await OrderItem.find({ orderId })
-      .populate({
-        path: 'productId',
-        select: 'sellerId'
-      });
+    const orderItems = await OrderItem.find({ orderId }).populate({
+      path: "productId",
+      select: "sellerId",
+    });
 
-    const sellerItems = orderItems.filter(item =>
-      item.productId.sellerId.toString() === req.user.id
+    const sellerItems = orderItems.filter(
+      (item) => item.productId.sellerId.toString() === req.user.id,
     );
 
     if (sellerItems.length === 0) {
-      return res.status(404).json({ success: false, message: "No items found for this seller" });
+      return res.status(404).json({
+        success: false,
+        message: "Không tìm thấy mặt hàng nào của người bán này",
+      });
     }
 
     // Cập nhật trạng thái đơn hàng
     await OrderItem.updateMany(
-      { _id: { $in: sellerItems.map(i => i._id) } },
-      { status: "shipping" }
+      { _id: { $in: sellerItems.map((i) => i._id) } },
+      { status: "shipping" },
     );
 
     // Tạo thông tin vận chuyển
-    const shippingInfos = await Promise.all(sellerItems.map(async (item) => {
-      const shippingInfo = new ShippingInfo({
-        orderItemId: item._id,
-        trackingNumber: `TRK-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
-        status: "shipping"
-      });
-      await shippingInfo.save();
-      return shippingInfo;
-    }));
+    const shippingInfos = await Promise.all(
+      sellerItems.map(async (item) => {
+        const shippingInfo = new ShippingInfo({
+          orderItemId: item._id,
+          trackingNumber: `TRK-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+          status: "shipping",
+        });
+        await shippingInfo.save();
+        return shippingInfo;
+      }),
+    );
 
     res.json({
       success: true,
-      message: "Order confirmed",
-      data: shippingInfos
+      message: "Đơn hàng đã được xác nhận",
+      data: shippingInfos,
     });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -598,7 +678,7 @@ exports.getProductReviews = async (req, res) => {
   try {
     // Lấy tất cả sản phẩm của seller
     const products = await Product.find({ sellerId: req.user.id });
-    const productIds = products.map(p => p._id);
+    const productIds = products.map((p) => p._id);
 
     // Lấy đánh giá của các sản phẩm đó
     const reviews = await Review.find({ productId: { $in: productIds } })
@@ -619,7 +699,7 @@ exports.submitFeedback = async (req, res) => {
     // Tạo feedback
     const feedback = new Feedback({
       sellerId: req.user.id,
-      content
+      content,
     });
 
     await feedback.save();
@@ -652,7 +732,6 @@ exports.submitFeedback = async (req, res) => {
 //         select: "city country",
 //       }
 //     });
-
 
 //     // 3. Lọc theo khoảng thời gian
 //     const now = new Date();
@@ -691,7 +770,6 @@ exports.submitFeedback = async (req, res) => {
 //     // Đếm số lượng
 //     const uniqueCustomers = uniqueCustomerList.length;
 
-
 //     const productsShipped = [...new Set(filteredItems.map(i => i.productId.toString()))].length;
 
 //     // --- Revenue by Category ---
@@ -721,7 +799,6 @@ exports.submitFeedback = async (req, res) => {
 //       }))
 //       .sort((a, b) => b.raw - a.raw)
 //       .map(({ raw, ...rest }) => rest);
-
 
 //     // --- Revenue Over Time ---
 //     const revenueByDate = {};
@@ -777,20 +854,23 @@ exports.getSalesReport = async (req, res) => {
     const sellerId = req.user.id;
 
     // 1. Lấy tất cả sản phẩm của seller
-    const products = await Product.find({ sellerId }).populate("categoryId", "name");
-    const productIds = products.map(p => p._id);
+    const products = await Product.find({ sellerId }).populate(
+      "categoryId",
+      "name",
+    );
+    const productIds = products.map((p) => p._id);
 
     // 2. Lấy tất cả order items liên quan (đã giao - shipped)
     const orderItems = await OrderItem.find({
       productId: { $in: productIds },
-      status: "shipped"
+      status: "shipped",
     }).populate({
       path: "orderId",
       select: "orderDate buyerId addressId",
       populate: {
         path: "addressId",
         select: "city country",
-      }
+      },
     });
 
     // 3. Lọc theo khoảng thời gian: ưu tiên from/to nếu có
@@ -803,7 +883,7 @@ exports.getSalesReport = async (req, res) => {
       if (to) {
         toDate.setHours(23, 59, 59, 999);
       }
-      filteredItems = orderItems.filter(item => {
+      filteredItems = orderItems.filter((item) => {
         if (!item.orderId) return false;
         const orderDate = new Date(item.orderId.orderDate);
         return orderDate >= fromDate && orderDate <= toDate;
@@ -828,16 +908,19 @@ exports.getSalesReport = async (req, res) => {
         default:
           startDate = new Date(0); // all time
       }
-      filteredItems = orderItems.filter(item =>
-        item.orderId && new Date(item.orderId.orderDate) >= startDate
+      filteredItems = orderItems.filter(
+        (item) => item.orderId && new Date(item.orderId.orderDate) >= startDate,
       );
     }
 
     // --- Tổng quan ---
-    const totalRevenue = filteredItems.reduce((sum, item) => sum + (item.unitPrice * item.quantity), 0);
+    const totalRevenue = filteredItems.reduce(
+      (sum, item) => sum + item.unitPrice * item.quantity,
+      0,
+    );
     // Lấy tất cả các buyerId duy nhất từ filteredItems
     const uniqueCustomerSet = new Set(
-      filteredItems.map(i => i.orderId?.buyerId?.toString())
+      filteredItems.map((i) => i.orderId?.buyerId?.toString()),
     );
 
     // Chuyển thành mảng
@@ -846,55 +929,65 @@ exports.getSalesReport = async (req, res) => {
     // Đếm số lượng
     const uniqueCustomers = uniqueCustomerList.length;
 
-
-    const productsShipped = [...new Set(filteredItems.map(i => i.productId.toString()))].length;
+    const productsShipped = [
+      ...new Set(filteredItems.map((i) => i.productId.toString())),
+    ].length;
 
     // --- Revenue by Category ---
     const categoryRevenueMap = {};
-    filteredItems.forEach(item => {
-      const product = products.find(p => p._id.equals(item.productId));
-      const catName = product?.categoryId?.name || "Other";
-categoryRevenueMap[catName] = (categoryRevenueMap[catName] || 0) + (item.unitPrice * item.quantity);
+    filteredItems.forEach((item) => {
+      const product = products.find((p) => p._id.equals(item.productId));
+      const catName = product?.categoryId?.name || "Khác";
+      categoryRevenueMap[catName] =
+        (categoryRevenueMap[catName] || 0) + item.unitPrice * item.quantity;
     });
     // Format for PieChart
-    const revenueByCategory = Object.entries(categoryRevenueMap).map(([name, value]) => ({
-      name,
-      value: Number(((value / totalRevenue) * 100).toFixed(0)) // % phần trăm
-    }));
+    const revenueByCategory = Object.entries(categoryRevenueMap).map(
+      ([name, value]) => ({
+        name,
+        value: Number(((value / totalRevenue) * 100).toFixed(0)), // % phần trăm
+      }),
+    );
 
     // --- Top Shipping Destinations ---
     const destinationMap = {};
-    filteredItems.forEach(item => {
-      const city = item.orderId?.addressId?.city || "Unknown";
-      destinationMap[city] = (destinationMap[city] || 0) + (item.unitPrice * item.quantity);
+    filteredItems.forEach((item) => {
+      const city = item.orderId?.addressId?.city || "Không xác định";
+      destinationMap[city] =
+        (destinationMap[city] || 0) + item.unitPrice * item.quantity;
     });
     const revenueByDestination = Object.entries(destinationMap)
       .map(([name, value]) => ({
         name,
         value: Number(((value / totalRevenue) * 100).toFixed(0)),
-        raw: value
+        raw: value,
       }))
       .sort((a, b) => b.raw - a.raw)
       .map(({ raw, ...rest }) => rest);
 
-
     // --- Revenue Over Time ---
     const revenueByDate = {};
-    filteredItems.forEach(item => {
-      const dateStr = new Date(item.orderId.orderDate).toISOString().split('T')[0];
-      revenueByDate[dateStr] = (revenueByDate[dateStr] || 0) + (item.unitPrice * item.quantity);
+    filteredItems.forEach((item) => {
+      const dateStr = new Date(item.orderId.orderDate)
+        .toISOString()
+        .split("T")[0];
+      revenueByDate[dateStr] =
+        (revenueByDate[dateStr] || 0) + item.unitPrice * item.quantity;
     });
-    const revenueOverTime = Object.entries(revenueByDate).map(([date, revenue]) => ({
-      date,
-      revenue
-    })).sort((a, b) => new Date(a.date) - new Date(b.date));;
+    const revenueOverTime = Object.entries(revenueByDate)
+      .map(([date, revenue]) => ({
+        date,
+        revenue,
+      }))
+      .sort((a, b) => new Date(a.date) - new Date(b.date));
 
     // --- Top Products ---
     const productSalesMap = {};
-    filteredItems.forEach(item => {
-      const product = products.find(p => p._id.equals(item.productId));
-      const name = product?.title || "Unknown";
-      if (!productSalesMap[name]) productSalesMap[name] = { quantity: 0, revenue: 0 };
+    filteredItems.forEach((item) => {
+      const product = products.find((p) => p._id.equals(item.productId));
+      const name = product?.title || "Không xác định";
+      if (!productSalesMap[name])
+        productSalesMap[name] = { quantity: 0, revenue: 0 };
       productSalesMap[name].quantity += item.quantity;
       productSalesMap[name].revenue += item.unitPrice * item.quantity;
     });
@@ -902,7 +995,7 @@ categoryRevenueMap[catName] = (categoryRevenueMap[catName] || 0) + (item.unitPri
       .map(([product, val]) => ({
         product,
         quantity: val.quantity,
-        revenue: val.revenue
+        revenue: val.revenue,
       }))
       .sort((a, b) => b.revenue - a.revenue)
       .slice(0, 5); // Top 5
@@ -912,14 +1005,14 @@ categoryRevenueMap[catName] = (categoryRevenueMap[catName] || 0) + (item.unitPri
       success: true,
       data: {
         totalRevenue,
-        uniqueCustomers,      // số lượng unique
-        uniqueCustomerList,   // mảng các ID customer
+        uniqueCustomers, // số lượng unique
+        uniqueCustomerList, // mảng các ID customer
         productsShipped,
         revenueByCategory,
         topDestinations: revenueByDestination,
         revenueOverTime,
-        topProducts
-      }
+        topProducts,
+      },
     });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -929,23 +1022,28 @@ categoryRevenueMap[catName] = (categoryRevenueMap[catName] || 0) + (item.unitPri
 exports.getReturnRequests = async (req, res) => {
   try {
     // Lấy tất cả sản phẩm của seller
-    const products = await Product.find({ sellerId: req.user.id }, '_id');
-    const productIds = products.map(p => p._id);
+    const products = await Product.find({ sellerId: req.user.id }, "_id");
+    const productIds = products.map((p) => p._id);
 
     // Lấy orderItems của các sản phẩm này
-    const orderItems = await OrderItem.find({ productId: { $in: productIds } }, '_id');
-    const orderItemIds = orderItems.map(oi => oi._id);
+    const orderItems = await OrderItem.find(
+      { productId: { $in: productIds } },
+      "_id",
+    );
+    const orderItemIds = orderItems.map((oi) => oi._id);
 
     // Lấy returnRequest liên quan
-    const returnRequests = await ReturnRequest.find({ orderItemId: { $in: orderItemIds } })
+    const returnRequests = await ReturnRequest.find({
+      orderItemId: { $in: orderItemIds },
+    })
       .populate({
-        path: 'orderItemId',
+        path: "orderItemId",
         populate: [
-          { path: 'productId', select: 'title image' },
-          { path: 'orderId' }
-        ]
+          { path: "productId", select: "title image" },
+          { path: "orderId" },
+        ],
       })
-      .populate({ path: 'userId', select: 'username fullname' })
+      .populate({ path: "userId", select: "username fullname" })
       .sort({ createdAt: -1 });
 
     res.json({ success: true, data: returnRequests });
@@ -960,23 +1058,28 @@ exports.updateReturnRequest = async (req, res) => {
     const { status } = req.body;
     const validStatuses = ["pending", "approved", "rejected", "completed"];
     if (!validStatuses.includes(status)) {
-      return res.status(400).json({ success: false, message: "Invalid status" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Trạng thái không hợp lệ" });
     }
 
-    const returnRequest = await ReturnRequest.findById(req.params.id)
-      .populate({
-        path: 'orderItemId',
-        populate: { path: 'productId' }
-      });
+    const returnRequest = await ReturnRequest.findById(req.params.id).populate({
+      path: "orderItemId",
+      populate: { path: "productId" },
+    });
 
     if (!returnRequest) {
-      return res.status(404).json({ success: false, message: "Return request not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Không tìm thấy yêu cầu trả hàng" });
     }
 
     // Check quyền: chỉ seller của product mới được cập nhật
     const product = returnRequest.orderItemId.productId;
     if (product.sellerId.toString() !== req.user.id) {
-      return res.status(403).json({ success: false, message: "Not authorized" });
+      return res
+        .status(403)
+        .json({ success: false, message: "Không có quyền truy cập" });
     }
 
     returnRequest.status = status;
@@ -991,24 +1094,27 @@ exports.getDisputes = async (req, res) => {
   try {
     // Lấy tất cả sản phẩm của seller
     const products = await Product.find({ sellerId: req.user.id });
-    const productIds = products.map(p => p._id);
+    const productIds = products.map((p) => p._id);
 
     // Tìm tất cả orderItems thuộc về các sản phẩm này
-    const orderItems = await OrderItem.find({ productId: { $in: productIds } }, '_id');
-    const orderItemIds = orderItems.map(item => item._id);
+    const orderItems = await OrderItem.find(
+      { productId: { $in: productIds } },
+      "_id",
+    );
+    const orderItemIds = orderItems.map((item) => item._id);
 
     // Lấy các Dispute liên quan đến các orderItem của seller
     const disputes = await Dispute.find({ orderItemId: { $in: orderItemIds } })
-      .populate('raisedBy', 'username fullname')
+      .populate("raisedBy", "username fullname")
       .populate({
-        path: 'orderItemId',
+        path: "orderItemId",
         populate: [
           {
-            path: 'productId',
-            select: 'title image',
+            path: "productId",
+            select: "title image",
           },
           {
-            path: 'orderId',
+            path: "orderId",
             // Để lấy thông tin order nếu cần
           },
         ],
@@ -1027,23 +1133,32 @@ exports.resolveDispute = async (req, res) => {
 
     const dispute = await Dispute.findById(req.params.id);
     if (!dispute) {
-      return res.status(404).json({ success: false, message: "Dispute not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Không tìm thấy tranh chấp" });
     }
 
     // Lấy orderItem qua dispute.orderItemId
     const orderItem = await OrderItem.findById(dispute.orderItemId);
     if (!orderItem) {
-      return res.status(404).json({ success: false, message: "Order item not found" });
+      return res.status(404).json({
+        success: false,
+        message: "Không tìm thấy mặt hàng trong đơn hàng",
+      });
     }
 
     // Lấy product để kiểm tra seller có quyền xử lý
     const product = await Product.findById(orderItem.productId);
     if (!product) {
-      return res.status(404).json({ success: false, message: "Product not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Không tìm thấy sản phẩm" });
     }
 
     if (product.sellerId.toString() !== req.user.id) {
-      return res.status(403).json({ success: false, message: "Not authorized" });
+      return res
+        .status(403)
+        .json({ success: false, message: "Không có quyền truy cập" });
     }
 
     dispute.resolution = resolution;
@@ -1060,48 +1175,50 @@ exports.getOrderHistory = async (req, res) => {
   try {
     // 1. Lấy tất cả sản phẩm của seller này
     const products = await Product.find({ sellerId: req.user.id }, "_id");
-    const productIds = products.map(p => p._id);
+    const productIds = products.map((p) => p._id);
 
     // 2. Lấy các đơn hàng theo thứ tự mới nhất trước
     const orders = await Order.find()
       .sort({ createdAt: -1, orderDate: -1 }) // Sắp xếp theo thứ tự mới nhất
       .lean();
-      
-    const orderIds = orders.map(order => order._id);
+
+    const orderIds = orders.map((order) => order._id);
 
     // 3. Lấy các OrderItem thuộc về seller và các đơn hàng đã sắp xếp
     const orderItems = await OrderItem.find({
       productId: { $in: productIds },
-      orderId: { $in: orderIds }
+      orderId: { $in: orderIds },
       // status: { $in: ["shipped"] }
     })
       .populate({
         path: "orderId",
         populate: [
           { path: "buyerId", select: "username email fullname" },
-          { path: "addressId" }
-        ]
+          { path: "addressId" },
+        ],
       })
       .populate({
         path: "productId",
         select: "title image categoryId",
-        populate: { path: "categoryId", select: "name" }
+        populate: { path: "categoryId", select: "name" },
       })
       .lean();
 
     // 4. Lấy ShippingInfo theo orderItemId
-    const orderItemIds = orderItems.map(x => x._id);
-    const shippingInfos = await ShippingInfo.find({ orderItemId: { $in: orderItemIds } }).lean();
+    const orderItemIds = orderItems.map((x) => x._id);
+    const shippingInfos = await ShippingInfo.find({
+      orderItemId: { $in: orderItemIds },
+    }).lean();
 
     // 5. Gán ShippingInfo vào từng OrderItem
     const shippingMap = {};
-    shippingInfos.forEach(info => {
+    shippingInfos.forEach((info) => {
       shippingMap[info.orderItemId.toString()] = info;
     });
 
-    const result = orderItems.map(item => ({
+    const result = orderItems.map((item) => ({
       ...item,
-      shippingInfo: shippingMap[item._id.toString()] || null
+      shippingInfo: shippingMap[item._id.toString()] || null,
     }));
 
     // 6. Sắp xếp kết quả theo thứ tự các đơn hàng
@@ -1109,7 +1226,7 @@ exports.getOrderHistory = async (req, res) => {
     orderIds.forEach((id, index) => {
       orderIdToIndex[id.toString()] = index;
     });
-    
+
     result.sort((a, b) => {
       const indexA = orderIdToIndex[a.orderId._id.toString()] || 0;
       const indexB = orderIdToIndex[b.orderId._id.toString()] || 0;
@@ -1131,19 +1248,28 @@ exports.replyToReview = async (req, res) => {
     // Kiểm tra seller sở hữu sản phẩm này không
     const product = await Product.findById(productId);
     if (!product || product.sellerId.toString() !== req.user.id) {
-      return res.status(403).json({ success: false, message: "Not authorized" });
+      return res
+        .status(403)
+        .json({ success: false, message: "Không có quyền truy cập" });
     }
 
     // Kiểm tra review gốc tồn tại
     const parentReview = await Review.findById(reviewId);
     if (!parentReview || parentReview.productId.toString() !== productId) {
-      return res.status(404).json({ success: false, message: "Review not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Không tìm thấy đánh giá" });
     }
 
     // Chỉ cho phép seller trả lời 1 lần (nếu muốn)
-    const existedReply = await Review.findOne({ parentId: reviewId, reviewerId: req.user.id });
+    const existedReply = await Review.findOne({
+      parentId: reviewId,
+      reviewerId: req.user.id,
+    });
     if (existedReply) {
-      return res.status(400).json({ success: false, message: "Already replied" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Đã phản hồi rồi" });
     }
 
     // Tạo reply
@@ -1151,7 +1277,7 @@ exports.replyToReview = async (req, res) => {
       productId,
       reviewerId: req.user.id,
       comment,
-      parentId: reviewId
+      parentId: reviewId,
       // Không cần rating
     });
 
@@ -1168,46 +1294,51 @@ exports.updateOrderItemStatus = async (req, res) => {
   try {
     const { orderItemId } = req.params;
     const { status } = req.body;
-    
+
     // Kiểm tra status hợp lệ
     const validStatuses = ["shipping", "rejected"];
     if (!validStatuses.includes(status)) {
-      return res.status(400).json({ 
-        success: false, 
-        message: "Invalid status. Status must be 'shipping' or 'rejected'"
+      return res.status(400).json({
+        success: false,
+        message:
+          "Trạng thái không hợp lệ. Trạng thái phải là 'shipping' hoặc 'rejected'",
       });
     }
-    
+
     // Tìm orderItem
     const orderItem = await OrderItem.findById(orderItemId);
     if (!orderItem) {
-      return res.status(404).json({ success: false, message: "Order item not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Không tìm thấy mặt hàng" });
     }
-    
+
     // Kiểm tra xem order item đã ở trạng thái shipped chưa
     if (orderItem.status === "shipped") {
-      return res.status(400).json({ 
-        success: false, 
-        message: "Cannot update status. Order item has already been shipped." 
+      return res.status(400).json({
+        success: false,
+        message: "Không thể cập nhật trạng thái. Mặt hàng đã được giao.",
       });
     }
-    
+
     // Kiểm tra sản phẩm thuộc seller hiện tại
     const product = await Product.findById(orderItem.productId);
     if (!product || product.sellerId.toString() !== req.user.id) {
-      return res.status(403).json({ success: false, message: "Not authorized" });
+      return res
+        .status(403)
+        .json({ success: false, message: "Không có quyền truy cập" });
     }
-    
+
     // Cập nhật trạng thái orderItem
     orderItem.status = status;
     await orderItem.save();
-    
+
     // Nếu status là shipping, tạo ShippingInfo mới
     let shippingInfo = null;
     if (status === "shipping") {
       // Kiểm tra xem đã có shipping info chưa
       const existingShippingInfo = await ShippingInfo.findOne({ orderItemId });
-      
+
       if (existingShippingInfo) {
         // Cập nhật shipping info hiện có
         existingShippingInfo.status = "shipping";
@@ -1218,22 +1349,21 @@ exports.updateOrderItemStatus = async (req, res) => {
         shippingInfo = new ShippingInfo({
           orderItemId,
           trackingNumber: `TRK-${Date.now()}-${Math.floor(Math.random() * 10000)}`,
-          status: "shipping"
+          status: "shipping",
         });
         await shippingInfo.save();
       }
     }
-    
+
     // Trả về kết quả với orderItem đã cập nhật và shipping info (nếu có)
-    res.json({ 
-      success: true, 
-      data: { 
+    res.json({
+      success: true,
+      data: {
         orderItem,
-        shippingInfo 
+        shippingInfo,
       },
-      message: `Order item status updated to ${status}`
+      message: `Trạng thái mặt hàng đã được cập nhật thành ${status}`,
     });
-    
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -1243,7 +1373,7 @@ exports.getShippingInfo = async (req, res) => {
   try {
     // 1. Get all products from the seller
     const products = await Product.find({ sellerId: req.user.id }, "_id");
-    const productIds = products.map(p => p._id);
+    const productIds = products.map((p) => p._id);
 
     // 2. Get all OrderItems for these products
     const orderItems = await OrderItem.find({ productId: { $in: productIds } })
@@ -1251,30 +1381,32 @@ exports.getShippingInfo = async (req, res) => {
         path: "orderId",
         populate: [
           { path: "buyerId", select: "username email fullname" },
-          { path: "addressId" }
-        ]
+          { path: "addressId" },
+        ],
       })
       .populate({
         path: "productId",
         select: "title image categoryId",
-        populate: { path: "categoryId", select: "name" }
+        populate: { path: "categoryId", select: "name" },
       });
-    
-    const orderItemIds = orderItems.map(item => item._id);
+
+    const orderItemIds = orderItems.map((item) => item._id);
 
     // 3. Get all shipping info for these OrderItems
-    const shippingInfos = await ShippingInfo.find({ orderItemId: { $in: orderItemIds } });
-    
+    const shippingInfos = await ShippingInfo.find({
+      orderItemId: { $in: orderItemIds },
+    });
+
     // 4. Create a map for easy access
     const shippingInfoMap = {};
-    shippingInfos.forEach(info => {
+    shippingInfos.forEach((info) => {
       shippingInfoMap[info.orderItemId.toString()] = info;
     });
 
     // 5. Create the result combining OrderItems and ShippingInfo
-    const result = orderItems.map(item => ({
+    const result = orderItems.map((item) => ({
       orderItem: item,
-      shippingInfo: shippingInfoMap[item._id.toString()] || null
+      shippingInfo: shippingInfoMap[item._id.toString()] || null,
     }));
 
     res.json({ success: true, data: result });
@@ -1287,29 +1419,38 @@ exports.updateShippingStatus = async (req, res) => {
   try {
     const { shippingInfoId } = req.params;
     const { status } = req.body;
-    
+
     // Validate status
     const validShippingStatuses = ["shipping", "shipped", "failed to ship"];
     if (!validShippingStatuses.includes(status)) {
-      return res.status(400).json({ 
-        success: false, 
-        message: "Invalid shipping status. Status must be 'shipping', 'shipped', or 'failed to ship'"
+      return res.status(400).json({
+        success: false,
+        message:
+          "Trạng thái vận chuyển không hợp lệ. Trạng thái phải là 'shipping', 'shipped', hoặc 'failed to ship'",
       });
     }
-    
+
     // Find shipping info: try by _id first
     console.log(`Looking up ShippingInfo by id: ${shippingInfoId}`);
     let shippingInfo = await ShippingInfo.findById(shippingInfoId);
     // If not found by id, the client may have passed an orderItemId instead - try that as a fallback
     if (!shippingInfo) {
-      console.warn(`ShippingInfo not found by id: ${shippingInfoId}. Trying as orderItemId...`);
-      shippingInfo = await ShippingInfo.findOne({ orderItemId: shippingInfoId });
+      console.warn(
+        `ShippingInfo not found by id: ${shippingInfoId}. Trying as orderItemId...`,
+      );
+      shippingInfo = await ShippingInfo.findOne({
+        orderItemId: shippingInfoId,
+      });
       if (shippingInfo) {
-        console.info(`Found ShippingInfo by orderItemId: ${shippingInfo._id} (provided id was orderItemId)`);
+        console.info(
+          `Found ShippingInfo by orderItemId: ${shippingInfo._id} (provided id was orderItemId)`,
+        );
       }
     }
     if (!shippingInfo) {
-      console.error(`ShippingInfo not found for id/orderItemId: ${shippingInfoId}`);
+      console.error(
+        `ShippingInfo not found for id/orderItemId: ${shippingInfoId}`,
+      );
 
       // Try to interpret provided id as an OrderItem id; if found and ownership checks pass,
       // create a ShippingInfo automatically so FE can update status in one step.
@@ -1317,59 +1458,84 @@ exports.updateShippingStatus = async (req, res) => {
         const possibleOrderItem = await OrderItem.findById(shippingInfoId);
         if (possibleOrderItem) {
           // Verify seller owns the product before creating ShippingInfo
-          const possibleProduct = await Product.findById(possibleOrderItem.productId);
+          const possibleProduct = await Product.findById(
+            possibleOrderItem.productId,
+          );
           if (!possibleProduct) {
-            return res.status(404).json({ success: false, message: 'Product for order item not found' });
+            return res.status(404).json({
+              success: false,
+              message: "Không tìm thấy sản phẩm của mặt hàng này",
+            });
           }
           if (possibleProduct.sellerId.toString() !== req.user.id) {
-            return res.status(403).json({ success: false, message: 'Not authorized to create shipping info for this order item' });
+            return res.status(403).json({
+              success: false,
+              message:
+                "Không có quyền tạo thông tin vận chuyển cho mặt hàng này",
+            });
           }
 
           // Create ShippingInfo with provided status
           const newShippingInfo = new ShippingInfo({
             orderItemId: possibleOrderItem._id,
             trackingNumber: `TRK-${Date.now()}-${Math.floor(Math.random() * 10000)}`,
-            status: status || 'shipping'
+            status: status || "shipping",
           });
           await newShippingInfo.save();
           shippingInfo = newShippingInfo;
-          console.info(`Auto-created ShippingInfo ${shippingInfo._id} for orderItem ${possibleOrderItem._id}`);
+          console.info(
+            `Auto-created ShippingInfo ${shippingInfo._id} for orderItem ${possibleOrderItem._id}`,
+          );
         } else {
-          return res.status(404).json({ success: false, message: "Shipping info not found for given id or orderItemId" });
+          return res.status(404).json({
+            success: false,
+            message:
+              "Không tìm thấy thông tin vận chuyển cho ID hoặc mã mặt hàng đã cung cấp",
+          });
         }
       } catch (createErr) {
-        console.error('Error while attempting to auto-create ShippingInfo:', createErr);
-        return res.status(500).json({ success: false, message: 'Failed to create shipping info' });
+        console.error(
+          "Error while attempting to auto-create ShippingInfo:",
+          createErr,
+        );
+        return res.status(500).json({
+          success: false,
+          message: "Không thể tạo thông tin vận chuyển",
+        });
       }
     }
-    
+
     // Find the related order item
     const orderItem = await OrderItem.findById(shippingInfo.orderItemId);
     if (!orderItem) {
-      return res.status(404).json({ success: false, message: "Order item not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Không tìm thấy mặt hàng" });
     }
-    
+
     // Kiểm tra xem order item đã ở trạng thái shipped chưa
     if (orderItem.status === "shipped") {
-      return res.status(400).json({ 
-        success: false, 
-        message: "Cannot update status. Order item has already been shipped." 
+      return res.status(400).json({
+        success: false,
+        message: "Không thể cập nhật trạng thái. Mặt hàng đã được giao.",
       });
     }
-    
+
     // Verify seller owns the product
     const product = await Product.findById(orderItem.productId);
     if (!product || product.sellerId.toString() !== req.user.id) {
-      return res.status(403).json({ success: false, message: "Not authorized" });
+      return res
+        .status(403)
+        .json({ success: false, message: "Không có quyền truy cập" });
     }
-    
+
     // Update shipping info status
     shippingInfo.status = status;
     await shippingInfo.save();
-    
+
     // Update corresponding OrderItem status
     let orderItemStatus;
-    switch(status) {
+    switch (status) {
       case "shipped":
         orderItemStatus = "shipped";
         break;
@@ -1382,46 +1548,48 @@ exports.updateShippingStatus = async (req, res) => {
       default:
         orderItemStatus = orderItem.status; // Keep current status if no mapping
     }
-    
+
     orderItem.status = orderItemStatus;
     await orderItem.save();
-    
+
     // ---- Sync parent Order status based on all its OrderItems ----
     try {
       const allItems = await OrderItem.find({ orderId: orderItem.orderId });
       if (allItems && allItems.length > 0) {
-        const allShipped = allItems.every(i => i.status === 'shipped');
-        const allFailed = allItems.every(i => i.status === 'failed to ship');
-        const anyShipping = allItems.some(i => i.status === 'shipping');
+        const allShipped = allItems.every((i) => i.status === "shipped");
+        const allFailed = allItems.every((i) => i.status === "failed to ship");
+        const anyShipping = allItems.some((i) => i.status === "shipping");
 
         const order = await Order.findById(orderItem.orderId);
         if (order) {
-          if (allShipped && order.status !== 'shipped') {
-            order.status = 'shipped';
+          if (allShipped && order.status !== "shipped") {
+            order.status = "shipped";
             await order.save();
-          } else if (allFailed && order.status !== 'failed to ship') {
-            order.status = 'failed to ship';
+          } else if (allFailed && order.status !== "failed to ship") {
+            order.status = "failed to ship";
             await order.save();
-          } else if (anyShipping && order.status !== 'shipping') {
-            order.status = 'shipping';
+          } else if (anyShipping && order.status !== "shipping") {
+            order.status = "shipping";
             await order.save();
           }
         }
       }
     } catch (syncErr) {
-      console.error('Error while syncing order status after shipping update:', syncErr);
+      console.error(
+        "Error while syncing order status after shipping update:",
+        syncErr,
+      );
       // non-blocking: don't fail the request if sync fails
     }
-    
+
     res.json({
       success: true,
       data: {
         shippingInfo,
-        orderItem
+        orderItem,
       },
-      message: `Shipping status updated to ${status} and order item status updated to ${orderItemStatus}`
+      message: `Trạng thái vận chuyển đã được cập nhật thành ${status} và trạng thái mặt hàng đã được cập nhật thành ${orderItemStatus}`,
     });
-    
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -1433,24 +1601,29 @@ exports.getOrderPayment = async (req, res) => {
     const { orderId } = req.params;
 
     // Kiểm tra đơn hàng có sản phẩm của seller
-    const orderItems = await OrderItem.find({ orderId })
-      .populate({
-        path: 'productId',
-        select: 'sellerId'
-      });
+    const orderItems = await OrderItem.find({ orderId }).populate({
+      path: "productId",
+      select: "sellerId",
+    });
 
-    const sellerItems = orderItems.filter(item =>
-      item.productId.sellerId.toString() === req.user.id
+    const sellerItems = orderItems.filter(
+      (item) => item.productId.sellerId.toString() === req.user.id,
     );
 
     if (sellerItems.length === 0) {
-      return res.status(404).json({ success: false, message: "No items found for this seller" });
+      return res.status(404).json({
+        success: false,
+        message: "Không tìm thấy mặt hàng nào của người bán này",
+      });
     }
 
     // Lấy thông tin thanh toán
     const payment = await Payment.findOne({ orderId });
     if (!payment) {
-      return res.status(404).json({ success: false, message: "Payment information not found" });
+      return res.status(404).json({
+        success: false,
+        message: "Không tìm thấy thông tin thanh toán",
+      });
     }
 
     // Lấy thông tin đơn hàng
@@ -1465,14 +1638,14 @@ exports.getOrderPayment = async (req, res) => {
           method: payment.method,
           status: payment.status,
           paidAt: payment.paidAt,
-          transactionId: payment.transactionId
+          transactionId: payment.transactionId,
         },
         order: {
           id: order._id,
           totalPrice: order.totalPrice,
-          status: order.status
-        }
-      }
+          status: order.status,
+        },
+      },
     });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -1484,75 +1657,83 @@ exports.updatePaymentStatus = async (req, res) => {
   try {
     const { paymentId } = req.params;
     const { status } = req.body;
-    
+
     // Kiểm tra status hợp lệ
     const validStatuses = ["paid", "failed"];
     if (!validStatuses.includes(status)) {
-      return res.status(400).json({ 
-        success: false, 
-        message: "Invalid status. Status must be 'paid' or 'failed'"
+      return res.status(400).json({
+        success: false,
+        message:
+          "Trạng thái không hợp lệ. Trạng thái phải là 'paid' hoặc 'failed'",
       });
     }
-    
+
     // Tìm payment
     const payment = await Payment.findById(paymentId);
     if (!payment) {
-      return res.status(404).json({ success: false, message: "Payment not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Không tìm thấy thanh toán" });
     }
-    
+
     // Nếu thanh toán đã là paid thì không thể thay đổi trạng thái
     if (payment.status === "paid") {
-      return res.status(400).json({ 
-        success: false, 
-        message: "Cannot change status of a paid payment" 
+      return res.status(400).json({
+        success: false,
+        message: "Không thể thay đổi trạng thái của thanh toán đã hoàn tất",
       });
     }
 
     // Kiểm tra đơn hàng có sản phẩm của seller
-    const orderItems = await OrderItem.find({ orderId: payment.orderId })
-      .populate({
-        path: 'productId',
-        select: 'sellerId'
-      });
+    const orderItems = await OrderItem.find({
+      orderId: payment.orderId,
+    }).populate({
+      path: "productId",
+      select: "sellerId",
+    });
 
-    const sellerItems = orderItems.filter(item =>
-      item.productId.sellerId.toString() === req.user.id
+    const sellerItems = orderItems.filter(
+      (item) => item.productId.sellerId.toString() === req.user.id,
     );
 
     if (sellerItems.length === 0) {
-      return res.status(403).json({ success: false, message: "Not authorized to update this payment" });
+      return res.status(403).json({
+        success: false,
+        message: "Không có quyền cập nhật thanh toán này",
+      });
     }
-    
+
     // Cập nhật trạng thái thanh toán
     payment.status = status;
-    
+
     // Nếu status là paid, thêm thời gian thanh toán
     if (status === "paid") {
       payment.paidAt = new Date();
     }
-    
+
     await payment.save();
-    
+
     // Nếu payment status là paid, KHÔNG cập nhật order status
     // vì "paid" không phải là giá trị hợp lệ trong enum của Order.status
     // Trong model Order, status chỉ có thể là: ["pending", "shipping", "shipped", "failed to ship", "rejected"]
     // Thay vào đó, chỉ cập nhật các OrderItems có thể chuyển sang "shipping" nếu đang ở trạng thái "pending"
     if (status === "paid") {
       // Cập nhật trạng thái các OrderItem sang shipping nếu đang ở trạng thái pending
-      await Promise.all(sellerItems.map(async (item) => {
-        if (item.status === "pending") {
-          item.status = "shipping";
-          await item.save();
-        }
-      }));
+      await Promise.all(
+        sellerItems.map(async (item) => {
+          if (item.status === "pending") {
+            item.status = "shipping";
+            await item.save();
+          }
+        }),
+      );
     }
-    
-    res.json({ 
-      success: true, 
+
+    res.json({
+      success: true,
       data: payment,
-      message: `Payment status updated to ${status}`
+      message: `Trạng thái thanh toán đã được cập nhật thành ${status}`,
     });
-    
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

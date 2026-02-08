@@ -37,7 +37,7 @@ import {
 } from "../../features/voucher/voucherSlice";
 import OrderService from "../../services/api/OrderService";
 
-// Design Palette
+// Thiết kế bảng màu
 const palette = {
   cream: "#F9F7F2",
   forestGreen: "#2D4F3E",
@@ -51,7 +51,7 @@ const fonts = {
   body: "'Montserrat', sans-serif",
 };
 
-// Custom modal styles
+// Kiểu dáng Modal tùy chỉnh
 const customModalStyles = {
   overlay: {
     backgroundColor: "rgba(0, 0, 0, 0.6)",
@@ -105,7 +105,7 @@ const Checkout = () => {
     street: "",
     city: "",
     state: "",
-    country: "",
+    country: "Việt Nam",
     isDefault: false,
   });
   const [phoneError, setPhoneError] = useState("");
@@ -136,12 +136,6 @@ const Checkout = () => {
   const calculateDiscount = () => {
     if (!voucher) return 0;
     if (subtotal < voucher.minOrderValue) {
-      if (voucherError === null) {
-        toast.error(
-          `Order must be at least ${voucher.minOrderValue.toLocaleString()} to apply this code.`,
-        );
-        dispatch(clearVoucher());
-      }
       return 0;
     }
     const discountAmount =
@@ -159,7 +153,7 @@ const Checkout = () => {
   const handleAddAddress = () => {
     if (!validatePhoneNumber(newAddress.phone)) {
       setPhoneError(
-        "Invalid phone number. Must start with 0 and have 10 digits.",
+        "Số điện thoại không hợp lệ. Phải bắt đầu bằng số 0 và có 10 chữ số.",
       );
       return;
     }
@@ -172,7 +166,7 @@ const Checkout = () => {
       street: "",
       city: "",
       state: "",
-      country: "",
+      country: "Việt Nam",
       isDefault: false,
     });
   };
@@ -181,19 +175,19 @@ const Checkout = () => {
     if (couponCode.trim()) {
       dispatch(applyVoucher(couponCode));
     } else {
-      toast.error("Please enter a coupon code");
+      toast.error("Vui lòng nhập mã giảm giá");
     }
   };
 
   const handleCancelVoucher = () => {
     dispatch(clearVoucher());
     setCouponCode("");
-    toast.info("Coupon code removed.");
+    toast.info("Đã hủy áp dụng mã giảm giá.");
   };
 
   const handlePlaceOrder = async () => {
     if (!selectedAddressId) {
-      toast.error("Please select a shipping address");
+      toast.error("Vui lòng chọn địa chỉ giao hàng");
       return;
     }
     setIsProcessing(true);
@@ -209,39 +203,13 @@ const Checkout = () => {
       const result = await OrderService.createOrderWithPayPal(orderDetails);
       const productIds = selectedProducts.map((item) => item.productId._id);
       await dispatch(removeSelectedItems(productIds)).unwrap();
-      toast.success("Order created! Redirecting to PayPal...");
-      const paypalWindow = window.open(
-        result.paymentUrl,
-        "paypal-payment",
-        "width=600,height=700,scrollbars=yes,resizable=yes",
-      );
-      const handleMessage = (event) => {
-        if (event.origin !== window.location.origin) return;
-        if (event.data.type === "PAYPAL_SUCCESS") {
-          toast.success("Payment completed!");
-          paypalWindow.close();
-          window.removeEventListener("message", handleMessage);
-          setTimeout(() => navigate("/", { replace: true }), 1000);
-        } else if (event.data.type === "PAYPAL_CANCELLED") {
-          toast.error("Payment was cancelled.");
-          paypalWindow.close();
-          window.removeEventListener("message", handleMessage);
-          setIsProcessing(false);
-        }
-      };
-      window.addEventListener("message", handleMessage);
-      const checkClosed = setInterval(() => {
-        if (paypalWindow.closed) {
-          clearInterval(checkClosed);
-          window.removeEventListener("message", handleMessage);
-          setIsProcessing(false);
-        }
-      }, 1000);
+      toast.success("Đặt hàng thành công!");
+      setTimeout(() => navigate("/order-history", { replace: true }), 1000);
     } catch (error) {
       toast.error(
         error.response?.data?.error ||
           error.message ||
-          "Failed to create order",
+          "Không thể tạo đơn hàng",
       );
       setIsProcessing(false);
     }
@@ -285,8 +253,8 @@ const Checkout = () => {
               },
             }}
           >
-            <ShoppingCartIcon sx={{ mr: 1, verticalAlign: "middle" }} />{" "}
-            Checkout
+            <ShoppingCartIcon sx={{ mr: 1, verticalAlign: "middle" }} /> Thanh
+            toán
           </Typography>
           <Grid container spacing={4}>
             <Grid item xs={12} md={7}>
@@ -308,7 +276,7 @@ const Checkout = () => {
                     fontWeight={600}
                     fontFamily={fonts.title}
                   >
-                    Shipping Address
+                    Địa chỉ nhận hàng
                   </Typography>
                 </Box>
                 <Divider sx={{ mb: 3 }} />
@@ -340,7 +308,7 @@ const Checkout = () => {
                           >
                             {address.isDefault && (
                               <Chip
-                                label="Default"
+                                label="Mặc định"
                                 size="small"
                                 sx={{
                                   position: "absolute",
@@ -383,7 +351,9 @@ const Checkout = () => {
                                   <Typography
                                     variant="body2"
                                     fontFamily={fonts.body}
-                                  >{`${address.street}, ${address.city}, ${address.state}, ${address.country}`}</Typography>
+                                  >
+                                    {`${address.street}, ${address.city}, ${address.state}, ${address.country}`}
+                                  </Typography>
                                 </Box>
                               }
                               sx={{
@@ -403,7 +373,7 @@ const Checkout = () => {
                     color="text.secondary"
                     sx={{ mb: 3, fontFamily: fonts.body }}
                   >
-                    No addresses found. Please add one.
+                    Chưa có địa chỉ nào. Vui lòng thêm địa chỉ mới.
                   </Typography>
                 )}
                 <Button
@@ -421,7 +391,7 @@ const Checkout = () => {
                     },
                   }}
                 >
-                  Add New Address
+                  Thêm địa chỉ mới
                 </Button>
               </Paper>
               <Paper
@@ -435,7 +405,7 @@ const Checkout = () => {
                     fontWeight={600}
                     fontFamily={fonts.title}
                   >
-                    Discount Code
+                    Mã giảm giá
                   </Typography>
                 </Box>
                 <Divider sx={{ mb: 3 }} />
@@ -455,7 +425,7 @@ const Checkout = () => {
                         color="success.main"
                         fontFamily={fonts.body}
                       >
-                        Applied: {voucher.code}
+                        Đã áp dụng: {voucher.code}
                       </Typography>
                     </Box>
                     <Button
@@ -466,14 +436,14 @@ const Checkout = () => {
                       onClick={handleCancelVoucher}
                       sx={{ minWidth: 100, fontFamily: fonts.body }}
                     >
-                      Remove
+                      Hủy mã
                     </Button>
                   </Box>
                 ) : (
                   <Box sx={{ display: "flex" }}>
                     <TextField
                       fullWidth
-                      placeholder="Enter discount code"
+                      placeholder="Nhập mã giảm giá"
                       value={couponCode}
                       onChange={(e) => setCouponCode(e.target.value)}
                       size="small"
@@ -497,7 +467,7 @@ const Checkout = () => {
                       {voucherLoading ? (
                         <CircularProgress size={24} color="inherit" />
                       ) : (
-                        "Apply"
+                        "Áp dụng"
                       )}
                     </Button>
                   </Box>
@@ -509,6 +479,16 @@ const Checkout = () => {
                     sx={{ mt: 1, fontFamily: fonts.body }}
                   >
                     {voucherError}
+                  </Typography>
+                )}
+                {voucher && subtotal < voucher.minOrderValue && (
+                  <Typography
+                    variant="body2"
+                    color="error"
+                    sx={{ mt: 1, fontFamily: fonts.body }}
+                  >
+                    Đơn hàng phải từ {voucher.minOrderValue.toLocaleString()}đ
+                    để áp dụng mã này.
                   </Typography>
                 )}
               </Paper>
@@ -530,7 +510,7 @@ const Checkout = () => {
                   mb={3}
                   fontFamily={fonts.title}
                 >
-                  Order Summary
+                  Tóm tắt đơn hàng
                 </Typography>
                 <Divider sx={{ mb: 3 }} />
                 <Box
@@ -590,7 +570,7 @@ const Checkout = () => {
                           color="text.secondary"
                           fontFamily={fonts.body}
                         >
-                          Quantity: {item.quantity}
+                          Số lượng: {item.quantity}
                         </Typography>
                       </Box>
                       <Typography
@@ -598,10 +578,10 @@ const Checkout = () => {
                         fontWeight={600}
                         sx={{ ml: 2, fontFamily: fonts.body }}
                       >
-                        $
-                        {((item.productId?.price || 0) * item.quantity).toFixed(
-                          2,
-                        )}
+                        {(
+                          (item.productId?.price || 0) * item.quantity
+                        ).toLocaleString()}
+                        đ
                       </Typography>
                     </Box>
                   ))}
@@ -614,9 +594,9 @@ const Checkout = () => {
                       mb: 1,
                     }}
                   >
-                    <Typography fontFamily={fonts.body}>Subtotal:</Typography>
+                    <Typography fontFamily={fonts.body}>Tạm tính:</Typography>
                     <Typography fontFamily={fonts.body}>
-                      ${subtotal.toFixed(2)}
+                      {subtotal.toLocaleString()}đ
                     </Typography>
                   </Box>
                   {discount > 0 && (
@@ -628,9 +608,9 @@ const Checkout = () => {
                         color: palette.forestGreen,
                       }}
                     >
-                      <Typography fontFamily={fonts.body}>Discount:</Typography>
+                      <Typography fontFamily={fonts.body}>Giảm giá:</Typography>
                       <Typography fontFamily={fonts.body}>
-                        -${discount.toFixed(2)}
+                        -{discount.toLocaleString()}đ
                       </Typography>
                     </Box>
                   )}
@@ -647,7 +627,7 @@ const Checkout = () => {
                       fontWeight={600}
                       fontFamily={fonts.body}
                     >
-                      Total:
+                      Tổng cộng:
                     </Typography>
                     <Typography
                       variant="h6"
@@ -655,7 +635,7 @@ const Checkout = () => {
                       color={palette.forestGreen}
                       fontFamily={fonts.body}
                     >
-                      ${total.toFixed(2)}
+                      {total.toLocaleString()}đ
                     </Typography>
                   </Box>
                 </Box>
@@ -679,10 +659,10 @@ const Checkout = () => {
                         size={24}
                         sx={{ color: "white", mr: 1 }}
                       />
-                      Processing...
+                      Đang xử lý...
                     </>
                   ) : (
-                    "Place Order & Pay with PayPal"
+                    "Đặt hàng (COD)"
                   )}
                 </Button>
                 <Box
@@ -699,19 +679,21 @@ const Checkout = () => {
                     color="text.secondary"
                     fontFamily={fonts.body}
                   >
-                    By placing your order, you agree to our terms. Payment will
-                    be processed via PayPal.
+                    Bằng cách đặt hàng, bạn đồng ý với các điều khoản của chúng
+                    tôi. Thanh toán khi nhận hàng.
                   </Typography>
                 </Box>
               </Paper>
             </Grid>
           </Grid>
         </motion.div>
+
+        {/* Modal thêm địa chỉ mới */}
         <Modal
           isOpen={isAddressModalOpen}
           onRequestClose={() => setIsAddressModalOpen(false)}
           style={customModalStyles}
-          contentLabel="Add New Address"
+          contentLabel="Thêm địa chỉ mới"
           ariaHideApp={false}
         >
           <Box sx={{ p: 4, fontFamily: fonts.body }}>
@@ -721,7 +703,7 @@ const Checkout = () => {
               mb={3}
               fontFamily={fonts.title}
             >
-              Add New Address
+              Thêm địa chỉ mới
             </Typography>
             {phoneError && (
               <Typography variant="body2" color="error" sx={{ mb: 2 }}>
@@ -732,7 +714,7 @@ const Checkout = () => {
               <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
-                  label="Full Name"
+                  label="Họ và tên"
                   value={newAddress.fullName}
                   onChange={(e) =>
                     setNewAddress({ ...newAddress, fullName: e.target.value })
@@ -745,7 +727,7 @@ const Checkout = () => {
               <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
-                  label="Phone Number"
+                  label="Số điện thoại"
                   value={newAddress.phone}
                   onChange={(e) =>
                     setNewAddress({ ...newAddress, phone: e.target.value })
@@ -758,7 +740,7 @@ const Checkout = () => {
               <Grid item xs={12}>
                 <TextField
                   fullWidth
-                  label="Street Address"
+                  label="Địa chỉ chi tiết (Số nhà, tên đường)"
                   value={newAddress.street}
                   onChange={(e) =>
                     setNewAddress({ ...newAddress, street: e.target.value })
@@ -771,7 +753,7 @@ const Checkout = () => {
               <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
-                  label="City"
+                  label="Thành phố / Huyện"
                   value={newAddress.city}
                   onChange={(e) =>
                     setNewAddress({ ...newAddress, city: e.target.value })
@@ -784,7 +766,7 @@ const Checkout = () => {
               <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
-                  label="State/Province"
+                  label="Tỉnh / Bang"
                   value={newAddress.state}
                   onChange={(e) =>
                     setNewAddress({ ...newAddress, state: e.target.value })
@@ -797,7 +779,7 @@ const Checkout = () => {
               <Grid item xs={12}>
                 <TextField
                   fullWidth
-                  label="Country"
+                  label="Quốc gia"
                   value={newAddress.country}
                   onChange={(e) =>
                     setNewAddress({ ...newAddress, country: e.target.value })
@@ -824,7 +806,7 @@ const Checkout = () => {
                       }}
                     />
                   }
-                  label="Set as default address"
+                  label="Đặt làm địa chỉ mặc định"
                 />
               </Grid>
             </Grid>
@@ -849,7 +831,7 @@ const Checkout = () => {
                   },
                 }}
               >
-                Cancel
+                Hủy
               </Button>
               <Button
                 variant="contained"
@@ -861,7 +843,7 @@ const Checkout = () => {
                   "&:hover": { bgcolor: "#213B2F" },
                 }}
               >
-                Save Address
+                Lưu địa chỉ
               </Button>
             </Box>
           </Box>

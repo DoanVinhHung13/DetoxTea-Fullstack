@@ -87,10 +87,32 @@ const Layout = () => {
     </div>
   );
 };
+
+const HomeWithToast = () => {
+  return (
+    <>
+      <ToastContainer
+        position="top-right"
+        autoClose={1000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+      />
+      <ScrollRestoration />
+      <Home />
+    </>
+  );
+};
+
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route errorElement={<ErrorPage />}>
-      <Route index element={<Home />}></Route>
+      <Route index element={<HomeWithToast />}></Route>
 
       {/* Annoymus route */}
       <Route path="/" element={<Layout />}>

@@ -1,11 +1,13 @@
 // Hero.jsx
-import herohome from "../../assets/images/home/tea-garden.jpg";
-import { useRef, useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import cauchuyen1 from "../../assets/images/home/cau-chuyen-ve-yen1.jpg";
 import cauchuyen2 from "../../assets/images/home/cau-chuyen-ve-yen2.jpg";
 import cauchuyen3 from "../../assets/images/home/cau-chuyen-ve-yen3.jpg";
+import herohome from "../../assets/images/home/tea-garden.jpg";
 
 const Hero = () => {
+  const navigate = useNavigate(); // Khởi tạo hàm điều hướng
   const scrollToProducts = () => {
     const productSection = document.getElementById("product-listing");
     if (productSection) {
@@ -58,14 +60,15 @@ const Hero = () => {
               className="font-sans max-w-2xl mx-auto text-center text-sm md:text-base 
               text-[#F8EFD8]/100 leading-relaxed font-light"
             >
-              Hồi sinh nét đẹp tiềm ẩn từ những lá trà bị bỏ lỡ, YÊN mang chất trà thật đến bên những người chọn sống bằng giá trị nội tại.
+              Hồi sinh nét đẹp tiềm ẩn từ những lá trà bị bỏ lỡ, YÊN mang chất
+              trà thật đến bên những người chọn sống bằng giá trị nội tại.
             </p>
 
             <button
-              onClick={scrollToProducts}
+              onClick={() => navigate("/products")}
               className="mt-6 px-12 py-4 bg-[#1E4D3B] text-white rounded-full font-bold uppercase text-xs tracking-[0.2em] hover:bg-[#15382B] transition-all transform hover:-translate-y-1 shadow-xl"
             >
-              Bộ sưu tập
+              Mua ngay
             </button>
           </div>
         </div>
@@ -75,7 +78,6 @@ const Hero = () => {
       <div className="relative pt-24 pb-24 bg-[#fdfbf7]">
         <div className="container px-6 mx-auto lg:px-16">
           <div className="grid items-center grid-cols-1 gap-16 lg:grid-cols-2">
-
             {/* TEXT */}
             <div className="order-2 space-y-8 lg:order-1">
               <div className="space-y-2">
@@ -111,7 +113,6 @@ const Hero = () => {
             {/* SLIDESHOW */}
             <div className="relative flex justify-center order-1 lg:order-2">
               <div className="relative w-full max-w-md overflow-hidden shadow-2xl aspect-square rounded-2xl">
-
                 {/* Images */}
                 {images.map((img, index) => (
                   <img
@@ -127,7 +128,7 @@ const Hero = () => {
                 {/* Prev */}
                 <button
                   onClick={prevSlide}
-                  className="absolute px-3 py-1 text-white -translate-y-1/2 bg-black/40 left-2 top-1/2 rounded-lg"
+                  className="absolute px-3 py-1 text-white -translate-y-1/2 rounded-lg bg-black/40 left-2 top-1/2"
                 >
                   ‹
                 </button>
@@ -135,7 +136,7 @@ const Hero = () => {
                 {/* Next */}
                 <button
                   onClick={nextSlide}
-                  className="absolute px-3 py-1 text-white -translate-y-1/2 bg-black/40 right-2 top-1/2 rounded-lg"
+                  className="absolute px-3 py-1 text-white -translate-y-1/2 rounded-lg bg-black/40 right-2 top-1/2"
                 >
                   ›
                 </button>
@@ -146,17 +147,13 @@ const Hero = () => {
                     <div
                       key={index}
                       className={`w-2.5 h-2.5 rounded-full ${
-                        index === currentSlide
-                          ? "bg-white"
-                          : "bg-white/40"
+                        index === currentSlide ? "bg-white" : "bg-white/40"
                       }`}
                     />
                   ))}
                 </div>
-
               </div>
             </div>
-
           </div>
         </div>
       </div>

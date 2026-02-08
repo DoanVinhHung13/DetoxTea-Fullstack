@@ -35,7 +35,7 @@ const syncOrderStatus = async (orderId) => {
 
     // Check if all items have status 'shipped'
     const allItemsShipped = orderItems.every(
-      (item) => item.status === "shipped"
+      (item) => item.status === "shipped",
     );
     console.log(`All items shipped: ${allItemsShipped}`);
 
@@ -56,21 +56,21 @@ const syncOrderStatus = async (orderId) => {
             // Khi order shipped, payment vẫn giữ ở trạng thái 'held' để admin có thể xử lý
             // paymentStatus: 'held' // Không cần update vì đã set từ đầu
           },
-          { new: true }
+          { new: true },
         );
         console.log(
-          `Order status updated successfully: ${updatedOrder.status}`
+          `Order status updated successfully: ${updatedOrder.status}`,
         );
         return true;
       } else {
         console.log(
-          "Order already has shipped status or not found, no update needed"
+          "Order already has shipped status or not found, no update needed",
         );
         return false;
       }
     } else {
       console.log(
-        `Not all items are shipped yet, order status remains unchanged`
+        `Not all items are shipped yet, order status remains unchanged`,
       );
       return false;
     }
@@ -109,7 +109,7 @@ const createOrder = async (req, res) => {
     for (const item of selectedItems) {
       // Validate product exists. CHÚ Ý: .select('sellerId') là cần thiết.
       const product = await Product.findById(item.productId).select(
-        "price sellerId title"
+        "price sellerId title",
       );
       if (!product) {
         return res
@@ -209,7 +209,7 @@ const createOrder = async (req, res) => {
           $inc: { quantity: -item.quantity },
           $set: { lastUpdated: new Date() },
         },
-        { upsert: false }
+        { upsert: false },
       );
     }
 
@@ -220,26 +220,26 @@ const createOrder = async (req, res) => {
 
     // 1. Thông báo cho NGƯỜI MUA
     await createNotification(
-    buyerId, 
-    `🎉 Đơn hàng PayPal #${orderShortId} đang chờ thanh toán. Tổng tiền: $${totalPrice.toFixed(2)}.`,
-    'Order', // 🌟 THAM SỐ TYPE (Vị trí 3)
-    orderLink // 🌟 THAM SỐ LINK (Vị trí 4)
-);
+      buyerId,
+      `🎉 Đơn hàng PayPal #${orderShortId} đang chờ thanh toán. Tổng tiền: $${totalPrice.toFixed(2)}.`,
+      "Order", // 🌟 THAM SỐ TYPE (Vị trí 3)
+      orderLink, // 🌟 THAM SỐ LINK (Vị trí 4)
+    );
 
     // 2. Thông báo cho TẤT CẢ NGƯỜI BÁN liên quan
     const sellerNotificationPromises = Array.from(uniqueSellerIds).map(
       async (sellerId) => {
         try {
           await createNotification(
-    sellerId, 
-    `🔔 Bạn có đơn hàng PayPal mới #${orderShortId} đang chờ thanh toán.`,
-    'Order', // 🌟 THAM SỐ TYPE (Vị trí 3)
-    `/seller/orders/${order._id}` // 🌟 THAM SỐ LINK (Vị trí 4)
-);
+            sellerId,
+            `🔔 Bạn có đơn hàng PayPal mới #${orderShortId} đang chờ thanh toán.`,
+            "Order", // 🌟 THAM SỐ TYPE (Vị trí 3)
+            `/seller/orders/${order._id}`, // 🌟 THAM SỐ LINK (Vị trí 4)
+          );
         } catch (e) {
           console.error(`Lỗi khi tạo thông báo cho Seller ${sellerId}:`, e);
         }
-      }
+      },
     );
     await Promise.all(sellerNotificationPromises); // 🌟 Dòng này đảm bảo Node.js đợi
 
@@ -247,7 +247,7 @@ const createOrder = async (req, res) => {
     try {
       const emailSubject = `[Xác nhận] Đơn hàng #${orderShortId} của bạn đã được đặt thành công`;
       const emailText = `Chào Khách hàng,\n\nĐơn hàng #${orderShortId} của bạn đã được đặt thành công. Tổng tiền: $${totalPrice.toFixed(
-        2
+        2,
       )}.\nVui lòng kiểm tra chi tiết tại website.\n\nCảm ơn bạn đã mua sắm!`;
       await sendEmail(buyerEmail, emailSubject, emailText);
       console.log("Email sent successfully to:", buyerEmail);
@@ -281,7 +281,7 @@ const getBuyerOrders = async (req, res) => {
     if (
       status &&
       ["pending", "shipping", "shipped", "failed to ship", "rejected"].includes(
-        status
+        status,
       )
     ) {
       query.status = status;
@@ -322,7 +322,7 @@ const getBuyerOrders = async (req, res) => {
           .lean();
 
         return { ...updatedOrder, items };
-      })
+      }),
     );
 
     return res.status(200).json({
@@ -350,7 +350,7 @@ const getOrderDetails = async (req, res) => {
 
     // First check and update the order status
     console.log(
-      `Checking status for order ${orderId} before returning details`
+      `Checking status for order ${orderId} before returning details`,
     );
     await syncOrderStatus(orderId);
 
@@ -421,13 +421,13 @@ const updateOrderItemStatus = async (req, res) => {
     const updatedOrderItem = await OrderItem.findByIdAndUpdate(
       id,
       { status },
-      { new: true } // Return the updated document
+      { new: true }, // Return the updated document
     ).populate("productId", "title");
 
     console.log(
       `Successfully updated status of order item for ${
         updatedOrderItem.productId?.title || "unknown product"
-      }`
+      }`,
     );
 
     // If status is 'shipped', check if all items in the order are shipped
@@ -435,7 +435,7 @@ const updateOrderItemStatus = async (req, res) => {
       console.log("Checking if all items in the order are now shipped");
       const orderStatusUpdated = await syncOrderStatus(orderId);
       console.log(
-        `Order status was ${orderStatusUpdated ? "updated" : "not updated"}`
+        `Order status was ${orderStatusUpdated ? "updated" : "not updated"}`,
       );
     }
 
@@ -482,7 +482,7 @@ const createOrderWithPayPal = async (req, res) => {
     for (const item of selectedItems) {
       // Validate product exists. CHÚ Ý: .select('sellerId') là cần thiết.
       const product = await Product.findById(item.productId).select(
-        "price sellerId title"
+        "price sellerId title",
       );
       if (!product) {
         return res
@@ -520,12 +520,32 @@ const createOrderWithPayPal = async (req, res) => {
     }
 
     // Step 2: Apply voucher if provided
-    // ... (Logic Voucher không đổi) ...
-    // Đã bỏ qua logic voucher để tập trung vào thông báo, giả định nó hoạt động.
-
-    let discount = 0; // Giữ lại khai báo discount
+    let discount = 0;
     if (couponCode) {
-      // ... logic voucher, tính discount và await voucher.save() ...
+      const voucher = await Voucher.findOne({ code: couponCode });
+      if (!voucher || !voucher.isActive) {
+        return res.status(400).json({ error: "Invalid or inactive voucher" });
+      }
+
+      if (subtotal < voucher.minOrderValue) {
+        return res.status(400).json({
+          error: `Order must be at least ${voucher.minOrderValue} to apply this voucher`,
+        });
+      }
+
+      if (voucher.discountType === "fixed") {
+        discount = voucher.discount;
+      } else if (voucher.discountType === "percentage") {
+        const calculatedDiscount = (subtotal * voucher.discount) / 100;
+        discount =
+          voucher.maxDiscount > 0
+            ? Math.min(calculatedDiscount, voucher.maxDiscount)
+            : calculatedDiscount;
+      }
+
+      // Increment usedCount and save (triggers pre-save hook to update isActive if needed)
+      voucher.usedCount += 1;
+      await voucher.save();
     }
 
     const totalPrice = Math.max(subtotal - discount, 0);
@@ -536,7 +556,7 @@ const createOrderWithPayPal = async (req, res) => {
       addressId: selectedAddressId,
       totalPrice,
       status: "pending",
-      paymentStatus: "held",
+      paymentStatus: "pending", // COD thì trạng thái thanh toán là pending (chưa trả tiền)
       // ... các trường khác
     });
     await order.save();
@@ -562,13 +582,13 @@ const createOrderWithPayPal = async (req, res) => {
           $inc: { quantity: -item.quantity },
           $set: { lastUpdated: new Date() },
         },
-        { upsert: false }
+        { upsert: false },
       );
     }
 
-    // Step 5: Create PayPal payment
+    // Step 5: Create Payment (COD)
     const Payment = require("../models/Payment");
-    const paypalPaymentId = `PAYPAL_${Date.now()}_${Math.random()
+    const codTransactionId = `COD_${Date.now()}_${Math.random()
       .toString(36)
       .substr(2, 9)}`;
 
@@ -576,9 +596,9 @@ const createOrderWithPayPal = async (req, res) => {
       orderId: order._id,
       userId: buyerId,
       amount: totalPrice,
-      method: "PayPal",
+      method: "COD",
       status: "pending",
-      transactionId: paypalPaymentId,
+      transactionId: codTransactionId,
     });
     await payment.save();
 
@@ -586,42 +606,36 @@ const createOrderWithPayPal = async (req, res) => {
 
     // 1. Thông báo cho NGƯỜI MUA
     await createNotification(
-    buyerId, 
-    `🎉 Đơn hàng PayPal #${orderShortId} đang chờ thanh toán. Tổng tiền: $${totalPrice.toFixed(2)}.`,
-    'Order', // 🌟 THAM SỐ TYPE (Vị trí 3)
-    orderLink // 🌟 THAM SỐ LINK (Vị trí 4)
-);
+      buyerId,
+      `🎉 Đơn hàng COD #${orderShortId} đã được đặt thành công. Tổng tiền: $${totalPrice.toFixed(2)}.`,
+      "Order", // 🌟 THAM SỐ TYPE (Vị trí 3)
+      orderLink, // 🌟 THAM SỐ LINK (Vị trí 4)
+    );
 
     // 2. Thông báo cho TẤT CẢ NGƯỜI BÁN liên quan
     const sellerNotificationPromises = Array.from(uniqueSellerIds).map(
       async (sellerId) => {
         try {
           await createNotification(
-    sellerId, 
-    `🔔 Bạn có đơn hàng PayPal mới #${orderShortId} đang chờ thanh toán.`,
-    'Order', // 🌟 THAM SỐ TYPE (Vị trí 3)
-    `/seller/orders/${order._id}` // 🌟 THAM SỐ LINK (Vị trí 4)
-);
+            sellerId,
+            `🔔 Bạn có đơn hàng COD mới #${orderShortId} đang chờ xử lý.`,
+            "Order", // 🌟 THAM SỐ TYPE (Vị trí 3)
+            `/seller/orders/${order._id}`, // 🌟 THAM SỐ LINK (Vị trí 4)
+          );
         } catch (e) {
           console.error(`Lỗi khi tạo thông báo cho Seller ${sellerId}:`, e);
         }
-      }
+      },
     );
     await Promise.all(sellerNotificationPromises); // Chờ tất cả thông báo seller hoàn thành
 
-    // Step 6: Tạo PayPal payment URL (Không đổi)
-    const BASE_URL =
-      process.env.BASE_URL || `${req.protocol}://${req.get("host")}`;
-    const paypalUrl = `${BASE_URL}/api/buyers/payments/paypal/simulate?paymentId=${paypalPaymentId}&orderId=${order._id}&amount=${totalPrice}`;
-
     // Success response
     return res.status(201).json({
-      message: "Order created and PayPal payment initiated successfully",
+      message: "Đặt hàng thành công (COD)",
       orderId: order._id,
       totalPrice,
       paymentId: payment._id,
-      paypalPaymentId,
-      paymentUrl: paypalUrl,
+      transactionId: codTransactionId,
     });
   } catch (error) {
     console.error("Error creating order with PayPal:", error);
