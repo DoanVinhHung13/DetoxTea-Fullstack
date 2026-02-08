@@ -151,7 +151,7 @@ const ProductCard = ({
           flex items-center justify-center gap-2"
         >
           <AddShoppingCartIcon style={{ fontSize: 20 }} />
-          {isAddingToCart ? "Adding..." : "Add to Cart"}
+          {isAddingToCart ? "Đang thêm..." : "Thêm vào giỏ hàng"}
         </button>
       </div>
     </motion.div>

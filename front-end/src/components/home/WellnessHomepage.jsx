@@ -169,7 +169,7 @@ const WellnessHomepage = () => {
                     </h4>
 
                     <p className="mb-3 text-lg font-bold text-forest-green">
-                      ${product.price?.toFixed(2) || "0.00"}
+                      {product.price?.toFixed(2) || "0.00"}đ
                     </p>
 
                     <button
@@ -180,7 +180,9 @@ const WellnessHomepage = () => {
                       disabled={addingToCart[product._id]}
                       className="w-full px-4 py-2 text-sm font-bold transition-colors rounded-lg font-bodyFont bg-forest-green text-cream hover:bg-forest-green/90 disabled:bg-gray-400 disabled:cursor-not-allowed"
                     >
-                      {addingToCart[product._id] ? "ADDING..." : "ADD TO CART"}
+                      {addingToCart[product._id]
+                        ? "Đang thêm..."
+                        : "Thêm vào giỏ hàng"}
                     </button>
                   </div>
                 </div>

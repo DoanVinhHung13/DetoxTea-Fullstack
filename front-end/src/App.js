@@ -54,6 +54,7 @@ import StoreRegistration from "./pages/StoreRegistration";
 
 import { ToastContainer } from "react-toastify";
 import Watchlist from "./components/home/Header/Watchlist.jsx";
+import AboutUs from "./pages/AboutUs/AboutUs.jsx";
 import AuthCallback from "./pages/AuthCallback";
 import ManagePayment from "./pages/DashboardAdmin/ManagePayment/ManagePayment";
 import ManageProductA from "./pages/DashboardAdmin/ManageProduct/ManageProduct";
@@ -116,6 +117,7 @@ const router = createBrowserRouter(
 
       {/* Annoymus route */}
       <Route path="/" element={<Layout />}>
+        <Route path="/about-us" element={<AboutUs />}></Route>
         <Route path="/products" element={<ProductList />}></Route>
         <Route path="/cart" element={<Cart />}></Route>
         <Route path="/checkout" element={<Checkout />}></Route>
