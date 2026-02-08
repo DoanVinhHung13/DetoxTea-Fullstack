@@ -1,401 +1,482 @@
-import CancelIcon from "@mui/icons-material/Cancel";
-import EditIcon from "@mui/icons-material/Edit";
-import SaveIcon from "@mui/icons-material/Save";
-import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
-import Visibility from "@mui/icons-material/Visibility";
-import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import { Add, Email, LocationOn, Person } from "@mui/icons-material";
 import {
-  Alert,
   Avatar,
   Box,
   Button,
-  CircularProgress,
+  Checkbox,
+  Chip,
   Container,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
   Divider,
+  FormControlLabel,
   Grid,
-  IconButton,
-  InputAdornment,
   Paper,
-  Snackbar,
   TextField,
   Typography,
 } from "@mui/material";
 import { useEffect, useState } from "react";
+import Modal from "react-modal";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
-
+import { toast } from "react-toastify";
 import {
-  fetchUserProfile,
-  resetUpdateStatus,
-  updateUserProfile,
-} from "../../features/profile/profileSlice";
+  addAddress,
+  fetchAddresses,
+} from "../../features/address/addressSlice";
+
+// Palette from Checkout for consistency
+const palette = {
+  cream: "#F9F7F2",
+  forestGreen: "#2D4F3E",
+  charcoal: "#1A1A1A",
+  softGold: "#C5A059",
+  white: "#FFFFFF",
+};
+
+const fonts = {
+  title: "'Playfair Display', serif",
+  body: "'Montserrat', sans-serif",
+};
+
+const customModalStyles = {
+  overlay: {
+    backgroundColor: "rgba(0, 0, 0, 0.6)",
+    zIndex: 1000,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  content: {
+    position: "relative",
+    top: "auto",
+    left: "auto",
+    right: "auto",
+    bottom: "auto",
+    maxWidth: "600px",
+    width: "100%",
+    padding: "0",
+    border: "none",
+    borderRadius: "8px",
+    boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+    backgroundColor: palette.white,
+    overflow: "hidden",
+  },
+};
 
 const Profile = () => {
-  const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.auth);
+  const { addresses } = useSelector((state) => state.address);
 
-  const { isAuthenticated } = useSelector((state) => state.auth);
-  const { user, loading, error, updateSuccess, updateLoading, updateError } =
-    useSelector((state) => state.profile);
-
-  const [editMode, setEditMode] = useState(false);
-  const [form, setForm] = useState({
-    avatarURL: "",
-    fullname: "",
-    password: "",
+  const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
+  const [newAddress, setNewAddress] = useState({
+    fullName: "",
+    phone: "",
+    street: "",
+    city: "",
+    state: "",
+    country: "Việt Nam",
+    isDefault: false,
   });
-  const [showPassword, setShowPassword] = useState(false);
-  const [confirmDialog, setConfirmDialog] = useState(false);
-  const [formErrors, setFormErrors] = useState({});
-  const [successMsg, setSuccessMsg] = useState("");
+  const [phoneError, setPhoneError] = useState("");
 
   useEffect(() => {
-    dispatch(fetchUserProfile());
+    dispatch(fetchAddresses());
   }, [dispatch]);
 
-  useEffect(() => {
-    if (user) {
-      setForm({
-        avatarURL: user.avatarURL || "",
-        fullname: user.fullname || "",
-        password: "",
+  const validatePhoneNumber = (phone) => /^0\d{9}$/.test(phone);
+
+  const handleAddAddress = async () => {
+    if (!validatePhoneNumber(newAddress.phone)) {
+      setPhoneError(
+        "Số điện thoại không hợp lệ. Phải bắt đầu bằng số 0 và có 10 chữ số.",
+      );
+      return;
+    }
+    setPhoneError("");
+
+    try {
+      // Sử dụng unwrap() nếu action được tạo bởi createAsyncThunk
+      await dispatch(addAddress(newAddress));
+      toast.success("Thêm địa chỉ thành công!");
+      setIsAddressModalOpen(false);
+      setNewAddress({
+        fullName: "",
+        phone: "",
+        street: "",
+        city: "",
+        state: "",
+        country: "Việt Nam",
+        isDefault: false,
       });
+      // Refresh list after adding
+      dispatch(fetchAddresses());
+    } catch (error) {
+      toast.error("Có lỗi xảy ra khi thêm địa chỉ.");
     }
-  }, [user]);
-
-  useEffect(() => {
-    if (updateSuccess) {
-      setSuccessMsg("Tuyệt vời! Thông tin của bạn đã được cập nhật.");
-      setEditMode(false);
-      setForm((prev) => ({ ...prev, password: "" }));
-      setTimeout(() => dispatch(resetUpdateStatus()), 3000);
-    }
-  }, [updateSuccess, dispatch]);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
-    if (formErrors[name]) setFormErrors((prev) => ({ ...prev, [name]: null }));
   };
-
-  const handleSave = async () => {
-    setConfirmDialog(false);
-    const dataToSend = { ...form };
-    if (!dataToSend.password) delete dataToSend.password;
-    dispatch(updateUserProfile(dataToSend));
-  };
-
-  if (loading)
-    return (
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
-          bgcolor: "#fdfbf7",
-        }}
-      >
-        <CircularProgress sx={{ color: "#1E4D3B" }} />
-      </Box>
-    );
 
   return (
-    <Box sx={{ bgcolor: "#fdfbf7", minHeight: "100vh", py: 8 }}>
+    <Box sx={{ bgcolor: palette.cream, minHeight: "100vh", py: 6 }}>
       <Container maxWidth="lg">
+        <Typography
+          variant="h4"
+          component="h1"
+          gutterBottom
+          sx={{
+            fontFamily: fonts.title,
+            fontWeight: 700,
+            color: palette.charcoal,
+            mb: 4,
+            borderBottom: `4px solid ${palette.forestGreen}`,
+            display: "inline-block",
+            pb: 1,
+          }}
+        >
+          Hồ sơ của tôi
+        </Typography>
+
         <Grid container spacing={4}>
-          {/* LEFT COLUMN: AVATAR & QUICK INFO */}
+          {/* Left Column: User Info */}
           <Grid item xs={12} md={4}>
             <Paper
               elevation={0}
               sx={{
                 p: 4,
-                borderRadius: "24px",
+                borderRadius: 2,
+                border: "1px solid #00000010",
                 textAlign: "center",
-                border: "1px solid #C5A059",
-                bgcolor: "white",
-                height: "100%",
               }}
             >
-              <Box
-                sx={{ position: "relative", display: "inline-block", mb: 3 }}
+              <Avatar
+                src={user?.avatar || ""}
+                alt={user?.username}
+                sx={{
+                  width: 100,
+                  height: 100,
+                  mx: "auto",
+                  mb: 2,
+                  bgcolor: palette.forestGreen,
+                }}
               >
-                <Avatar
-                  src={form.avatarURL || user?.avatarURL}
-                  sx={{
-                    width: 160,
-                    height: 160,
-                    mx: "auto",
-                    border: "4px solid #fdfbf7",
-                    boxShadow: "0 10px 30px rgba(30, 77, 59, 0.15)",
-                  }}
-                />
-                <Box
-                  sx={{
-                    position: "absolute",
-                    bottom: 10,
-                    right: 10,
-                    bgcolor: "#1E4D3B",
-                    borderRadius: "50%",
-                    p: 0.5,
-                    color: "white",
-                    display: "flex",
-                  }}
-                >
-                  <VerifiedUserIcon fontSize="small" />
-                </Box>
-              </Box>
-
+                {user?.username?.charAt(0).toUpperCase()}
+              </Avatar>
               <Typography
                 variant="h5"
-                sx={{ fontBold: "serif", color: "#1E4D3B", fontWeight: 700 }}
+                sx={{ fontFamily: fonts.title, fontWeight: 600, mb: 1 }}
               >
                 {user?.fullname || user?.username}
               </Typography>
               <Typography
                 variant="body2"
-                sx={{ color: "#C5A059", letterSpacing: 2, mb: 3 }}
+                color="text.secondary"
+                sx={{ fontFamily: fonts.body, mb: 3 }}
               >
-                {user?.role === "seller" ? "PREMIUM SELLER" : "VALUED BUYER"}
+                {user?.email}
               </Typography>
 
-              <Divider sx={{ my: 3, opacity: 0.5 }} />
+              <Divider sx={{ my: 2 }} />
 
-              <Box sx={{ textAlign: "left", mb: 4 }}>
-                <Typography
-                  variant="caption"
-                  sx={{ color: "text.secondary", display: "block" }}
-                >
-                  Username
-                </Typography>
-                <Typography variant="body1" sx={{ fontWeight: 600, mb: 2 }}>
-                  @{user?.username}
-                </Typography>
-
-                <Typography
-                  variant="caption"
-                  sx={{ color: "text.secondary", display: "block" }}
-                >
-                  Member Since
-                </Typography>
-                <Typography variant="body1" sx={{ fontWeight: 600 }}>
-                  Jan 2026
-                </Typography>
+              <Box sx={{ textAlign: "left" }}>
+                <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+                  <Person sx={{ color: palette.forestGreen, mr: 2 }} />
+                  <Typography variant="body1" sx={{ fontFamily: fonts.body }}>
+                    {user?.username}
+                  </Typography>
+                </Box>
+                <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+                  <Email sx={{ color: palette.forestGreen, mr: 2 }} />
+                  <Typography variant="body1" sx={{ fontFamily: fonts.body }}>
+                    {user?.email}
+                  </Typography>
+                </Box>
               </Box>
-
-              {!editMode && (
-                <Button
-                  fullWidth
-                  variant="contained"
-                  startIcon={<EditIcon />}
-                  onClick={() => setEditMode(true)}
-                  sx={{
-                    bgcolor: "#1E4D3B",
-                    borderRadius: "12px",
-                    py: 1.5,
-                    "&:hover": { bgcolor: "#15382B" },
-                  }}
-                >
-                  Edit Profile
-                </Button>
-              )}
             </Paper>
           </Grid>
 
-          {/* RIGHT COLUMN: DETAILED FORM */}
+          {/* Right Column: Address Book */}
           <Grid item xs={12} md={8}>
             <Paper
               elevation={0}
-              sx={{
-                p: { xs: 3, md: 5 },
-                borderRadius: "24px",
-                bgcolor: "white",
-                boxShadow: "0 4px 20px rgba(0,0,0,0.03)",
-              }}
+              sx={{ p: 4, borderRadius: 2, border: "1px solid #00000010" }}
             >
-              <Typography
-                variant="h4"
-                sx={{ fontBold: "serif", color: "#1E4D3B", mb: 1 }}
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  mb: 3,
+                }}
               >
-                Account Settings
-              </Typography>
-              <Typography
-                variant="body1"
-                sx={{ color: "text.secondary", mb: 5 }}
-              >
-                Manage your public information and security settings.
-              </Typography>
-
-              <Grid container spacing={3}>
-                <Grid item xs={12} md={6}>
+                <Box sx={{ display: "flex", alignItems: "center" }}>
+                  <LocationOn sx={{ color: palette.forestGreen, mr: 1 }} />
                   <Typography
-                    variant="subtitle2"
-                    sx={{ mb: 1, ml: 1, fontWeight: 700 }}
+                    variant="h5"
+                    sx={{ fontFamily: fonts.title, fontWeight: 600 }}
                   >
-                    Full Name
+                    Sổ địa chỉ
                   </Typography>
-                  <TextField
-                    fullWidth
-                    name="fullname"
-                    value={form.fullname}
-                    onChange={handleChange}
-                    disabled={!editMode}
-                    placeholder="Enter your name"
-                    sx={{
-                      "& .MuiOutlinedInput-root": { borderRadius: "12px" },
-                    }}
-                  />
-                </Grid>
-
-                <Grid item xs={12} md={6}>
-                  <Typography
-                    variant="subtitle2"
-                    sx={{ mb: 1, ml: 1, fontWeight: 700 }}
-                  >
-                    Email Address
-                  </Typography>
-                  <TextField
-                    fullWidth
-                    value={user?.email}
-                    disabled
-                    sx={{
-                      "& .MuiOutlinedInput-root": {
-                        borderRadius: "12px",
-                        bgcolor: "#f9f9f9",
-                      },
-                    }}
-                  />
-                </Grid>
-
-                {editMode && (
-                  <Grid item xs={12}>
-                    <Typography
-                      variant="subtitle2"
-                      sx={{ mb: 1, ml: 1, fontWeight: 700 }}
-                    >
-                      New Password
-                    </Typography>
-                    <TextField
-                      fullWidth
-                      name="password"
-                      type={showPassword ? "text" : "password"}
-                      value={form.password}
-                      onChange={handleChange}
-                      placeholder="Leave blank to keep current"
-                      InputProps={{
-                        endAdornment: (
-                          <InputAdornment position="end">
-                            <IconButton
-                              onClick={() => setShowPassword(!showPassword)}
-                            >
-                              {showPassword ? (
-                                <VisibilityOff />
-                              ) : (
-                                <Visibility />
-                              )}
-                            </IconButton>
-                          </InputAdornment>
-                        ),
-                      }}
-                      sx={{
-                        "& .MuiOutlinedInput-root": { borderRadius: "12px" },
-                      }}
-                    />
-                  </Grid>
-                )}
-              </Grid>
-
-              {editMode && (
-                <Box sx={{ mt: 6, display: "flex", gap: 2 }}>
-                  <Button
-                    variant="contained"
-                    startIcon={<SaveIcon />}
-                    onClick={() => setConfirmDialog(true)}
-                    disabled={updateLoading}
-                    sx={{
-                      bgcolor: "#1E4D3B",
-                      borderRadius: "12px",
-                      px: 4,
-                      "&:hover": { bgcolor: "#15382B" },
-                    }}
-                  >
-                    Save Changes
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    startIcon={<CancelIcon />}
-                    onClick={() => setEditMode(false)}
-                    sx={{
-                      color: "#1E4D3B",
-                      borderColor: "#1E4D3B",
-                      borderRadius: "12px",
-                      px: 4,
-                    }}
-                  >
-                    Cancel
-                  </Button>
                 </Box>
+                <Button
+                  variant="contained"
+                  startIcon={<Add />}
+                  onClick={() => setIsAddressModalOpen(true)}
+                  sx={{
+                    bgcolor: palette.forestGreen,
+                    color: palette.white,
+                    fontFamily: fonts.body,
+                    textTransform: "none",
+                    "&:hover": { bgcolor: "#213B2F" },
+                  }}
+                >
+                  Thêm địa chỉ mới
+                </Button>
+              </Box>
+
+              <Divider sx={{ mb: 3 }} />
+
+              {addresses && addresses.length > 0 ? (
+                <Grid container spacing={3}>
+                  {addresses.map((address) => (
+                    <Grid item xs={12} key={address._id}>
+                      <Paper
+                        variant="outlined"
+                        sx={{
+                          p: 3,
+                          borderRadius: 2,
+                          borderColor: address.isDefault
+                            ? palette.forestGreen
+                            : "divider",
+                          bgcolor: address.isDefault
+                            ? "rgba(45, 79, 62, 0.04)"
+                            : "transparent",
+                          position: "relative",
+                        }}
+                      >
+                        {address.isDefault && (
+                          <Chip
+                            label="Mặc định"
+                            size="small"
+                            sx={{
+                              position: "absolute",
+                              top: 16,
+                              right: 16,
+                              bgcolor: palette.forestGreen,
+                              color: palette.white,
+                              fontFamily: fonts.body,
+                              fontSize: "0.7rem",
+                            }}
+                          />
+                        )}
+                        <Typography
+                          variant="subtitle1"
+                          sx={{
+                            fontFamily: fonts.body,
+                            fontWeight: 600,
+                            mb: 1,
+                          }}
+                        >
+                          {address.fullName}{" "}
+                          <Typography
+                            component="span"
+                            variant="body2"
+                            color="text.secondary"
+                          >
+                            | {address.phone}
+                          </Typography>
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          sx={{ fontFamily: fonts.body, mb: 0.5 }}
+                        >
+                          {address.street}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          sx={{ fontFamily: fonts.body }}
+                        >
+                          {address.city}, {address.state}, {address.country}
+                        </Typography>
+                      </Paper>
+                    </Grid>
+                  ))}
+                </Grid>
+              ) : (
+                <Typography
+                  variant="body1"
+                  color="text.secondary"
+                  sx={{ fontFamily: fonts.body, textAlign: "center", py: 4 }}
+                >
+                  Bạn chưa lưu địa chỉ nào.
+                </Typography>
               )}
             </Paper>
           </Grid>
         </Grid>
-      </Container>
 
-      {/* DIALOGS & SNACKBARS - Giữ nguyên logic cũ nhưng đổi style */}
-      <Dialog
-        open={confirmDialog}
-        onClose={() => setConfirmDialog(false)}
-        PaperProps={{ sx: { borderRadius: "20px", p: 1 } }}
-      >
-        <DialogTitle sx={{ fontBold: "serif", color: "#1E4D3B" }}>
-          Xác nhận thay đổi?
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Mọi thay đổi về thông tin cá nhân sẽ có hiệu lực ngay lập tức trên
-            toàn hệ thống.
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions sx={{ p: 3 }}>
-          <Button
-            onClick={() => setConfirmDialog(false)}
-            sx={{ color: "text.secondary" }}
-          >
-            Hủy
-          </Button>
-          <Button
-            onClick={handleSave}
-            variant="contained"
-            sx={{ bgcolor: "#1E4D3B", borderRadius: "10px" }}
-          >
-            Xác nhận lưu
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      <Snackbar
-        open={!!successMsg}
-        autoHideDuration={3000}
-        onClose={() => setSuccessMsg("")}
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
-      >
-        <Alert
-          severity="success"
-          sx={{
-            borderRadius: "12px",
-            bgcolor: "#1E4D3B",
-            color: "white",
-            "& .MuiAlert-icon": { color: "white" },
-          }}
+        {/* Add Address Modal - Copied from Checkout */}
+        <Modal
+          isOpen={isAddressModalOpen}
+          onRequestClose={() => setIsAddressModalOpen(false)}
+          style={customModalStyles}
+          contentLabel="Thêm địa chỉ mới"
+          ariaHideApp={false}
         >
-          {successMsg}
-        </Alert>
-      </Snackbar>
+          <Box sx={{ p: 4, fontFamily: fonts.body }}>
+            <Typography
+              variant="h5"
+              fontWeight={600}
+              mb={3}
+              fontFamily={fonts.title}
+            >
+              Thêm địa chỉ mới
+            </Typography>
+            {phoneError && (
+              <Typography variant="body2" color="error" sx={{ mb: 2 }}>
+                {phoneError}
+              </Typography>
+            )}
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Họ và tên"
+                  value={newAddress.fullName}
+                  onChange={(e) =>
+                    setNewAddress({ ...newAddress, fullName: e.target.value })
+                  }
+                  variant="outlined"
+                  size="small"
+                  required
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Số điện thoại"
+                  value={newAddress.phone}
+                  onChange={(e) =>
+                    setNewAddress({ ...newAddress, phone: e.target.value })
+                  }
+                  variant="outlined"
+                  size="small"
+                  required
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="Địa chỉ chi tiết (Số nhà, tên đường)"
+                  value={newAddress.street}
+                  onChange={(e) =>
+                    setNewAddress({ ...newAddress, street: e.target.value })
+                  }
+                  variant="outlined"
+                  size="small"
+                  required
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Thành phố / Huyện"
+                  value={newAddress.city}
+                  onChange={(e) =>
+                    setNewAddress({ ...newAddress, city: e.target.value })
+                  }
+                  variant="outlined"
+                  size="small"
+                  required
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Tỉnh / Bang"
+                  value={newAddress.state}
+                  onChange={(e) =>
+                    setNewAddress({ ...newAddress, state: e.target.value })
+                  }
+                  variant="outlined"
+                  size="small"
+                  required
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="Quốc gia"
+                  value={newAddress.country}
+                  onChange={(e) =>
+                    setNewAddress({ ...newAddress, country: e.target.value })
+                  }
+                  variant="outlined"
+                  size="small"
+                  required
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={newAddress.isDefault}
+                      onChange={(e) =>
+                        setNewAddress({
+                          ...newAddress,
+                          isDefault: e.target.checked,
+                        })
+                      }
+                      sx={{
+                        color: palette.forestGreen,
+                        "&.Mui-checked": { color: palette.forestGreen },
+                      }}
+                    />
+                  }
+                  label="Đặt làm địa chỉ mặc định"
+                />
+              </Grid>
+            </Grid>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "flex-end",
+                mt: 3,
+                gap: 2,
+              }}
+            >
+              <Button
+                variant="outlined"
+                onClick={() => setIsAddressModalOpen(false)}
+                sx={{
+                  fontFamily: fonts.body,
+                  textTransform: "none",
+                  borderColor: palette.softGold,
+                  color: palette.softGold,
+                  "&:hover": {
+                    borderColor: palette.softGold,
+                    backgroundColor: "rgba(197, 160, 89, 0.04)",
+                  },
+                }}
+              >
+                Hủy
+              </Button>
+              <Button
+                variant="contained"
+                onClick={handleAddAddress}
+                sx={{
+                  fontFamily: fonts.body,
+                  textTransform: "none",
+                  bgcolor: palette.forestGreen,
+                  color: palette.white,
+                  "&:hover": { bgcolor: "#213B2F" },
+                }}
+              >
+                Lưu địa chỉ
+              </Button>
+            </Box>
+          </Box>
+        </Modal>
+      </Container>
     </Box>
   );
 };

@@ -1,3 +1,4 @@
+import giftset from "../../assets/images/home/gift-set.jpg";
 const GiftSet = () => {
   return (
     <section className="bg-[#fdfbf7] py-24 overflow-hidden">
@@ -6,11 +7,11 @@ const GiftSet = () => {
           {/* CỘT TRÁI: HÌNH ẢNH */}
           <div className="relative group">
             {/* Khung viền trang trí phía sau ảnh (tạo nét sang trọng) */}
-            <div className="absolute -inset-4 border border-[#8BA889]/30 rounded-2xl pointer-events-none transform translate-x-2 translate-y-2 transition-transform group-hover:translate-x-0 group-hover:translate-y-0"></div>
+            <div className="absolute transition-transform transform translate-x-2 translate-y-2 pointer-events-none -inset-4 rounded-2xl group-hover:translate-x-0 group-hover:translate-y-0"></div>
 
             <div className="relative h-[500px] w-full overflow-hidden rounded-2xl shadow-2xl">
               <img
-                src="/gift-set-premium-tea.jpg"
+                src={giftset}
                 alt="Yên Tết Gift Set"
                 className="object-cover w-full h-full transition-transform duration-700 group-hover:scale-105"
               />
