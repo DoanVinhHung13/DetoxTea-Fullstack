@@ -75,7 +75,7 @@ const ProductCard = ({
 
         <div className="flex items-center justify-between pt-2">
           <div className="text-xl font-bold text-[#1E4D3B]">
-            {product.price?.toFixed(2)}đ
+            {product.price?.toFixed(3)}đ
           </div>
 
           <button

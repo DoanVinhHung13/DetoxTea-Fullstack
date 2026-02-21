@@ -169,7 +169,7 @@ const WellnessHomepage = () => {
                     </h4>
 
                     <p className="mb-3 text-lg font-bold text-forest-green">
-                      {product.price?.toFixed(2) || "0.00"}đ
+                      {product.price?.toFixed(3) || "0.000"}đ
                     </p>
 
                     <button

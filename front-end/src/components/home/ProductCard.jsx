@@ -133,7 +133,7 @@ const ProductCard = ({
         <div className="flex items-baseline justify-between pt-2">
           <div className="flex items-baseline gap-1">
             <span className="font-bold text-[#2C3E1F] text-2xl">
-              {product.price?.toFixed(2)}
+              {product.price?.toFixed(3)}
               <span className="text-sm text-[#6B7563]">/kg</span>
             </span>
           </div>
