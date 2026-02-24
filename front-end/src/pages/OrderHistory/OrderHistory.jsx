@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import {
   FaBox,
   FaCheck,
+  FaChevronDown,
   FaClock,
   FaCreditCard,
   FaFilter,
@@ -337,7 +338,7 @@ const OrderHistory = () => {
                         )}
                       </div> */}
                     </div>
-                    {/* <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3">
                       {shouldShowPaymentButton(order._id) && (
                         <button
                           onClick={() => handleProceedToPayment(order._id)}
@@ -361,7 +362,7 @@ const OrderHistory = () => {
                           className={`transition-transform ${expandedOrders[order._id] ? "rotate-180" : ""}`}
                         />
                       </button>
-                    </div> */}
+                    </div>
                   </div>
                   {expandedOrders[order._id] && order.items?.length > 0 && (
                     <motion.div

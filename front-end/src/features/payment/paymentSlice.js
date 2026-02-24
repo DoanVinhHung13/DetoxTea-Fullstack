@@ -1,89 +1,102 @@
 // paymentSlice.js
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import axios from 'axios';
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import axios from "axios";
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:9999/api';
+const API_URL = process.env.REACT_APP_API_URL || "http://localhost:9999";
 
 export const createPayment = createAsyncThunk(
-  'payment/createPayment',
+  "payment/createPayment",
   async (paymentData, { getState, rejectWithValue }) => {
     try {
       const token = getState().auth.token;
       if (!token) {
-        return rejectWithValue('No token found');
+        return rejectWithValue("No token found");
       }
 
       // Validate orderId is present
       if (!paymentData.orderId) {
-        console.error('Missing orderId in payment data:', paymentData);
-        return rejectWithValue('Missing order ID. Please try again.');
+        console.error("Missing orderId in payment data:", paymentData);
+        return rejectWithValue("Missing order ID. Please try again.");
       }
 
       // Ensure orderId is a string
       const sanitizedData = {
         ...paymentData,
         orderId: String(paymentData.orderId),
-        replaceExisting: paymentData.replaceExisting || false // Add flag to indicate if previous payment should be deleted
+        replaceExisting: paymentData.replaceExisting || false, // Add flag to indicate if previous payment should be deleted
       };
-      
-      console.log('Creating payment with data:', sanitizedData);
-      
-      const response = await axios.post(`${API_URL}/buyers/payments`, sanitizedData, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      
+
+      console.log("Creating payment with data:", sanitizedData);
+
+      const response = await axios.post(
+        `${API_URL}/api/buyers/payments`,
+        sanitizedData,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+
       // Add extra validation to ensure we have required fields based on payment method
       const data = response.data;
-      
-      if (paymentData.method === 'VietQR' && (!data.qrData || !data.qrData.qrDataURL)) {
-        console.error('VietQR API response missing qrData or qrDataURL:', data);
-        return rejectWithValue('QR code generation failed. Please try another payment method.');
+
+      if (
+        paymentData.method === "VietQR" &&
+        (!data.qrData || !data.qrData.qrDataURL)
+      ) {
+        console.error("VietQR API response missing qrData or qrDataURL:", data);
+        return rejectWithValue(
+          "QR code generation failed. Please try another payment method.",
+        );
       }
-      
-      if (paymentData.method === 'PayOS' && !data.paymentUrl) {
-        console.error('PayOS API response missing paymentUrl:', data);
-        return rejectWithValue('Payment URL generation failed. Please try another payment method.');
+
+      if (paymentData.method === "PayOS" && !data.paymentUrl) {
+        console.error("PayOS API response missing paymentUrl:", data);
+        return rejectWithValue(
+          "Payment URL generation failed. Please try another payment method.",
+        );
       }
-      
+
       return data;
     } catch (error) {
-      console.error('Payment creation error:', error);
+      console.error("Payment creation error:", error);
       return rejectWithValue(
-        error.response?.data?.message || 
-        error.response?.data?.details || 
-        'Failed to create payment. Please try again.'
+        error.response?.data?.message ||
+          error.response?.data?.details ||
+          "Failed to create payment. Please try again.",
       );
     }
-  }
+  },
 );
 
 // Thêm hàm kiểm tra trạng thái thanh toán
 export const checkPaymentStatus = createAsyncThunk(
-  'payment/checkPaymentStatus',
+  "payment/checkPaymentStatus",
   async (orderId, { getState, rejectWithValue }) => {
     try {
       const token = getState().auth.token;
       if (!token) {
-        return rejectWithValue('No token found');
+        return rejectWithValue("No token found");
       }
-      
-      const response = await axios.get(`${API_URL}/buyers/payments/status/${orderId}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      
+
+      const response = await axios.get(
+        `${API_URL}/api/buyers/payments/status/${orderId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+
       return response.data;
     } catch (error) {
-      console.error('Payment status check error:', error);
+      console.error("Payment status check error:", error);
       return rejectWithValue(
-        error.response?.data?.message || 
-        'Failed to check payment status.'
+        error.response?.data?.message || "Failed to check payment status.",
       );
     }
-  }
+  },
 );
 
 const paymentSlice = createSlice({
-  name: 'payment',
+  name: "payment",
   initialState: {
     payment: null,
     paymentStatus: null,
