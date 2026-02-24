@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import loginpng from "../assets/images/login.png";
+import loginpng from "../assets/images/login.jpg";
 import { setCredentials } from "../features/auth/authSlice";
 import { login } from "../services/authService";
 
@@ -277,9 +277,6 @@ const SignIn = () => {
             transition={{ delay: 0.2 }}
             className="text-center"
           >
-            <h1 className="mb-4 text-4xl font-bold">
-              Trải nghiệm mua sắm tuyệt vời
-            </h1>
             {/* <p className="text-lg text-indigo-100">
               Khám phá hàng ngàn sản phẩm chất lượng ngay hôm nay.
             </p> */}

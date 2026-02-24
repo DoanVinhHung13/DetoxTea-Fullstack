@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import loginpng from "../assets/images/login.jpg";
 import { register } from "../services/authService";
 
 // Icons
@@ -99,7 +100,7 @@ const SignUp = () => {
       <div className="relative flex-1 hidden w-0 lg:block">
         <img
           className="absolute inset-0 object-cover w-full h-full"
-          src="https://lh3.googleusercontent.com/aida-public/AB6AXuC48xQaRdOJsDXh26l5GfJ6coC2tvdXyjz6oeGBAROf0vT_Nk4X_Y1sZaHE0Hk1YFbazYsM9gRWtlpc5VVijQx3Tdb0E-MUqWuJCngMujsRFOhLQiMR0-hFIMM6m4Gu-g4Zi6Y4KnN-yUnnkKKVIWCONPsa9SKA2KkIUtmr2NOX1FfB4Wwcfuf3EEOHWr2vtqTgUXSvtVdGrdjv9_2uxYQY-OvWZINfRQtaKLBM4pf8st01cmgF0Qa-zQMAkPpQ6A2Y1YqbHhYta6Jb"
+          src={loginpng}
           alt="Sign up background"
         />
         <div className="absolute inset-0 bg-[#228B22] mix-blend-multiply opacity-10" />
@@ -109,9 +110,9 @@ const SignUp = () => {
             animate={{ opacity: 1, scale: 1 }}
             className="text-center"
           >
-            <h1 className="mb-4 text-4xl font-bold">
+            {/* <h1 className="mb-4 text-4xl font-bold">
               Bắt đầu hành trình của bạn
-            </h1>
+            </h1> */}
             {/* <p className="text-lg text-gray-100">
               Join our community and discover exclusive benefits.
             </p> */}
