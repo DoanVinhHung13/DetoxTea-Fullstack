@@ -581,7 +581,7 @@ const Checkout = () => {
                         {(
                           (item.productId?.price || 0) * item.quantity
                         ).toLocaleString()}
-                        đ
+                        .000đ
                       </Typography>
                     </Box>
                   ))}
@@ -596,7 +596,7 @@ const Checkout = () => {
                   >
                     <Typography fontFamily={fonts.body}>Tạm tính:</Typography>
                     <Typography fontFamily={fonts.body}>
-                      {subtotal.toLocaleString()}đ
+                      {subtotal.toLocaleString()}.000đ
                     </Typography>
                   </Box>
                   {discount > 0 && (
@@ -635,7 +635,7 @@ const Checkout = () => {
                       color={palette.forestGreen}
                       fontFamily={fonts.body}
                     >
-                      {total.toLocaleString()}đ
+                      {total.toLocaleString()}.000đ
                     </Typography>
                   </Box>
                 </Box>

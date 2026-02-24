@@ -182,7 +182,7 @@ export default function TeaQuiz() {
                   {selectedProduct.description ||
                     "Một sự lựa chọn tuyệt vời mang lại trải nghiệm hương vị cân bằng và thư thái."}
                 </p>
-                <div className="mb-8 text-3xl font-bold text-green-600">
+                <div className="mb-8 text-3xl font-bold text-[#2D4F3E]">
                   {selectedProduct.price?.toLocaleString("vi-VN")}.000đ
                 </div>
                 <div className="flex flex-col gap-4 sm:flex-row">
@@ -190,8 +190,8 @@ export default function TeaQuiz() {
                     variant="contained"
                     onClick={() => handleAddToCart(selectedProduct)}
                     sx={{
-                      bgcolor: "#16a34a",
-                      "&:hover": { bgcolor: "#15803d" },
+                      bgcolor: "#2D4F3E",
+                      "&:hover": { bgcolor: "#2D4F3E" },
                       borderRadius: "9999px",
                       px: 4,
                       py: 1.5,

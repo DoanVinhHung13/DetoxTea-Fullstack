@@ -145,7 +145,7 @@ const WellnessHomepage = () => {
                   style={{ borderColor: "#C5A059" }}
                 >
                   <div
-                    className="h-40 overflow-hidden cursor-pointer"
+                    className="h-64 overflow-hidden cursor-pointer"
                     onClick={() => handleProductClick(product)}
                   >
                     <img
@@ -162,7 +162,7 @@ const WellnessHomepage = () => {
 
                   <div className="p-4 text-center">
                     <h4
-                      className="mb-1 text-base font-semibold cursor-pointer font-bodyFont text-charcoal hover:text-forest-green line-clamp-1"
+                      className="mb-1 text-lg cursor-pointer font-bodyFont text-charcoal hover:text-forest-green line-clamp-1"
                       onClick={() => handleProductClick(product)}
                     >
                       {product.title}
