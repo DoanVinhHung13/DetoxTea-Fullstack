@@ -1,18 +1,18 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
-import { toast } from 'react-toastify';
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 // Define the base API URL, consistent with cartSlice.js
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:9999/api';
+const API_URL = process.env.REACT_APP_API_URL || "http://localhost:9999";
 
 // Asynchronous thunk to apply a voucher by its code
 export const applyVoucher = createAsyncThunk(
-  'voucher/applyVoucher',
+  "voucher/applyVoucher",
   async (code, { rejectWithValue, getState }) => {
     try {
       // Access the token from the auth state
       const { token } = getState().auth;
-      
+
       // Configure request headers with the authorization token
       const config = {
         headers: {
@@ -21,8 +21,11 @@ export const applyVoucher = createAsyncThunk(
       };
 
       // Use the API_URL variable for the request
-      const response = await axios.get(`${API_URL}/buyers/vouchers/code/${code}`, config);
-      
+      const response = await axios.get(
+        `${API_URL}/api/buyers/vouchers/code/${code}`,
+        config,
+      );
+
       toast.success("Áp dụng mã giảm giá thành công!");
       return response.data;
     } catch (error) {
@@ -31,11 +34,11 @@ export const applyVoucher = createAsyncThunk(
       toast.error(message);
       return rejectWithValue(message);
     }
-  }
+  },
 );
 
 const voucherSlice = createSlice({
-  name: 'voucher',
+  name: "voucher",
   initialState: {
     voucher: null,
     loading: false,
@@ -46,7 +49,7 @@ const voucherSlice = createSlice({
     clearVoucher: (state) => {
       state.voucher = null;
       state.error = null;
-    }
+    },
   },
   extraReducers: (builder) => {
     builder
