@@ -1,101 +1,123 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import axios from "axios";
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:9999/api';
+const API_URL = process.env.REACT_APP_API_URL || "http://localhost:9999";
 
 // Async thunk to fetch address list
 export const fetchAddresses = createAsyncThunk(
-  'address/fetchAddresses',
+  "address/fetchAddresses",
   async (_, { getState, rejectWithValue }) => {
     try {
       const token = getState().auth.token;
       if (!token) {
-        return rejectWithValue('No token found');
+        return rejectWithValue("No token found");
       }
-      const response = await axios.get(`${API_URL}/buyers/addresses`, {
+      const response = await axios.get(`${API_URL}/api/buyers/addresses`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       return response.data.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to fetch addresses');
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to fetch addresses",
+      );
     }
-  }
+  },
 );
 
 // Async thunk to add a new address
 export const addAddress = createAsyncThunk(
-  'address/addAddress',
+  "address/addAddress",
   async (addressData, { getState, rejectWithValue }) => {
     try {
       const token = getState().auth.token;
       if (!token) {
-        return rejectWithValue('No token found');
+        return rejectWithValue("No token found");
       }
-      const response = await axios.post(`${API_URL}/buyers/addresses`, addressData, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await axios.post(
+        `${API_URL}/api/buyers/addresses`,
+        addressData,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
       return response.data.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to add address');
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to add address",
+      );
     }
-  }
+  },
 );
 
 // Async thunk to update an address
 export const updateAddress = createAsyncThunk(
-  'address/updateAddress',
+  "address/updateAddress",
   async ({ id, addressData }, { getState, rejectWithValue }) => {
     try {
       const token = getState().auth.token;
       if (!token) {
-        return rejectWithValue('No token found');
+        return rejectWithValue("No token found");
       }
-      const response = await axios.put(`${API_URL}/buyers/addresses/${id}`, addressData, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await axios.put(
+        `${API_URL}/api/buyers/addresses/${id}`,
+        addressData,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
       return response.data.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to update address');
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to update address",
+      );
     }
-  }
+  },
 );
 
 // Async thunk to delete an address
 export const deleteAddress = createAsyncThunk(
-  'address/deleteAddress',
+  "address/deleteAddress",
   async (id, { getState, rejectWithValue }) => {
     try {
       const token = getState().auth.token;
       if (!token) {
-        return rejectWithValue('No token found');
+        return rejectWithValue("No token found");
       }
-      await axios.delete(`${API_URL}/buyers/addresses/${id}`, {
+      await axios.delete(`${API_URL}/api/buyers/addresses/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       return id;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to delete address');
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to delete address",
+      );
     }
-  }
+  },
 );
 
 // Async thunk to set an address as default
 export const setDefaultAddress = createAsyncThunk(
-  'address/setDefaultAddress',
+  "address/setDefaultAddress",
   async (id, { getState, rejectWithValue }) => {
     try {
       const token = getState().auth.token;
       if (!token) {
-        return rejectWithValue('No token found');
+        return rejectWithValue("No token found");
       }
-      const response = await axios.put(`${API_URL}/buyers/addresses/${id}/default`, {}, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await axios.put(
+        `${API_URL}/api/buyers/addresses/${id}/default`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
       return response.data.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to set default address');
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to set default address",
+      );
     }
-  }
+  },
 );
 
 // Initial state
@@ -107,7 +129,7 @@ const initialState = {
 
 // Create slice
 const addressSlice = createSlice({
-  name: 'address',
+  name: "address",
   initialState,
   reducers: {
     // Synchronous reducers can be added here if needed
@@ -147,7 +169,9 @@ const addressSlice = createSlice({
       })
       .addCase(updateAddress.fulfilled, (state, action) => {
         state.loading = false;
-        const index = state.addresses.findIndex(addr => addr._id === action.payload._id);
+        const index = state.addresses.findIndex(
+          (addr) => addr._id === action.payload._id,
+        );
         if (index !== -1) {
           state.addresses[index] = action.payload;
         }
@@ -163,7 +187,9 @@ const addressSlice = createSlice({
       })
       .addCase(deleteAddress.fulfilled, (state, action) => {
         state.loading = false;
-        state.addresses = state.addresses.filter(addr => addr._id !== action.payload);
+        state.addresses = state.addresses.filter(
+          (addr) => addr._id !== action.payload,
+        );
       })
       .addCase(deleteAddress.rejected, (state, action) => {
         state.loading = false;
@@ -176,9 +202,9 @@ const addressSlice = createSlice({
       })
       .addCase(setDefaultAddress.fulfilled, (state, action) => {
         state.loading = false;
-        state.addresses = state.addresses.map(addr => ({
+        state.addresses = state.addresses.map((addr) => ({
           ...addr,
-          isDefault: addr._id === action.payload._id
+          isDefault: addr._id === action.payload._id,
         }));
       })
       .addCase(setDefaultAddress.rejected, (state, action) => {

@@ -392,7 +392,7 @@ const Profile = () => {
               <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
-                  label="Tỉnh / Bang"
+                  label="Tỉnh"
                   value={newAddress.state}
                   onChange={(e) =>
                     setNewAddress({ ...newAddress, state: e.target.value })
