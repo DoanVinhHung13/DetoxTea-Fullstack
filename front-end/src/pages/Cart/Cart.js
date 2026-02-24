@@ -144,8 +144,8 @@ const Cart = () => {
                               {item.productId?.title || item.productId?.name}
                             </Typography>
                             <p className="text-[10px] md:text-xs font-medium tracking-widest text-gray-400 uppercase">
-                              {item.productId?.price?.toLocaleString()}đ / đơn
-                              vị
+                              {item.productId?.price?.toLocaleString("vi-VN")}
+                              .000đ / đơn vị
                             </p>
                           </div>
                           <button
@@ -187,8 +187,8 @@ const Cart = () => {
                             <Typography className="font-bold text-base md:text-lg text-[#1E4D3B]">
                               {(
                                 item.quantity * (item.productId?.price || 0)
-                              ).toLocaleString()}
-                              đ
+                              ).toLocaleString("vi-VN")}
+                              .000đ
                             </Typography>
                           </div>
                         </div>
@@ -212,7 +212,7 @@ const Cart = () => {
                     <div className="flex justify-between">
                       <span>Tạm tính ({selectedItems.length})</span>
                       <span className="text-black">
-                        {totalAmt.toLocaleString()}đ
+                        {totalAmt.toLocaleString("vi-VN")}.000đ
                       </span>
                     </div>
                     <div className="flex justify-between">
@@ -234,7 +234,7 @@ const Cart = () => {
                         variant="h4"
                         className="font-bold text-[#1E4D3B] text-2xl md:text-3xl"
                       >
-                        {totalAmt.toLocaleString()}đ
+                        {totalAmt.toLocaleString("vi-VN")}.000đ
                       </Typography>
                       <p className="text-[9px] text-gray-400 uppercase tracking-tighter">
                         * Đã bao gồm thuế VAT

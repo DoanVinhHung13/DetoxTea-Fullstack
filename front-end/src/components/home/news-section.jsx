@@ -1,7 +1,5 @@
 "use client";
 
-import { ChevronRight } from "lucide-react";
-import { Link } from "react-router-dom";
 import phaTraImg from "../../assets/images/home/anh2.jpg";
 import matchaImg from "../../assets/images/home/anh3.jpg";
 import haGiangImg from "../../assets/images/home/doi-che-co-thu-ha-giang.jpg";
@@ -51,9 +49,9 @@ export default function NewsSection() {
       {/* Full-width grid without gaps */}
       <div className="grid grid-cols-1 md:grid-cols-3">
         {newsArticles.map((article) => (
-          <Link
+          <div
             key={article.id}
-            to={`/news/${article.slug}`}
+            // to={`/news/${article.slug}`}
             className="relative block overflow-hidden group aspect-[3/4]"
           >
             {/* Background Image */}
@@ -87,17 +85,17 @@ export default function NewsSection() {
               </p>
 
               {/* CTA */}
-              <div className="flex items-center transition-transform duration-300 group-hover:translate-x-2">
+              {/* <div className="flex items-center transition-transform duration-300 group-hover:translate-x-2">
                 <span className="text-sm font-semibold tracking-wide uppercase">
                   Xem chi tiết
                 </span>
                 <ChevronRight className="w-5 h-5 ml-2" />
-              </div>
+              </div> */}
             </div>
 
             {/* Hover effect overlay */}
             <div className="absolute inset-0 transition-opacity duration-300 opacity-0 bg-gradient-to-t from-green-900/20 to-transparent group-hover:opacity-100"></div>
-          </Link>
+          </div>
         ))}
       </div>
     </section>

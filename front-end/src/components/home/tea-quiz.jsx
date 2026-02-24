@@ -1,189 +1,228 @@
 import { Button } from "@mui/material";
+import axios from "axios";
 import { ShoppingCart, Sparkles } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { addToCart } from "../../features/cart/cartSlice";
 
-const QUIZ_DATA = {
+const QUIZ_META = {
   label: "TÌM KIẾM HƯƠNG VỊ HOÀN HẢO",
   question: "Hôm nay bạn cần gì?",
   subtitle: "Chọn cảm giác bạn muốn tìm, Yên gợi ý loại trà phù hợp.",
-  answers: [
-    {
-      id: "energetic",
-      icon: "⚡",
-      title: "Cần sự tỉnh táo",
-      description: "Cần năng lượng để bắt đầu một ngày dài mới hoặc tỉnh táo",
-      product: {
-        id: 1,
-        name: "Trà Matcha Nhật Bản",
-        image: "/green-tea-matcha-powder.jpg",
-        price: "350.000đ",
-        description:
-          "Được thu hoạch thủ công tại vùng núi cao, mang đến hương vị thanh tao, tinh tế. Trà vị ngọt tác, giúp thư thân sống khỏe suốt cả ngày.",
-        badge: "GIỚI Ý HOÀN HẢO",
-      },
-    },
-    {
-      id: "relaxed",
-      title: "Muốn được thư giãn",
-      icon: "🌼",
-      description: "Trà thảo mộc giúp thư giãn tinh thần sau ngày dài mệt mỏi",
-      product: {
-        id: 2,
-        name: "Trà Oolong Đặc Biệt Tứ Quý",
-        image: "/oolong-tea-leaves.jpg",
-        price: "350.000đ",
-        description:
-          "Được thu hoạch thủ công tại vùng núi cao, mang đến hương vị thanh tao, tinh tế. Trà vị ngọt tác, giúp thư thân sống khỏe suốt cả ngày.",
-        badge: "GIỚI Ý HOÀN HẢO",
-      },
-    },
-    {
-      id: "balanced",
-      icon: "✨",
-      title: "Tìm hương vị mới",
-      description:
-        "Khám phá những loại trà độc đáo với hương vị đặc biệt thơm ngon mới lạ",
-      product: {
-        id: 3,
-        name: "Trà Hoa Cúc Hữu Cơ",
-        image: "/chamomile-flowers-herbal-tea.jpg",
-        price: "350.000đ",
-        description:
-          "Được thu hoạch thủ công tại vùng núi cao, mang đến hương vị thanh tao, tinh tế. Trà vị ngọt tác, giúp thư thân sống khỏe suốt cả ngày.",
-        badge: "GIỚI Ý HOÀN HẢO",
-      },
-    },
-  ],
 };
+
+const ANSWER_CONFIG = [
+  {
+    id: "energetic",
+    icon: "⚡",
+    title: "Cần sự tỉnh táo",
+    description: "Cần năng lượng để bắt đầu một ngày dài mới hoặc tỉnh táo",
+    productId: "60d21b4667d0d8992e610110", // Tinh Sắc
+  },
+  {
+    id: "relaxed",
+    icon: "🌼",
+    title: "Muốn được thư giãn",
+    description: "Trà thảo mộc giúp thư giãn tinh thần sau ngày dài mệt mỏi",
+    productId: "60d21b4667d0d8992e610100", // Nhã Hương
+  },
+  {
+    id: "balanced",
+    icon: "✨",
+    title: "Tìm hương vị mới",
+    description:
+      "Khám phá những loại trà độc đáo với hương vị đặc biệt thơm ngon mới lạ",
+    productId: "6999c974c2bc0991140e4a57", // Sương Mai
+  },
+];
 
 export default function TeaQuiz() {
   const [selectedAnswer, setSelectedAnswer] = useState(null);
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const handleAnswerSelect = (answerId) => {
-    setSelectedAnswer(answerId);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const authState = useSelector((state) => state.auth);
+  const isAuthenticated = authState?.isAuthenticated || false;
+
+  const API_BASE_URL = (
+    process.env.REACT_APP_API_URL || "http://localhost:9999"
+  ).trim();
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setLoading(true);
+        // Fetch danh sách sản phẩm (đảm bảo chứa các ID cần tìm)
+        const response = await axios.get(
+          `${API_BASE_URL}/api/products?limit=20`,
+        );
+        const { data } = response.data;
+
+        const formatted = data.map((product) => {
+          const img = String(product.image || "").trim();
+          let imageUrl;
+          if (img.startsWith("http://") || img.startsWith("https://")) {
+            imageUrl = img;
+          } else if (img) {
+            imageUrl = `${API_BASE_URL}/uploads/${img}`;
+          } else {
+            imageUrl = "https://via.placeholder.com/400?text=No+Image";
+          }
+          return { ...product, imageUrl };
+        });
+
+        setProducts(formatted);
+      } catch (error) {
+        console.error("Error loading quiz products:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, [API_BASE_URL]);
+
+  const handleAddToCart = (product) => {
+    if (!isAuthenticated) {
+      toast.info("Vui lòng đăng nhập để thêm vào giỏ hàng");
+      navigate("/signin");
+      return;
+    }
+
+    // Gửi đúng các field mà addToCart createAsyncThunk yêu cầu
+    dispatch(
+      addToCart({
+        productId: product._id,
+        quantity: 1,
+        price: product.price,
+        name: product.title,
+        image: product.image, // Gửi tên file gốc để server xử lý
+        stock: product.stock || 0,
+      }),
+    );
   };
 
-  const selectedProduct = selectedAnswer
-    ? QUIZ_DATA.answers.find((a) => a.id === selectedAnswer)?.product
+  const handleProductClick = (product) => {
+    navigate(`/auth/product/${product._id}`, { state: { item: product } });
+  };
+
+  const selectedConfig = selectedAnswer
+    ? ANSWER_CONFIG.find((a) => a.id === selectedAnswer)
+    : null;
+  const selectedProduct = selectedConfig
+    ? products.find((p) => p._id === selectedConfig.productId)
     : null;
 
-  const handleReset = () => {
-    setSelectedAnswer(null);
-  };
-
   return (
-    <section className="max-w-6xl px-4 py-16 mx-auto md:pb-20 bg-cream">
+    <section className="max-w-6xl px-4 py-16 mx-auto md:pb-20">
       <div className="max-w-5xl mx-auto">
-        {/* Quiz Question Section */}
-        <div
-          className={`text-center mb-12 transition-all duration-500 ${selectedAnswer ? "opacity-0 h-0 overflow-hidden" : "opacity-100"}`}
-        >
-          <p className="text-xs font-semibold text-green-600 uppercase tracking-[0.2em] mb-3">
-            {QUIZ_DATA.label}
-          </p>
-          <h2 className="mb-4 font-serif text-3xl font-bold text-gray-900 md:text-5xl">
-            {QUIZ_DATA.question}
-          </h2>
-          <p className="max-w-2xl mx-auto text-sm text-gray-600">
-            {QUIZ_DATA.subtitle}
-          </p>
-        </div>
+        {/* Quiz UI (Ẩn khi đã chọn xong) */}
+        {!selectedAnswer && (
+          <div className="text-center animate-fadeIn">
+            <p className="mb-3 text-xs font-semibold tracking-widest text-green-600 uppercase">
+              {QUIZ_META.label}
+            </p>
+            <h2 className="mb-4 font-serif text-4xl font-bold text-gray-900">
+              {QUIZ_META.question}
+            </h2>
+            <p className="max-w-2xl mx-auto mb-12 text-gray-600">
+              {QUIZ_META.subtitle}
+            </p>
 
-        {/* Answer Cards Grid */}
-        <div
-          className={`grid grid-cols-1 md:grid-cols-3 gap-6 mb-12 transition-all duration-500 ${selectedAnswer ? "opacity-0 h-0 overflow-hidden" : "opacity-100"}`}
-        >
-          {QUIZ_DATA.answers.map((answer) => (
-            <button
-              key={answer.id}
-              onClick={() => handleAnswerSelect(answer.id)}
-              className="relative overflow-hidden transition-all duration-300 shadow-md bg-cream group rounded-2xl hover:shadow-xl hover:-translate-y-2"
-            >
-              {/* Content */}
-              <div className="p-6 text-left">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-xl">{answer.icon}</span>
-                  <h3 className="text-lg font-bold text-gray-900">
-                    {answer.title}
-                  </h3>
-                </div>
-                <p className="text-sm leading-relaxed text-gray-600">
-                  {answer.description}
-                </p>
-              </div>
-            </button>
-          ))}
-        </div>
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+              {loading
+                ? Array.from({ length: 3 }).map((_, i) => (
+                    <div
+                      key={i}
+                      className="h-40 bg-gray-100 rounded-2xl animate-pulse"
+                    />
+                  ))
+                : ANSWER_CONFIG.map((answer) => (
+                    <button
+                      key={answer.id}
+                      onClick={() => setSelectedAnswer(answer.id)}
+                      className="p-8 text-left transition-all bg-white border border-gray-100 shadow-sm rounded-2xl hover:shadow-xl hover:-translate-y-1"
+                    >
+                      <span className="block mb-4 text-3xl">{answer.icon}</span>
+                      <h3 className="mb-2 text-lg font-bold text-gray-900">
+                        {answer.title}
+                      </h3>
+                      <p className="text-sm text-gray-500">
+                        {answer.description}
+                      </p>
+                    </button>
+                  ))}
+            </div>
+          </div>
+        )}
 
-        {/* Result Section */}
+        {/* Result UI */}
         {selectedAnswer && selectedProduct && (
           <div className="animate-fadeIn">
-            {/* Result Header */}
-            <div className="mb-8 text-center">
-              <div className="inline-block px-4 py-2 mb-4 bg-green-100 rounded-full">
-                <p className="text-xs font-semibold tracking-wide text-green-700 uppercase">
-                  Món quà tuyệt vời dành cho bạn:
-                </p>
+            <div className="flex flex-col overflow-hidden bg-white border shadow-2xl md:flex-row rounded-3xl border-gray-50">
+              <div className="md:w-1/2">
+                <img
+                  src={selectedProduct.imageUrl}
+                  alt={selectedProduct.title}
+                  className="w-full h-full object-cover min-h-[400px]"
+                />
               </div>
-            </div>
-
-            {/* Product Card */}
-            <div className="grid grid-cols-1 gap-8 overflow-hidden bg-white border border-gray-100 shadow-xl md:grid-cols-2 rounded-2xl">
-              {/* Left - Product Info */}
-              <div className="flex flex-col justify-center p-8 md:p-12">
-                <div className="inline-block px-3 py-1 mb-4 bg-green-100 rounded-full w-fit">
-                  <p className="flex items-center gap-1 text-xs font-semibold tracking-wide text-green-700 uppercase">
-                    <Sparkles className="w-3 h-3" />
-                    {selectedProduct.badge}
-                  </p>
+              <div className="flex flex-col justify-center p-8 md:w-1/2 md:p-12">
+                <div className="flex items-center gap-2 mb-4 text-xs font-bold tracking-widest text-green-600 uppercase">
+                  <Sparkles size={16} /> Gợi ý dành cho bạn
                 </div>
-
-                <h3 className="mb-4 font-serif text-3xl font-bold leading-tight text-gray-900 md:text-4xl">
-                  {selectedProduct.name}
+                <h3 className="mb-4 font-serif text-3xl font-bold md:text-4xl">
+                  {selectedProduct.title}
                 </h3>
-
-                <p className="mb-6 text-sm leading-relaxed text-gray-600">
-                  {selectedProduct.description}
+                <p className="mb-6 leading-relaxed text-gray-600">
+                  {selectedProduct.description ||
+                    "Một sự lựa chọn tuyệt vời mang lại trải nghiệm hương vị cân bằng và thư thái."}
                 </p>
-
                 <div className="mb-8 text-3xl font-bold text-green-600">
-                  {selectedProduct.price}
+                  {selectedProduct.price?.toLocaleString("vi-VN")}.000đ
                 </div>
-
                 <div className="flex flex-col gap-4 sm:flex-row">
                   <Button
-                    size="lg"
-                    className="flex items-center justify-center gap-2 px-8 py-6 font-semibold text-white bg-green-600 rounded-full shadow-lg hover:bg-green-700"
+                    variant="contained"
+                    onClick={() => handleAddToCart(selectedProduct)}
+                    sx={{
+                      bgcolor: "#16a34a",
+                      "&:hover": { bgcolor: "#15803d" },
+                      borderRadius: "9999px",
+                      px: 4,
+                      py: 1.5,
+                      textTransform: "none",
+                      fontWeight: "bold",
+                    }}
+                    startIcon={<ShoppingCart size={20} />}
                   >
-                    <ShoppingCart className="w-5 h-5" />
                     Thêm vào giỏ hàng
                   </Button>
                   <Button
-                    variant="outline"
-                    size="lg"
-                    onClick={handleReset}
-                    className="px-8 py-6 font-medium text-gray-700 border-2 border-gray-300 rounded-full hover:bg-gray-50"
+                    variant="outlined"
+                    onClick={() => handleProductClick(selectedProduct)}
+                    sx={{
+                      borderRadius: "9999px",
+                      px: 4,
+                      py: 1.5,
+                      textTransform: "none",
+                      color: "#374151",
+                      borderColor: "#d1d5db",
+                    }}
                   >
                     Xem chi tiết
                   </Button>
                 </div>
               </div>
-
-              {/* Right - Product Image */}
-              <div className="relative h-80 md:h-full bg-gradient-to-br from-gray-900 to-gray-800">
-                <img
-                  src={selectedProduct.image || "/placeholder.svg"}
-                  alt={selectedProduct.name}
-                  className="object-cover w-full h-full"
-                />
-              </div>
             </div>
-
-            {/* Reset Button */}
             <div className="mt-8 text-center">
               <button
-                onClick={handleReset}
-                className="text-sm text-gray-600 underline hover:text-gray-900 underline-offset-4"
+                onClick={() => setSelectedAnswer(null)}
+                className="text-sm text-gray-500 underline hover:text-gray-800"
               >
                 ← Quay lại chọn lại
               </button>
