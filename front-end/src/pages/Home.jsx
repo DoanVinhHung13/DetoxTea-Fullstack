@@ -71,7 +71,7 @@ const Home = () => {
                   Nhã Hương - Thơm dịu
                 </li>
                 <li className="cursor-pointer hover:text-white">
-                  Tỉnh Sắc - Đậm vị
+                  Tình Sắc - Đậm vị
                 </li>
                 <li className="cursor-pointer hover:text-white">Hộp quà Tết</li>
               </ul>
