@@ -176,7 +176,7 @@ const AboutUs = () => {
             chính mình."
           </p>
           <cite className="text-sm not-italic tracking-widest uppercase opacity-80">
-            — Elara Thorne, Nhà Sáng Lập
+            — Elara Thorne, Nhà Sáng Lập —
           </cite>
         </motion.blockquote>
       </section>
