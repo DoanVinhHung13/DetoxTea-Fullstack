@@ -54,7 +54,7 @@ const ProductCard = ({
               }}
             >
               <VisibilityIcon style={{ fontSize: 18 }} />
-              View Details
+              Xem chi tiết
             </button>
           </div>
         </div>
