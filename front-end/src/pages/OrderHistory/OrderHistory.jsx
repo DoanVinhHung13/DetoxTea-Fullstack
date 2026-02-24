@@ -294,7 +294,7 @@ const OrderHistory = () => {
                           Tổng tiền
                         </span>
                         <span className="font-medium text-charcoal">
-                          {order.totalPrice.toLocaleString()}đ
+                          {order.totalPrice.toLocaleString()}.000đ
                         </span>
                       </div>
                       <div>
@@ -425,7 +425,7 @@ const OrderHistory = () => {
                                 </td>
                                 <td className="px-4 py-3.5 whitespace-nowrap">
                                   <div className="text-sm font-medium text-charcoal">
-                                    {item.unitPrice?.toLocaleString()}đ
+                                    {item.unitPrice?.toLocaleString()}.000đ
                                   </div>
                                 </td>
                                 <td className="px-4 py-3.5 whitespace-nowrap">

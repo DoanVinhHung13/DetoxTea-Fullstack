@@ -205,17 +205,24 @@ const AuthProductDetail = () => {
           {/* Cột trái: Hình ảnh mang hơi hướng nghệ thuật */}
           <Grid item xs={12} md={6}>
             <Fade in timeout={1000}>
-              <ElegantImageCard elevation={0}>
-                <Box
-                  component="img"
-                  src={
-                    data.image?.startsWith("http")
-                      ? data.image
-                      : `${API_BASE_URL}/uploads/${data.image}`
-                  }
-                  sx={{ width: "90%", height: "90%", objectFit: "cover" }}
-                />
-              </ElegantImageCard>
+              {/* <ElegantImageCard elevation={24}> */}
+              <Box
+                component="img"
+                src={
+                  data.image?.startsWith("http")
+                    ? data.image
+                    : `${API_BASE_URL}/uploads/${data.image}`
+                }
+                sx={{
+                  backgroundColor: palette.white,
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                  padding: "10px",
+                  border: "1px solid #ccc",
+                }}
+              />
+              {/* </ElegantImageCard> */}
             </Fade>
           </Grid>
 
@@ -267,7 +274,7 @@ const AuthProductDetail = () => {
 
               <Divider sx={{ borderColor: palette.sageGreen, opacity: 0.3 }} />
 
-              <PriceText>{data.price?.toLocaleString()} VND</PriceText>
+              <PriceText>{data.price?.toLocaleString()}.000 VND</PriceText>
 
               <Typography
                 variant="body1"

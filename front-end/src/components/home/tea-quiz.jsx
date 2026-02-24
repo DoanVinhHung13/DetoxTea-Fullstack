@@ -17,23 +17,25 @@ const ANSWER_CONFIG = [
   {
     id: "energetic",
     icon: "⚡",
-    title: "Cần sự tỉnh táo",
-    description: "Cần năng lượng để bắt đầu một ngày dài mới hoặc tỉnh táo",
+    title: "Sự mới mẻ tinh tế",
+    description:
+      "Nền trà rõ và dày vị hơn. Hậu sâu, lưu lại lâu, dành cho khi bạn muốn một trải nghiệm khác.",
     productId: "60d21b4667d0d8992e610110", // Tinh Sắc
   },
   {
     id: "relaxed",
-    icon: "🌼",
-    title: "Muốn được thư giãn",
-    description: "Trà thảo mộc giúp thư giãn tinh thần sau ngày dài mệt mỏi",
+    icon: "🌿",
+    title: "Sự tỉnh táo nhẹ nhàng",
+    description:
+      "Trà xanh nền thanh, hương lài ướp vừa đủ.Tỉnh mà không gắt, rõ vị nhưng vẫn êm.",
     productId: "60d21b4667d0d8992e610100", // Nhã Hương
   },
   {
     id: "balanced",
-    icon: "✨",
-    title: "Tìm hương vị mới",
+    icon: "🌼",
+    title: "Sự thoải mái cân bằng",
     description:
-      "Khám phá những loại trà độc đáo với hương vị đặc biệt thơm ngon mới lạ",
+      "Trà xanh phối ô long nhẹ, vị mềm và tròn. Cảm giác dịu và sạch, dễ uống mỗi ngày.",
     productId: "6999c974c2bc0991140e4a57", // Sương Mai
   },
 ];
