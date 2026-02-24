@@ -308,7 +308,7 @@ const OrderHistory = () => {
                           {getStatusText(order.status)}
                         </span>
                       </div>
-                      <div>
+                      {/* <div>
                         <span className="block mb-1 text-xs tracking-wider uppercase text-charcoal/60">
                           Thanh toán
                         </span>
@@ -336,7 +336,7 @@ const OrderHistory = () => {
                             )}
                           </div>
                         )}
-                      </div>
+                      </div> */}
                     </div>
                     <div className="flex items-center gap-3">
                       {shouldShowPaymentButton(order._id) && (
