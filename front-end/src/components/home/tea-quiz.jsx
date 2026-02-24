@@ -27,7 +27,7 @@ const ANSWER_CONFIG = [
     icon: "🌿",
     title: "Sự tỉnh táo nhẹ nhàng",
     description:
-      "Trà xanh nền thanh, hương lài ướp vừa đủ.Tỉnh mà không gắt, rõ vị nhưng vẫn êm.",
+      "Trà xanh nền thanh, hương lài ướp vừa đủ. Tỉnh mà không gắt, rõ vị nhưng vẫn êm.",
     productId: "60d21b4667d0d8992e610100", // Nhã Hương
   },
   {
