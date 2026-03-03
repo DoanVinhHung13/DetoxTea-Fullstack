@@ -1,5 +1,6 @@
 "use client";
 
+import { Link } from "react-router-dom";
 import phaTraImg from "../../assets/images/home/anh2.jpg";
 import matchaImg from "../../assets/images/home/anh3.jpg";
 import haGiangImg from "../../assets/images/home/doi-che-co-thu-ha-giang.jpg";
@@ -30,7 +31,7 @@ const newsArticles = [
     excerpt:
       "Bạn có biết mỗi loại lá trà đều mang một câu chuyện riêng? Từ chè xanh thanh mát, trà ô long nồng nàn, đến trà thảo mộc dịu dàng… Mỗi tách trà mở ra một hành trình nhỏ, để bạn vừa nhấm nháp hương vị, vừa khám phá những điều thú vị quanh thế giới trà.",
     image: matchaImg,
-    slug: "matcha-cao-cap-xu-huong-hien-dai",
+    slug: "tra-va-nhung-cau-chuyen-bat-ngo",
   },
 ];
 
@@ -49,9 +50,9 @@ export default function NewsSection() {
       {/* Full-width grid without gaps */}
       <div className="grid grid-cols-1 md:grid-cols-3">
         {newsArticles.map((article) => (
-          <div
+          <Link
             key={article.id}
-            // to={`/news/${article.slug}`}
+            to={`/news/${article.slug}`}
             className="relative block overflow-hidden group aspect-[3/4]"
           >
             {/* Background Image */}
@@ -95,7 +96,7 @@ export default function NewsSection() {
 
             {/* Hover effect overlay */}
             <div className="absolute inset-0 transition-opacity duration-300 opacity-0 bg-gradient-to-t from-green-900/20 to-transparent group-hover:opacity-100"></div>
-          </div>
+          </Link>
         ))}
       </div>
     </section>

@@ -510,7 +510,7 @@ const OrderDetail = () => {
               <span className="p-2 bg-blue-100 rounded-lg">
                 <FaReceipt className="text-[#2D4F3E]" />
               </span>
-              <h1 className="text-2xl font-bold text-gray-800 md:text-3xl">
+              <h1 className="text-2xl text-gray-800 md:text-3xl">
                 Đơn hàng #{orderDetails._id.slice(-8).toUpperCase()}
               </h1>
             </div>

@@ -29,21 +29,21 @@ const AboutUs = () => {
           transition={{ duration: 1, delay: 0.3 }}
           className="relative z-10 max-w-4xl px-6 text-center text-white"
         >
-          <motion.p
+          {/* <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
             className="mb-4 text-sm font-light tracking-widest uppercase"
           >
             Thành lập 2026
-          </motion.p>
+          </motion.p> */}
           <h1 className="mb-6 text-5xl font-bold leading-tight md:text-7xl">
-            Yên: Tinh Hoa Trà Detox
+            Yên: Giữ lại sự tinh giản trong từng tách trà
           </h1>
           <p className="max-w-2xl mx-auto text-lg font-light leading-relaxed md:text-xl">
-            Trải nghiệm sự tinh khiết từ lá trà detox được thu hoạch vào buổi
-            sáng sớm từ những vườn trà trên núi cao, mang đến cho bạn một liệu
-            trình thanh lọc cơ thể toàn diện.
+            Gu trà được xây dựng từ nền trà nguyên bản, giữ trọn cấu trúc tự
+            nhiên của lá trà. Không thêm thắt tầng hương gây xao nhãng - chỉ là
+            vị trà thanh sạch, rõ ràng và đủ đầy theo cách vốn có.
           </p>
         </motion.div>
 
@@ -127,19 +127,19 @@ const AboutUs = () => {
 
           <div className="grid gap-12 md:grid-cols-3">
             <PillarItem
-              icon="🌿"
+              // icon="🌿"
               title="100% Tự Nhiên"
               desc="Mỗi thành phần đều được tuyển chọn từ thiên nhiên, không hóa chất, không chất bảo quản. Chỉ có lá trà nguyên chất và thảo mộc hữu cơ."
               colors={colors}
             />
             <PillarItem
-              icon="💚"
+              // icon="💚"
               title="Detox Toàn Diện"
               desc="Công thức độc quyền giúp thanh lọc gan, thận, hệ tiêu hóa. Loại bỏ độc tố tích tụ, mang lại làn da rạng rỡ từ bên trong."
               colors={colors}
             />
             <PillarItem
-              icon="🧘‍♀️"
+              // icon="🧘‍♀️"
               title="Cân Bằng Cơ Thể"
               desc="Hỗ trợ giảm cân lành mạnh, cải thiện giấc ngủ, tăng cường năng lượng. Một liệu trình trà là một lối sống cân bằng."
               colors={colors}
@@ -175,9 +175,9 @@ const AboutUs = () => {
             sáng. Chúng tôi không chỉ bán trà; chúng tôi mang đến sự trở về với
             chính mình."
           </p>
-          <cite className="text-sm not-italic tracking-widest uppercase opacity-80">
+          {/* <cite className="text-sm not-italic tracking-widest uppercase opacity-80">
             — Elara Thorne, Nhà Sáng Lập —
-          </cite>
+          </cite> */}
         </motion.blockquote>
       </section>
 

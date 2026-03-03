@@ -62,6 +62,7 @@ import AdminDashboardLayout from "./pages/DashboardAdmin/ManagerDashboardAdminLa
 import ManageStore from "./pages/DashboardAdmin/ManageShop/ManageStore";
 import ManageUser from "./pages/DashboardAdmin/ManageUser/ManageUser";
 import ManageVoucher from "./pages/DashboardAdmin/ManageVoucher/ManageVoucher";
+import News from "./pages/News/News.jsx";
 import ProductList from "./pages/ProductList/ProductList.jsx";
 
 const Layout = () => {
@@ -117,6 +118,7 @@ const router = createBrowserRouter(
 
       {/* Annoymus route */}
       <Route path="/" element={<Layout />}>
+        <Route path="/news/:slug" element={<News />}></Route>
         <Route path="/about-us" element={<AboutUs />}></Route>
         <Route path="/products" element={<ProductList />}></Route>
         <Route path="/cart" element={<Cart />}></Route>
