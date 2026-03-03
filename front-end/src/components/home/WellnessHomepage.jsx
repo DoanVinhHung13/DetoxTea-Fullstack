@@ -30,12 +30,25 @@ const WellnessHomepage = () => {
   const fetchFeaturedProducts = async () => {
     try {
       setLoading(true);
+
+      // Danh sách 3 sản phẩm bạn muốn hiển thị
+      const featuredTitles = ["Tỉnh Sắc", "Nhã Hương", "Sương Mai"];
+
+      // Gọi API lấy toàn bộ sản phẩm (hoặc tăng limit) để lọc
+      // Hoặc gọi từng sản phẩm nếu Backend hỗ trợ filter theo title chính xác
       const response = await axios.get(
-        `${API_BASE_URL}/api/products?page=1&limit=3`,
+        `${API_BASE_URL}/api/products?limit=100`,
       );
+
       const { data } = response.data;
 
-      const formattedProducts = data.map((product) => {
+      // Lọc ra đúng 3 sản phẩm dựa trên title trong database
+      const filteredData = data.filter((product) =>
+        featuredTitles.includes(product.title),
+      );
+
+      // Format lại dữ liệu hình ảnh như cũ
+      const formattedProducts = filteredData.map((product) => {
         let imageUrl;
         const img = String(product.image || "").trim();
 
@@ -52,7 +65,12 @@ const WellnessHomepage = () => {
         };
       });
 
-      setProducts(formattedProducts);
+      // Đảm bảo thứ tự hiển thị đúng như danh sách featuredTitles
+      const sortedProducts = featuredTitles
+        .map((title) => formattedProducts.find((p) => p.title === title))
+        .filter(Boolean); // Loại bỏ null nếu không tìm thấy
+
+      setProducts(sortedProducts);
     } catch (error) {
       console.error("Error loading featured products:", error);
     } finally {
