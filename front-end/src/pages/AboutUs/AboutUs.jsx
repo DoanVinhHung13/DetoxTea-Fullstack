@@ -86,7 +86,7 @@ const AboutUs = () => {
                 Sinh ra từ đất và nuôi dưỡng bởi truyền thống, Yên đại diện cho
                 một hành trình từ những vườn trà thanh bình đến liệu trình chăm
                 sóc sức khỏe hàng ngày của bạn. Câu chuyện của chúng tôi là về
-                sự kết nối—với thiên nhiên, với nghề thủ công, và với những
+                sự kết nối - với thiên nhiên, với nghề thủ công, và với những
                 khoảnh khắc tĩnh lặng định hình hạnh phúc của chúng ta.
               </p>
               <p>

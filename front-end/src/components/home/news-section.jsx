@@ -13,7 +13,7 @@ const newsArticles = [
     excerpt:
       "Bước chân lên những đồi chè lâu năm, nơi từng có những búp trà lỡ hẹn với thời gian. Giờ đây, chúng kể tiếp câu chuyện về hương vị nguyên bản và sự tử tế của đất lành. Một hành trình vừa tìm lại nguồn cội, vừa cảm nhận sự yên bình giữa thiên nhiên.",
     image: haGiangImg,
-    slug: "kham-pha-doi-che-co-thu-ha-giang",
+    slug: "tro-ve-voi-nhung-nuong-che-lang-le-lam-dong",
   },
   {
     id: 2,
@@ -22,7 +22,7 @@ const newsArticles = [
     excerpt:
       "Nhấm nháp từng ngụm trà, cảm nhận hương thơm dịu dàng và hơi thở của lá trà. Những nghi thức giản đơn, tinh tế không chỉ giúp điều chỉnh nhiệt độ hay thời gian, mà còn dạy ta cách chậm lại, lắng nghe bản thân và tìm thấy bình yên trong những khoảnh khắc tưởng chừng nhỏ bé.",
     image: phaTraImg,
-    slug: "nghe-thuat-pha-tra-tinh-hoa",
+    slug: "thuong-tra-khoanh-khac-tinh-lang-giua-nhip-song-hoi-ha",
   },
   {
     id: 3,

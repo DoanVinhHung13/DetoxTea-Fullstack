@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import logoTrang from "../../../assets/images/home/logo-trang.png";
 
 const Footer = () => {
@@ -59,15 +60,37 @@ const Footer = () => {
 
             <ul className="space-y-3 text-sm text-white/70">
               <li className="cursor-pointer hover:text-white">
-                Sương Mai - Thanh nhẹ
+                <Link
+                  to="/auth/product/69a68e26b919ce2cf32db334"
+                  className="block w-full h-full"
+                >
+                  Sương Mai - Thanh nhẹ
+                </Link>
               </li>
               <li className="cursor-pointer hover:text-white">
-                Nhã Hương - Thơm dịu
+                <Link
+                  to="/auth/product/60d21b4667d0d8992e610100"
+                  className="block w-full h-full"
+                >
+                  Nhã Hương - Thơm dịu
+                </Link>
               </li>
               <li className="cursor-pointer hover:text-white">
-                Tình Sắc - Đậm vị
+                <Link
+                  to="/auth/product/60d21b4667d0d8992e610110"
+                  className="block w-full h-full"
+                >
+                  Tình Sắc - Đậm vị
+                </Link>
               </li>
-              <li className="cursor-pointer hover:text-white">Hộp quà Tết</li>
+              <li className="cursor-pointer hover:text-white">
+                <Link
+                  to="/auth/product/69a68e4ab919ce2cf32db335"
+                  className="block w-full h-full"
+                >
+                  Hộp quà Tết
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -79,33 +102,33 @@ const Footer = () => {
 
             <ul className="space-y-3 text-sm text-white/70">
               <li className="cursor-pointer hover:text-white">
-                Hành trình trà từ Lâm Đồng
+                <Link
+                  to="/news/tro-ve-voi-nhung-nuong-che-lang-le-lam-dong"
+                  className="block w-full h-full"
+                >
+                  Hành trình trà từ Lâm Đồng
+                </Link>
               </li>
               <li className="cursor-pointer hover:text-white">
-                Vẻ đẹp "Trà lệch chuẩn"
+                <Link
+                  to="/news/thuong-tra-khoanh-khac-tinh-lang-giua-nhip-song-hoi-ha"
+                  className="block w-full h-full"
+                >
+                  Vẻ đẹp "Trà lệch chuẩn"
+                </Link>
               </li>
-              <li className="cursor-pointer hover:text-white">
+              <Link
+                to="/news/tra-va-nhung-cau-chuyen-bat-ngo"
+                className="block w-full h-full"
+              >
                 Nghệ thuật pha trà
-              </li>
+              </Link>
+              <li className="cursor-pointer hover:text-white"></li>
             </ul>
           </div>
 
           {/* NEWSLETTER + CONTACT */}
           <div className="space-y-6">
-            <div>
-              <h4 className="mb-3 text-sm font-semibold tracking-widest uppercase">
-                Nhận ưu đãi
-              </h4>
-
-              <div className="flex">
-                <input
-                  type="email"
-                  placeholder="Email của bạn"
-                  className="w-full py-2 text-sm bg-transparent outline-none placeholder:text-white/50"
-                />
-              </div>
-            </div>
-
             {/* CONTACT */}
             <div>
               <p className="mb-2 text-sm font-semibold tracking-widest uppercase">
@@ -114,19 +137,6 @@ const Footer = () => {
 
               <p className="text-sm text-white/70">(+84) 271 837 323</p>
               <p className="text-sm text-white/70">yen.detox@gmail.com</p>
-            </div>
-
-            {/* SOCIAL */}
-            <div className="flex gap-4">
-              <div className="w-8 h-8 flex items-center justify-center border border-white/40 rounded-full hover:bg-white hover:text-[#1E4D3B] cursor-pointer transition">
-                f
-              </div>
-              <div className="w-8 h-8 flex items-center justify-center border border-white/40 rounded-full hover:bg-white hover:text-[#1E4D3B] cursor-pointer transition">
-                in
-              </div>
-              <div className="w-8 h-8 flex items-center justify-center border border-white/40 rounded-full hover:bg-white hover:text-[#1E4D3B] cursor-pointer transition">
-                yt
-              </div>
             </div>
           </div>
         </div>

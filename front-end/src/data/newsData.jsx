@@ -10,7 +10,7 @@ export const newsArticles = [
     date: "15 Tháng 10, 2024",
     author: "Minh An",
     image: haGiangImg,
-    slug: "kham-pha-doi-che-co-thu-ha-giang",
+    slug: "tro-ve-voi-nhung-nuong-che-lang-le-lam-dong",
     content: `
       <!DOCTYPE html>
 <html lang="vi">
@@ -123,7 +123,7 @@ export const newsArticles = [
     excerpt:
       "Nhấm nháp từng ngụm trà, cảm nhận hương thơm dịu dàng và hơi thở của lá trà. Những nghi thức giản đơn giúp ta chậm lại và tìm thấy bình yên.",
     image: phaTraImg,
-    slug: "nghe-thuat-pha-tra-tinh-hoa",
+    slug: "thuong-tra-khoanh-khac-tinh-lang-giua-nhip-song-hoi-ha",
     content: `
       <!DOCTYPE html>
 <html lang="vi">
