@@ -15,7 +15,12 @@ dotenv.config(); // Move dotenv.config() before using process.env
 
 app.use(
   cors({
-    origin: [process.env.CLIENT_URL],
+    origin: [
+      "http://localhost:3000",
+      "https://yen-detox-tea.com",
+      "https://www.yen-detox-tea.com",
+      "https://detox-tea-fullstack.vercel.app",
+    ],
     credentials: true,
   }),
 );
