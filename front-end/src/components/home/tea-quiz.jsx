@@ -72,7 +72,7 @@ export default function TeaQuiz() {
           } else if (img) {
             imageUrl = `${API_BASE_URL}/uploads/${img}`;
           } else {
-            imageUrl = "https://via.placeholder.com/400?text=No+Image";
+            imageUrl = "";
           }
           return { ...product, imageUrl };
         });
