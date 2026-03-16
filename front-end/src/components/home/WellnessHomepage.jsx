@@ -57,7 +57,7 @@ const WellnessHomepage = () => {
         } else if (img) {
           imageUrl = `${API_BASE_URL}/uploads/${img}`;
         } else {
-          imageUrl = "https://via.placeholder.com/400?text=No+Image";
+          imageUrl = "";
         }
         return {
           ...product,
@@ -172,8 +172,6 @@ const WellnessHomepage = () => {
                       className="object-cover w-full h-full p-2 transition-transform duration-500 rounded-xl hover:scale-110"
                       onError={(e) => {
                         e.target.onerror = null;
-                        e.target.src =
-                          "https://via.placeholder.com/400?text=No+Image";
                       }}
                     />
                   </div>
