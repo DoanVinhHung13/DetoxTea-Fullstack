@@ -58,6 +58,7 @@ import AboutUs from "./pages/AboutUs/AboutUs.jsx";
 import AuthCallback from "./pages/AuthCallback";
 import ManagePayment from "./pages/DashboardAdmin/ManagePayment/ManagePayment";
 import ManageProductA from "./pages/DashboardAdmin/ManageProduct/ManageProduct";
+import ManageOrderA from "./pages/DashboardAdmin/ManageOrder/ManageOrder";
 import AdminDashboardLayout from "./pages/DashboardAdmin/ManagerDashboardAdminLaydout";
 import ManageStore from "./pages/DashboardAdmin/ManageShop/ManageStore";
 import ManageUser from "./pages/DashboardAdmin/ManageUser/ManageUser";
@@ -192,6 +193,10 @@ const router = createBrowserRouter(
         <Route
           path="/admin/manage-payments"
           element={<ManagePayment />}
+        ></Route>
+        <Route
+          path="/admin/manage-orders"
+          element={<ManageOrderA />}
         ></Route>
       </Route>
 

@@ -239,6 +239,9 @@ export default function AdminDashboardLayout() {
   const handleOnclickPayments = () => {
     navigate("/admin/manage-payments");
   };
+  const handleOnclickOrders = () => {
+    navigate("/admin/manage-orders");
+  };
 
   const handleOnclickSignout = async () => {
     await AuthenService.logout();
@@ -449,6 +452,21 @@ export default function AdminDashboardLayout() {
                   primary="Payment Management" 
                   primaryTypographyProps={{ 
                     fontWeight: currentPath === "/admin/manage-payments" ? 'bold' : 'normal' 
+                  }}
+                />
+              </ListItemButton>
+
+              <ListItemButton 
+                onClick={handleOnclickOrders}
+                selected={currentPath === "/admin/manage-orders"}
+              >
+                <ListItemIcon sx={{ color: "primary.contrastText" }}>
+                  <ReceiptLongIcon />
+                </ListItemIcon>
+                <ListItemText 
+                  primary="Manage Orders" 
+                  primaryTypographyProps={{ 
+                    fontWeight: currentPath === "/admin/manage-orders" ? 'bold' : 'normal' 
                   }}
                 />
               </ListItemButton>

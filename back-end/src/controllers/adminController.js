@@ -862,21 +862,23 @@ exports.getAllOrdersAdmin = async (req, res) => {
         // 6. Tính tổng số tiền cho từng seller trong đơn hàng
         const sellerAmounts = {};
         orderItemsWithShipping.forEach((item) => {
-          const sellerId = item.productId.sellerId._id.toString();
-          if (!sellerAmounts[sellerId]) {
-            sellerAmounts[sellerId] = {
-              seller: item.productId.sellerId,
-              amount: 0,
-              items: [],
-            };
+          if (item.productId && item.productId.sellerId) {
+            const sellerId = item.productId.sellerId._id.toString();
+            if (!sellerAmounts[sellerId]) {
+              sellerAmounts[sellerId] = {
+                seller: item.productId.sellerId,
+                amount: 0,
+                items: [],
+              };
+            }
+            sellerAmounts[sellerId].amount += item.quantity * item.unitPrice;
+            sellerAmounts[sellerId].items.push({
+              product: item.productId,
+              quantity: item.quantity,
+              unitPrice: item.unitPrice,
+              shippingInfo: item.shippingInfo,
+            });
           }
-          sellerAmounts[sellerId].amount += item.quantity * item.unitPrice;
-          sellerAmounts[sellerId].items.push({
-            product: item.productId,
-            quantity: item.quantity,
-            unitPrice: item.unitPrice,
-            shippingInfo: item.shippingInfo,
-          });
         });
 
         return {
@@ -901,6 +903,136 @@ exports.getAllOrdersAdmin = async (req, res) => {
     });
   } catch (error) {
     handleError(res, error, "Lỗi khi lấy danh sách đơn hàng");
+  }
+};
+
+/**
+ * @desc Lấy chi tiết một đơn hàng cho admin
+ * @route GET /api/admin/orders/:orderId
+ * @access Riêng tư (Admin)
+ */
+exports.getOrderDetailsAdmin = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+
+    const order = await Order.findById(orderId)
+      .populate("buyerId", "username email fullname")
+      .populate("addressId")
+      .lean();
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Đơn hàng không tồn tại",
+      });
+    }
+
+    const orderItems = await OrderItem.find({ orderId: order._id })
+      .populate({
+        path: "productId",
+        select: "title image price sellerId categoryId",
+        populate: [
+          { path: "sellerId", select: "username email" },
+          { path: "categoryId", select: "name" },
+        ],
+      })
+      .lean();
+
+    // Lấy shipping info cho từng order item
+    const orderItemIds = orderItems.map((item) => item._id);
+    const shippingInfos = await ShippingInfo.find({
+      orderItemId: { $in: orderItemIds },
+    }).lean();
+
+    const shippingMap = {};
+    shippingInfos.forEach((info) => {
+      shippingMap[info.orderItemId.toString()] = info;
+    });
+
+    const orderItemsWithShipping = orderItems.map((item) => ({
+      ...item,
+      shippingInfo: shippingMap[item._id.toString()] || null,
+    }));
+
+    res.status(200).json({
+      success: true,
+      data: {
+        ...order,
+        orderItems: orderItemsWithShipping,
+      },
+    });
+  } catch (error) {
+    handleError(res, error, "Lỗi khi lấy chi tiết đơn hàng");
+  }
+};
+
+/**
+ * @desc Cập nhật trạng thái đơn hàng (Admin)
+ * @route PUT /api/admin/orders/:orderId/status
+ * @access Riêng tư (Admin)
+ */
+exports.updateOrderStatusAdmin = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const { status } = req.body;
+
+    const validStatuses = [
+      "pending",
+      "processing",
+      "shipping",
+      "shipped",
+      "failed to ship",
+      "rejected",
+    ];
+
+    if (!status || !validStatuses.includes(status)) {
+      return res.status(400).json({
+        success: false,
+        message: "Trạng thái không hợp lệ",
+      });
+    }
+
+    const order = await Order.findById(orderId);
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Đơn hàng không tồn tại",
+      });
+    }
+
+    const previousStatus = order.status;
+    order.status = status;
+    await order.save();
+
+    // Cập nhật trạng thái của tất cả các item trong đơn hàng nếu order thay đổi trạng thái
+    // Điều này đảm bảo tính nhất quán
+    await OrderItem.updateMany({ orderId: order._id }, { status });
+
+    // Gửi thông báo cho người mua nếu trạng thái thay đổi
+    if (status !== previousStatus) {
+      try {
+        const buyer = await User.findById(order.buyerId);
+        if (buyer) {
+          const orderShortId = order._id.toString().slice(-6).toUpperCase();
+          const emailSubject = `Cập nhật trạng thái đơn hàng #${orderShortId}`;
+          const emailText = `Chào ${buyer.username},\n\nTrạng thái đơn hàng #${orderShortId} của bạn đã được cập nhật thành: ${status}.\n\nTrân trọng,\nShopii Team`;
+          await sendEmail(buyer.email, emailSubject, emailText);
+
+          // Tạo thông báo trong hệ thống (nếu có service hỗ trợ logic này ở controllers)
+          // Ở đây mình có thể import service thông báo nếu cần, nhưng tạm thời dùng logic đơn giản
+        }
+      } catch (err) {
+        console.error("Lỗi khi gửi email/thông báo cập nhật trạng thái:", err);
+      }
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Cập nhật trạng thái đơn hàng thành công",
+      data: order,
+    });
+  } catch (error) {
+    handleError(res, error, "Lỗi khi cập nhật trạng thái đơn hàng");
   }
 };
 

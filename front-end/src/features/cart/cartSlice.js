@@ -8,17 +8,24 @@ export const fetchCart = createAsyncThunk(
   "cart/fetchCart",
   async (_, { getState, rejectWithValue }) => {
     try {
-      const token = getState().auth.token;
+      const state = getState();
+      const token = state.auth.token;
+      const user = state.auth.user;
+
       if (!token) {
         return rejectWithValue("No token found");
       }
+
+      if (!user || user.role !== "buyer") {
+        return rejectWithValue("User is not allowed to access cart");
+      }
+
       const response = await axios.get(`${API_URL}/api/buyers/cart`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
       const cartItems = response.data.items;
 
-      // Fetch inventory data for each product in the cart
       const itemsWithInventory = await Promise.all(
         cartItems.map(async (item) => {
           try {
@@ -29,9 +36,9 @@ export const fetchCart = createAsyncThunk(
               },
             );
 
-            // Add inventory quantity to productId object
             item.productId.inventoryQuantity =
               inventoryResponse.data.data.inventory?.quantity || 0;
+
             return item;
           } catch (error) {
             console.error(

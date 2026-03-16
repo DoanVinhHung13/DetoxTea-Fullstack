@@ -4,10 +4,7 @@ const BACKEND_API_URI = `${API_BASE_URL}/api`;
 
 // Format currency function
 const formatCurrency = (amount) => {
-  return new Intl.NumberFormat('vi-VN', { 
-    style: 'currency', 
-    currency: 'VND' 
-  }).format(amount);
+  return new Intl.NumberFormat("vi-VN").format(amount * 1000) + " đ";
 };
 
 export {

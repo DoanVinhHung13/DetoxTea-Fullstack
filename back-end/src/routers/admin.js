@@ -114,8 +114,8 @@ router.get("/products/:id/reviews", getProductReviewsAndStats);
 
 // --- Order Management by Admin Routes ---
 router.get("/orders", getAllOrdersAdmin);
-// router.get("/orders/:orderId", getOrderDetailsAdmin);
-// router.put("/orders/:orderId/status", updateOrderStatusAdmin);
+router.get("/orders/:orderId", getOrderDetailsAdmin);
+router.put("/orders/:orderId/status", updateOrderStatusAdmin);
 
 // --- Review and Feedback Moderation Routes ---
 router.get("/reviews", getAllReviewsAdmin); // danh sách đánh giá
