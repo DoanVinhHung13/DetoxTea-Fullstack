@@ -1,10 +1,10 @@
 // ManageProduct.js
-import * as React from "react";
 import Grid from "@mui/material/Grid";
 import Paper from "@mui/material/Paper";
-import Products from "./Products";
-import { useOutletContext } from "react-router-dom";
 import axios from "axios";
+import * as React from "react";
+import { useOutletContext } from "react-router-dom";
+import Products from "./Products";
 
 export default function ManageProductA() {
   const { handleSetDashboardTitle } = useOutletContext();
@@ -21,12 +21,12 @@ export default function ManageProductA() {
   const updateProductList = async (page = 1) => {
     try {
       const res = await axios.get(
-        `http://localhost:9999/api/admin/products?page=${page}&limit=5`,
+        `https://detoxtea-fullstack.onrender.com/api/admin/products?page=${page}&limit=5`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
           },
-        }
+        },
       );
       setProducts(res.data.data);
       setTotalPages(res.data.totalPages || 1);

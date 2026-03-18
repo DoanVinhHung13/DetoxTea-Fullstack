@@ -1,17 +1,17 @@
 // UpdateProduct.js
-import * as React from "react";
+import Alert from "@mui/material/Alert";
+import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-import TextField from "@mui/material/TextField";
-import Button from "@mui/material/Button";
-import axios from "axios";
-import Snackbar from "@mui/material/Snackbar";
-import Alert from "@mui/material/Alert";
 import FormControlLabel from "@mui/material/FormControlLabel";
+import Snackbar from "@mui/material/Snackbar";
 import Switch from "@mui/material/Switch";
+import TextField from "@mui/material/TextField";
+import axios from "axios";
+import * as React from "react";
 
 export default function UpdateProduct({
   targetProduct,
@@ -21,10 +21,12 @@ export default function UpdateProduct({
 }) {
   const [title, setTitle] = React.useState(targetProduct?.title || "");
   const [description, setDescription] = React.useState(
-    targetProduct?.description || ""
+    targetProduct?.description || "",
   );
   const [price, setPrice] = React.useState(targetProduct?.price || "");
-  const [isActive, setIsActive] = React.useState(targetProduct?.isAuction || false);
+  const [isActive, setIsActive] = React.useState(
+    targetProduct?.isAuction || false,
+  );
   const [snackbar, setSnackbar] = React.useState({
     open: false,
     msg: "",
@@ -41,20 +43,20 @@ export default function UpdateProduct({
   const handleUpdateProduct = async (e) => {
     e.preventDefault();
     try {
-      const reqBody = { 
-        title, 
-        description, 
+      const reqBody = {
+        title,
+        description,
         price,
-        isAuction: isActive // Using isAuction field as isActive
+        isAuction: isActive, // Using isAuction field as isActive
       };
       const { data } = await axios.put(
-        `http://localhost:9999/api/admin/products/${targetProduct._id}/status`,
+        `https://detoxtea-fullstack.onrender.com/api/admin/products/${targetProduct._id}/status`,
         reqBody,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
           },
-        }
+        },
       );
       setSnackbar({
         open: true,
@@ -121,7 +123,7 @@ export default function UpdateProduct({
                 />
               }
               label="Active"
-              sx={{ mb: 2, display: 'block' }}
+              sx={{ mb: 2, display: "block" }}
             />
             <DialogActions sx={{ mt: 2, px: 0 }}>
               <Button onClick={handleClose} variant="text" color="secondary">

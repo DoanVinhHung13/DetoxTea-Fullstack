@@ -1,17 +1,17 @@
-import * as React from "react";
 import {
+  Alert,
+  Button,
   Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle,
-  TextField,
   MenuItem,
-  Button,
   Snackbar,
-  Alert,
+  TextField,
 } from "@mui/material";
 import axios from "axios";
+import * as React from "react";
 
 export default function UpdateUser({
   targetUser,
@@ -41,48 +41,46 @@ export default function UpdateUser({
   }, [targetUser, open]);
 
   const handleUpdateUser = async (e) => {
-  e.preventDefault();
-  if (!targetUser?._id) return;
+    e.preventDefault();
+    if (!targetUser?._id) return;
 
-  try {
-    setLoading(true);
+    try {
+      setLoading(true);
 
-    const res = await axios.put(
-      `http://localhost:9999/api/admin/users/${targetUser._id}`,
-      {
-        username,
-        email,
-        role,
-        action: status,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      const res = await axios.put(
+        `https://detoxtea-fullstack.onrender.com/api/admin/users/${targetUser._id}`,
+        {
+          username,
+          email,
+          role,
+          action: status,
         },
-      }
-    );
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          },
+        },
+      );
 
-    setSnackbar({
-      open: true,
-      msg: "Update successful!",
-      severity: "success",
-    });
+      setSnackbar({
+        open: true,
+        msg: "Update successful!",
+        severity: "success",
+      });
 
-    // 🔥 CỰC QUAN TRỌNG
-    onUpdated?.();      // refresh list
-    handleClose();      // đóng dialog NGAY
-
-  } catch (error) {
-    setSnackbar({
-      open: true,
-      msg: error?.response?.data?.message || "Update failed!",
-      severity: "error",
-    });
-  } finally {
-    setLoading(false);
-  }
-};
-
+      // 🔥 CỰC QUAN TRỌNG
+      onUpdated?.(); // refresh list
+      handleClose(); // đóng dialog NGAY
+    } catch (error) {
+      setSnackbar({
+        open: true,
+        msg: error?.response?.data?.message || "Update failed!",
+        severity: "error",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <>
@@ -146,11 +144,7 @@ export default function UpdateUser({
               <Button onClick={handleClose} color="secondary">
                 Cancel
               </Button>
-              <Button
-                type="submit"
-                variant="contained"
-                disabled={loading}
-              >
+              <Button type="submit" variant="contained" disabled={loading}>
                 {loading ? "Saving..." : "Save"}
               </Button>
             </DialogActions>

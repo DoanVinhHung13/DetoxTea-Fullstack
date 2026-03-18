@@ -1,11 +1,11 @@
-import * as React from "react";
 import Grid from "@mui/material/Grid";
 import Paper from "@mui/material/Paper";
-import Users from "./Users";
-import UpdateUser from "./UpdateUser";
-import ConfirmDialog from "./ConfirmDialog";
-import { useOutletContext } from "react-router-dom";
 import axios from "axios";
+import * as React from "react";
+import { useOutletContext } from "react-router-dom";
+import ConfirmDialog from "./ConfirmDialog";
+import UpdateUser from "./UpdateUser";
+import Users from "./Users";
 
 export default function ManageUser() {
   const { handleSetDashboardTitle } = useOutletContext();
@@ -32,12 +32,12 @@ export default function ManageUser() {
   const updateUserList = async (page = 1) => {
     try {
       const res = await axios.get(
-        `http://localhost:9999/api/admin/users?page=${page}&limit=10`,
+        `https://detoxtea-fullstack.onrender.com/api/admin/users?page=${page}&limit=10`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
           },
-        }
+        },
       );
 
       setUsers(res.data.data || []);
@@ -84,27 +84,26 @@ export default function ManageUser() {
     try {
       if (confirmType === "delete") {
         await axios.delete(
-          `http://localhost:9999/api/admin/users/${selectedUser._id}`,
+          `https://detoxtea-fullstack.onrender.com/api/admin/users/${selectedUser._id}`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
             },
-          }
+          },
         );
       }
 
       if (confirmType === "lock") {
         await axios.patch(
-          `http://localhost:9999/api/admin/users/${selectedUser._id}/status`,
+          `https://detoxtea-fullstack.onrender.com/api/admin/users/${selectedUser._id}/status`,
           {
-            action:
-              selectedUser.action === "lock" ? "unlock" : "lock",
+            action: selectedUser.action === "lock" ? "unlock" : "lock",
           },
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
             },
-          }
+          },
         );
       }
 
@@ -144,11 +143,7 @@ export default function ManageUser() {
       {/* CONFIRM DELETE / LOCK */}
       <ConfirmDialog
         open={openConfirm}
-        title={
-          confirmType === "delete"
-            ? "Delete User"
-            : "Lock / Unlock User"
-        }
+        title={confirmType === "delete" ? "Delete User" : "Lock / Unlock User"}
         content={
           confirmType === "delete"
             ? "Are you sure you want to delete this user?"

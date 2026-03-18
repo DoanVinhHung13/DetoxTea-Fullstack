@@ -1,10 +1,10 @@
 // ManageStore.js
-import * as React from "react";
 import Grid from "@mui/material/Grid";
 import Paper from "@mui/material/Paper";
-import Stores from "./Stores";
-import { useOutletContext } from "react-router-dom";
 import axios from "axios";
+import * as React from "react";
+import { useOutletContext } from "react-router-dom";
+import Stores from "./Stores";
 
 export default function ManageStore() {
   const { handleSetDashboardTitle } = useOutletContext();
@@ -21,12 +21,12 @@ export default function ManageStore() {
   const updateStoreList = async (page = 1) => {
     try {
       const res = await axios.get(
-        `http://localhost:9999/api/admin/stores?page=${page}&limit=10&withRatings=true`,
+        `https://detoxtea-fullstack.onrender.com/api/admin/stores?page=${page}&limit=10&withRatings=true`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
           },
-        }
+        },
       );
       setStores(res.data.data);
       setTotalPages(res.data.totalPages || 1);

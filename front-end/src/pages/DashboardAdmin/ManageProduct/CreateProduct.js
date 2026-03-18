@@ -1,15 +1,15 @@
 import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
   Button,
-  Stack,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   MenuItem,
+  Stack,
+  TextField,
 } from "@mui/material";
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function CreateProduct({ open, handleClose, onCreated }) {
   const [form, setForm] = useState({
@@ -33,7 +33,7 @@ export default function CreateProduct({ open, handleClose, onCreated }) {
   const fetchCategories = async () => {
     try {
       const res = await axios.get(
-        "http://localhost:9999/api/categories"
+        "https://detoxtea-fullstack.onrender.com/api/categories",
       );
       setCategories(res.data.data || res.data);
     } catch (err) {
@@ -48,7 +48,7 @@ export default function CreateProduct({ open, handleClose, onCreated }) {
   const handleSubmit = async () => {
     try {
       await axios.post(
-        "http://localhost:9999/api/admin/products",
+        "https://detoxtea-fullstack.onrender.com/api/admin/products",
         {
           ...form,
           price: Number(form.price), // ép kiểu cho chắc
@@ -58,7 +58,7 @@ export default function CreateProduct({ open, handleClose, onCreated }) {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
           },
-        }
+        },
       );
 
       onCreated();
@@ -106,7 +106,7 @@ export default function CreateProduct({ open, handleClose, onCreated }) {
             value={form.inventory}
             onChange={handleChange}
             inputProps={{ min: 0 }}
-            />
+          />
 
           <TextField
             label="Image URL"

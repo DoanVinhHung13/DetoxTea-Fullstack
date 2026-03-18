@@ -1,69 +1,55 @@
-import React, { useEffect, useState } from "react";
+import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
+import FilterAltIcon from "@mui/icons-material/FilterAlt";
+import LocalShippingIcon from "@mui/icons-material/LocalShipping";
+import PeopleIcon from "@mui/icons-material/People";
+import PersonIcon from "@mui/icons-material/Person";
+import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
+import RefreshIcon from "@mui/icons-material/Refresh";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import StoreIcon from "@mui/icons-material/Store";
+import TimelineIcon from "@mui/icons-material/Timeline";
+import TrendingDownIcon from "@mui/icons-material/TrendingDown";
+import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import {
-  Grid,
+  Avatar,
+  Box,
   Card,
   CardContent,
-  Typography,
-  Box,
-  Divider,
-  Select,
-  MenuItem,
+  Chip,
   FormControl,
+  Grid,
+  IconButton,
   InputLabel,
-  Button,
+  LinearProgress,
+  MenuItem,
+  Select,
+  Stack,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableRow,
-  Link as MuiLink,
-  IconButton,
-  Chip,
-  Stack,
-  LinearProgress,
-  Avatar,
-  useTheme,
   Tooltip,
+  Typography,
+  useTheme,
 } from "@mui/material";
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { useOutletContext } from "react-router-dom";
 import {
-  PieChart,
-  Pie,
+  Bar,
+  BarChart,
+  CartesianGrid,
   Cell,
+  Pie,
+  PieChart,
   Tooltip as RechartsTooltip,
   ResponsiveContainer,
-  BarChart,
-  Bar,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Legend,
-  LineChart, 
-  Line,
-  Radar,
-  RadarChart, 
-  PolarGrid, 
-  PolarAngleAxis, 
-  PolarRadiusAxis,
-  RadialBarChart, 
-  RadialBar
 } from "recharts";
-import { Link } from "react-router-dom";
-import axios from "axios";
-import CustomLegend from "./CustomLegend";
-import { useOutletContext } from "react-router-dom";
-import RefreshIcon from '@mui/icons-material/Refresh';
-import FilterAltIcon from '@mui/icons-material/FilterAlt';
-import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import PeopleIcon from '@mui/icons-material/People';
-import PersonIcon from '@mui/icons-material/Person';
-import LocalShippingIcon from '@mui/icons-material/LocalShipping';
-import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
-import StoreIcon from '@mui/icons-material/Store';
-import TimelineIcon from '@mui/icons-material/Timeline';
 import Title from "../Title";
-import TrendingUpIcon from '@mui/icons-material/TrendingUp';
-import TrendingDownIcon from '@mui/icons-material/TrendingDown';
+import CustomLegend from "./CustomLegend";
 
 // Custom colors for charts
 const COLORS = [
@@ -87,36 +73,42 @@ const TIME_OPTIONS = [
 ];
 
 // Component for stats card
-const StatCard = ({ title, value, icon, color = "primary.main", percentChange = null }) => {
+const StatCard = ({
+  title,
+  value,
+  icon,
+  color = "primary.main",
+  percentChange = null,
+}) => {
   return (
-    <Card 
-      sx={{ 
-        height: '100%',
-        position: 'relative',
-        overflow: 'hidden',
-        transition: 'transform 0.2s, box-shadow 0.2s',
-        '&:hover': {
-          transform: 'translateY(-4px)',
-          boxShadow: '0 8px 24px 0 rgba(0,0,0,0.12)'
-        }
+    <Card
+      sx={{
+        height: "100%",
+        position: "relative",
+        overflow: "hidden",
+        transition: "transform 0.2s, box-shadow 0.2s",
+        "&:hover": {
+          transform: "translateY(-4px)",
+          boxShadow: "0 8px 24px 0 rgba(0,0,0,0.12)",
+        },
       }}
     >
-      <Box 
-        sx={{ 
-          position: 'absolute', 
-          top: 0, 
-          right: 0, 
-          width: '30%', 
-          height: '100%', 
-          bgcolor: `${color}15`, 
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center'
+      <Box
+        sx={{
+          position: "absolute",
+          top: 0,
+          right: 0,
+          width: "30%",
+          height: "100%",
+          bgcolor: `${color}15`,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
         }}
       >
         {icon}
       </Box>
-      <CardContent sx={{ position: 'relative', zIndex: 1 }}>
+      <CardContent sx={{ position: "relative", zIndex: 1 }}>
         <Typography variant="body2" color="text.secondary" gutterBottom>
           {title}
         </Typography>
@@ -124,18 +116,19 @@ const StatCard = ({ title, value, icon, color = "primary.main", percentChange = 
           {value}
         </Typography>
         {percentChange !== null && (
-          <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
+          <Box sx={{ display: "flex", alignItems: "center", mt: 1 }}>
             {percentChange >= 0 ? (
               <TrendingUpIcon fontSize="small" color="success" />
             ) : (
               <TrendingDownIcon fontSize="small" color="error" />
             )}
-            <Typography 
-              variant="body2" 
+            <Typography
+              variant="body2"
               color={percentChange >= 0 ? "success.main" : "error.main"}
               ml={0.5}
             >
-              {Math.abs(percentChange)}% {percentChange >= 0 ? "increase" : "decrease"}
+              {Math.abs(percentChange)}%{" "}
+              {percentChange >= 0 ? "increase" : "decrease"}
             </Typography>
           </Box>
         )}
@@ -161,14 +154,14 @@ const Overview = () => {
     setError(null);
     try {
       const res = await axios.get(
-        `http://localhost:9999/api/admin/report${
+        `https://detoxtea-fullstack.onrender.com/api/admin/report${
           selectedPeriod ? `?period=${selectedPeriod}` : ""
         }`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("accessToken") || ""}`,
           },
-        }
+        },
       );
       if (!res.data.success) {
         throw new Error("API response unsuccessful");
@@ -177,7 +170,7 @@ const Overview = () => {
       const revenueByCategory = res.data.insights.revenueByCategory || [];
       const totalRevenue = revenueByCategory.reduce(
         (sum, item) => sum + (item.value || 0),
-        0
+        0,
       );
       const revenueByCategoryWithPercent = revenueByCategory.map((item) => ({
         ...item,
@@ -225,7 +218,14 @@ const Overview = () => {
   return (
     <Box>
       {/* Title và các bộ lọc */}
-      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 3 }}>
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          mb: 3,
+        }}
+      >
         <Title highlight={true}>Dashboard Analytics</Title>
         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
           <FormControl size="small" variant="outlined">
@@ -236,7 +236,12 @@ const Overview = () => {
               label="Time Period"
               onChange={(e) => setPeriod(e.target.value)}
               sx={{ minWidth: 150 }}
-              startAdornment={<FilterAltIcon sx={{ mr: 1, color: 'text.secondary' }} fontSize="small" />}
+              startAdornment={
+                <FilterAltIcon
+                  sx={{ mr: 1, color: "text.secondary" }}
+                  fontSize="small"
+                />
+              }
             >
               {TIME_OPTIONS.map((opt) => (
                 <MenuItem value={opt.value} key={opt.value}>
@@ -258,7 +263,7 @@ const Overview = () => {
       </Box>
 
       {loading ? (
-        <Box sx={{ width: '100%', mt: 2, mb: 4 }}>
+        <Box sx={{ width: "100%", mt: 2, mb: 4 }}>
           <LinearProgress />
         </Box>
       ) : error ? (
@@ -269,71 +274,81 @@ const Overview = () => {
         <Grid container spacing={3}>
           {/* Summary Cards - first row */}
           <Grid item xs={12} sm={6} md={3}>
-            <StatCard 
-              title="Total Revenue (Shipped)" 
-              value={`$${formatNumber(report.summary.totalRevenue)}`} 
-              icon={<AttachMoneyIcon sx={{ fontSize: 40, color: 'primary.main' }} />} 
+            <StatCard
+              title="Total Revenue (Shipped)"
+              value={`$${formatNumber(report.summary.totalRevenue)}`}
+              icon={
+                <AttachMoneyIcon sx={{ fontSize: 40, color: "primary.main" }} />
+              }
               percentChange={3.7} // Example value
             />
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
-            <StatCard 
-              title="Total Orders" 
-              value={formatNumber(report.summary.totalOrders)} 
-              icon={<ShoppingCartIcon sx={{ fontSize: 40, color: 'secondary.main' }} />} 
+            <StatCard
+              title="Total Orders"
+              value={formatNumber(report.summary.totalOrders)}
+              icon={
+                <ShoppingCartIcon
+                  sx={{ fontSize: 40, color: "secondary.main" }}
+                />
+              }
               color="secondary.main"
               percentChange={2.1} // Example value
             />
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
-            <StatCard 
-              title="Total Users" 
-              value={formatNumber(report.summary.totalUsers)} 
-              icon={<PeopleIcon sx={{ fontSize: 40, color: '#0288d1' }} />} 
+            <StatCard
+              title="Total Users"
+              value={formatNumber(report.summary.totalUsers)}
+              icon={<PeopleIcon sx={{ fontSize: 40, color: "#0288d1" }} />}
               color="#0288d1"
               percentChange={5.8} // Example value
             />
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
-            <StatCard 
-              title="Unique Customers" 
-              value={formatNumber(report.summary.uniqueCustomers)} 
-              icon={<PersonIcon sx={{ fontSize: 40, color: '#43a047' }} />} 
+            <StatCard
+              title="Unique Customers"
+              value={formatNumber(report.summary.uniqueCustomers)}
+              icon={<PersonIcon sx={{ fontSize: 40, color: "#43a047" }} />}
               color="#43a047"
               percentChange={-1.2} // Example value
             />
           </Grid>
-          
+
           {/* Summary Cards - second row */}
           <Grid item xs={12} sm={6} md={3}>
-            <StatCard 
-              title="Products Shipped" 
-              value={formatNumber(report.summary.productsShipped)} 
-              icon={<LocalShippingIcon sx={{ fontSize: 40, color: '#7b1fa2' }} />} 
+            <StatCard
+              title="Products Shipped"
+              value={formatNumber(report.summary.productsShipped)}
+              icon={
+                <LocalShippingIcon sx={{ fontSize: 40, color: "#7b1fa2" }} />
+              }
               color="#7b1fa2"
             />
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
-            <StatCard 
-              title="Active Buyers" 
-              value={formatNumber(report.summary.activeBuyers)} 
-              icon={<PersonOutlineIcon sx={{ fontSize: 40, color: '#c62828' }} />} 
+            <StatCard
+              title="Active Buyers"
+              value={formatNumber(report.summary.activeBuyers)}
+              icon={
+                <PersonOutlineIcon sx={{ fontSize: 40, color: "#c62828" }} />
+              }
               color="#c62828"
             />
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
-            <StatCard 
-              title="Active Sellers" 
-              value={formatNumber(report.summary.activeSellers)} 
-              icon={<StoreIcon sx={{ fontSize: 40, color: '#f9a825' }} />} 
+            <StatCard
+              title="Active Sellers"
+              value={formatNumber(report.summary.activeSellers)}
+              icon={<StoreIcon sx={{ fontSize: 40, color: "#f9a825" }} />}
               color="#f9a825"
             />
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
-            <StatCard 
-              title="Conversion Rate" 
-              value={`${report.summary.conversionRate || 0}%`} 
-              icon={<TimelineIcon sx={{ fontSize: 40, color: '#00897b' }} />} 
+            <StatCard
+              title="Conversion Rate"
+              value={`${report.summary.conversionRate || 0}%`}
+              icon={<TimelineIcon sx={{ fontSize: 40, color: "#00897b" }} />}
               color="#00897b"
             />
           </Grid>
@@ -344,7 +359,7 @@ const Overview = () => {
               <Card sx={{ height: 420 }}>
                 <CardContent
                   sx={{
-                    height: '100%',
+                    height: "100%",
                     display: "flex",
                     flexDirection: "column",
                     p: 3,
@@ -373,12 +388,17 @@ const Overview = () => {
                             />
                           ))}
                         </Pie>
-                        <RechartsTooltip formatter={(value, name) => [`${value}`, `${name}`]} />
+                        <RechartsTooltip
+                          formatter={(value, name) => [`${value}`, `${name}`]}
+                        />
                       </PieChart>
                     </ResponsiveContainer>
                   </Box>
                   <Box sx={{ mt: 2 }}>
-                    <CustomLegend items={report.summary.orderStatus} colors={COLORS} />
+                    <CustomLegend
+                      items={report.summary.orderStatus}
+                      colors={COLORS}
+                    />
                   </Box>
                 </CardContent>
               </Card>
@@ -391,7 +411,7 @@ const Overview = () => {
               <Card sx={{ height: 420 }}>
                 <CardContent
                   sx={{
-                    height: '100%',
+                    height: "100%",
                     display: "flex",
                     flexDirection: "column",
                     p: 3,
@@ -403,26 +423,30 @@ const Overview = () => {
                     <ResponsiveContainer width="100%" height="100%">
                       <BarChart data={report.insights.revenueByCategory}>
                         <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
-                        <XAxis 
-                          dataKey="name" 
-                          tick={{fontSize: 12}}
-                          interval={0} 
+                        <XAxis
+                          dataKey="name"
+                          tick={{ fontSize: 12 }}
+                          interval={0}
                           angle={-45}
                           textAnchor="end"
                         />
                         <YAxis />
-                        <RechartsTooltip formatter={(value) => [`${value}%`, 'Revenue']} />
-                        <Bar 
-                          dataKey="value" 
+                        <RechartsTooltip
+                          formatter={(value) => [`${value}%`, "Revenue"]}
+                        />
+                        <Bar
+                          dataKey="value"
                           fill={theme.palette.primary.main}
                           radius={[4, 4, 0, 0]} // rounded corners
                         >
-                          {report.insights.revenueByCategory.map((entry, index) => (
-                            <Cell 
-                              key={`cat-${index}`} 
-                              fill={COLORS[index % COLORS.length]} 
-                            />
-                          ))}
+                          {report.insights.revenueByCategory.map(
+                            (entry, index) => (
+                              <Cell
+                                key={`cat-${index}`}
+                                fill={COLORS[index % COLORS.length]}
+                              />
+                            ),
+                          )}
                         </Bar>
                       </BarChart>
                     </ResponsiveContainer>
@@ -431,13 +455,13 @@ const Overview = () => {
               </Card>
             </Grid>
           )}
-          
+
           {/* User Activity / Recent Orders */}
           <Grid item xs={12} md={6} lg={4}>
             <Card sx={{ height: 420 }}>
-              <CardContent sx={{ p: 3, height: '100%' }}>
+              <CardContent sx={{ p: 3, height: "100%" }}>
                 <Title highlight={false}>Recent Users</Title>
-                <Box sx={{ mt: 2, maxHeight: '330px', overflow: 'auto' }}>
+                <Box sx={{ mt: 2, maxHeight: "330px", overflow: "auto" }}>
                   {report.insights.recentUsers ? (
                     <Table size="small">
                       <TableHead>
@@ -451,39 +475,49 @@ const Overview = () => {
                         {report.insights.recentUsers.map((user, idx) => (
                           <TableRow key={idx} hover>
                             <TableCell>
-                              <Stack direction="row" spacing={1} alignItems="center">
-                                <Avatar 
+                              <Stack
+                                direction="row"
+                                spacing={1}
+                                alignItems="center"
+                              >
+                                <Avatar
                                   src={user.avatar}
-                                  alt={user.name} 
-                                  sx={{ width: 30, height: 30 }} 
+                                  alt={user.name}
+                                  sx={{ width: 30, height: 30 }}
                                 />
-                                <Typography variant="body2">{user.name}</Typography>
+                                <Typography variant="body2">
+                                  {user.name}
+                                </Typography>
                               </Stack>
                             </TableCell>
                             <TableCell>
-                              {user.type === 'seller' ? (
-                                <Chip 
-                                  size="small" 
-                                  label="Seller" 
+                              {user.type === "seller" ? (
+                                <Chip
+                                  size="small"
+                                  label="Seller"
                                   color="secondary"
-                                  sx={{ fontWeight: 500, fontSize: '0.7rem' }}
+                                  sx={{ fontWeight: 500, fontSize: "0.7rem" }}
                                 />
                               ) : (
-                                <Chip 
-                                  size="small" 
-                                  label="Buyer" 
+                                <Chip
+                                  size="small"
+                                  label="Buyer"
                                   color="primary"
-                                  sx={{ fontWeight: 500, fontSize: '0.7rem' }}
+                                  sx={{ fontWeight: 500, fontSize: "0.7rem" }}
                                 />
                               )}
                             </TableCell>
                             <TableCell>
-                              <Chip 
-                                size="small" 
+                              <Chip
+                                size="small"
                                 label={user.status}
                                 variant="outlined"
-                                color={user.status === 'active' ? 'success' : 'default'}
-                                sx={{ fontWeight: 500, fontSize: '0.7rem' }}
+                                color={
+                                  user.status === "active"
+                                    ? "success"
+                                    : "default"
+                                }
+                                sx={{ fontWeight: 500, fontSize: "0.7rem" }}
                               />
                             </TableCell>
                           </TableRow>

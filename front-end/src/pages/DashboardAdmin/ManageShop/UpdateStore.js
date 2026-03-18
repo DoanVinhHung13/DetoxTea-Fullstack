@@ -1,16 +1,16 @@
 // UpdateStore.js
-import * as React from "react";
+import Alert from "@mui/material/Alert";
+import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-import TextField from "@mui/material/TextField";
 import MenuItem from "@mui/material/MenuItem";
-import Button from "@mui/material/Button";
-import axios from "axios";
 import Snackbar from "@mui/material/Snackbar";
-import Alert from "@mui/material/Alert";
+import TextField from "@mui/material/TextField";
+import axios from "axios";
+import * as React from "react";
 
 export default function UpdateStore({
   targetStore,
@@ -19,13 +19,13 @@ export default function UpdateStore({
   handleClose,
 }) {
   const [storeName, setStoreName] = React.useState(
-    targetStore?.storeName || ""
+    targetStore?.storeName || "",
   );
   const [description, setDescription] = React.useState(
-    targetStore?.description || ""
+    targetStore?.description || "",
   );
   const [bannerImageURL, setBannerImageURL] = React.useState(
-    targetStore?.bannerImageURL || ""
+    targetStore?.bannerImageURL || "",
   );
   const [status, setStatus] = React.useState(targetStore?.status || "");
   const [snackbar, setSnackbar] = React.useState({
@@ -46,13 +46,13 @@ export default function UpdateStore({
     try {
       const reqBody = { storeName, description, bannerImageURL, status };
       const { data } = await axios.put(
-        `http://localhost:9999/api/admin/stores/${targetStore._id}/status`, // Chỉ cập nhật status qua endpoint /status
+        `https://detoxtea-fullstack.onrender.com/api/admin/stores/${targetStore._id}/status`, // Chỉ cập nhật status qua endpoint /status
         { status }, // Chỉ gửi status để cập nhật trạng thái
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
           },
-        }
+        },
       );
       // Nếu cần cập nhật các trường khác, gửi thêm request tới endpoint chính
       if (
@@ -61,13 +61,13 @@ export default function UpdateStore({
         bannerImageURL !== targetStore.bannerImageURL
       ) {
         await axios.put(
-          `http://localhost:9999/api/admin/stores/${targetStore._id}`,
+          `https://detoxtea-fullstack.onrender.com/api/admin/stores/${targetStore._id}`,
           { storeName, description, bannerImageURL },
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
             },
-          }
+          },
         );
       }
       setSnackbar({

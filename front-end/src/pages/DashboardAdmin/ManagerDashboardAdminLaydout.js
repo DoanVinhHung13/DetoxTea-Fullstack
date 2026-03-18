@@ -1,50 +1,43 @@
-import * as React from "react";
-import { styled, createTheme, ThemeProvider } from "@mui/material/styles";
-import CssBaseline from "@mui/material/CssBaseline";
-import MuiDrawer from "@mui/material/Drawer";
-import Box from "@mui/material/Box";
-import MuiAppBar from "@mui/material/AppBar";
-import Toolbar from "@mui/material/Toolbar";
-import List from "@mui/material/List";
-import Typography from "@mui/material/Typography";
-import Divider from "@mui/material/Divider";
-import { Chip, Avatar, Badge, Paper, Tooltip } from "@mui/material";
-import IconButton from "@mui/material/IconButton";
-import Container from "@mui/material/Container";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
-import ListSubheader from "@mui/material/ListSubheader";
-import AccountBoxIcon from "@mui/icons-material/AccountBox";
-import MeetingRoomIcon from "@mui/icons-material/MeetingRoom";
-import Link from "@mui/material/Link";
-import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import AuthenService from "../../services/api/AuthenService";
-import { resetUserInfo } from "../../redux/slices/orebi.slice";
-import { useDispatch } from "react-redux";
-import PeopleIcon from "@mui/icons-material/People"; // Manage Users
-import WidgetsIcon from "@mui/icons-material/Widgets"; // Manage Products
-import FeedbackIcon from "@mui/icons-material/Feedback"; // Manage Disputes
-import ReceiptLongIcon from "@mui/icons-material/ReceiptLong"; // Manage Orders
-import Collapse from "@mui/material/Collapse";
 import DashboardIcon from "@mui/icons-material/Dashboard"; // Dashboard Overview
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
-import StoreIcon from "@mui/icons-material/Store";
-import InventoryIcon from "@mui/icons-material/Inventory";
-import AssignmentReturnIcon from "@mui/icons-material/AssignmentReturn";
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
-import NotificationsIcon from "@mui/icons-material/Notifications";
-import SettingsIcon from "@mui/icons-material/Settings";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
+import InventoryIcon from "@mui/icons-material/Inventory";
 import LocalOfferIcon from "@mui/icons-material/LocalOffer"; // Icon cho Voucher
+import MeetingRoomIcon from "@mui/icons-material/MeetingRoom";
+import MenuIcon from "@mui/icons-material/Menu";
+import NotificationsIcon from "@mui/icons-material/Notifications";
 import PaymentIcon from "@mui/icons-material/Payment"; // Icon cho Payment Management
+import PeopleIcon from "@mui/icons-material/People"; // Manage Users
+import ReceiptLongIcon from "@mui/icons-material/ReceiptLong"; // Manage Orders
+import SettingsIcon from "@mui/icons-material/Settings";
+import StoreIcon from "@mui/icons-material/Store";
+import { Avatar, Badge, Chip, Paper, Tooltip } from "@mui/material";
+import MuiAppBar from "@mui/material/AppBar";
+import Box from "@mui/material/Box";
+import Collapse from "@mui/material/Collapse";
+import Container from "@mui/material/Container";
+import CssBaseline from "@mui/material/CssBaseline";
+import Divider from "@mui/material/Divider";
+import MuiDrawer from "@mui/material/Drawer";
+import IconButton from "@mui/material/IconButton";
+import Link from "@mui/material/Link";
+import List from "@mui/material/List";
+import ListItemButton from "@mui/material/ListItemButton";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
+import { createTheme, styled, ThemeProvider } from "@mui/material/styles";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+import * as React from "react";
+import { useDispatch } from "react-redux";
+import { resetUserInfo } from "../../redux/slices/orebi.slice";
+import AuthenService from "../../services/api/AuthenService";
 
-import { Outlet, useNavigate, useLocation } from "react-router-dom";
-import { useState } from "react";
-import { useEffect } from "react";
 import axios from "axios";
+import { useEffect, useState } from "react";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
 function Copyright(props) {
   return (
@@ -177,15 +170,15 @@ export default function AdminDashboardLayout() {
   const toggleDrawer = () => {
     setOpen(!open);
   };
-  const [adminInfo, setAdminInfo] = useState(null); 
-  
+  const [adminInfo, setAdminInfo] = useState(null);
+
   // Get current path to highlight active menu item
   const currentPath = location.pathname;
 
   useEffect(() => {
     // Fetch admin dashboard stats
     axios
-      .get("http://localhost:9999/api/admin/report", {
+      .get("https://detoxtea-fullstack.onrender.com/api/admin/report", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("accessToken") || ""}`,
         },
@@ -200,7 +193,7 @@ export default function AdminDashboardLayout() {
             summary: `Users: ${res.data.data.totalUsers}, Sellers: ${res.data.data.totalSellers}`,
             // Giả định avatar admin
             avatarURL: "https://randomuser.me/api/portraits/men/41.jpg",
-            fullname: "Admin User"
+            fullname: "Admin User",
           });
         } else {
           setAdminInfo(null);
@@ -210,9 +203,10 @@ export default function AdminDashboardLayout() {
   }, []);
 
   const [openAdminMgmt, setOpenAdminMgmt] = React.useState(
-    currentPath.includes("/manage-users") || currentPath.includes("/manage-stores")
+    currentPath.includes("/manage-users") ||
+      currentPath.includes("/manage-stores"),
   );
-  
+
   const handleToggleAdminMgmt = () => {
     setOpenAdminMgmt((prev) => !prev);
   };
@@ -281,7 +275,7 @@ export default function AdminDashboardLayout() {
             >
               {dashboardTitle}
             </Typography>
-            
+
             {/* Notification icon */}
             <Tooltip title="Notifications">
               <IconButton color="primary" sx={{ mr: 1 }}>
@@ -290,21 +284,21 @@ export default function AdminDashboardLayout() {
                 </Badge>
               </IconButton>
             </Tooltip>
-            
+
             {/* Settings icon */}
             <Tooltip title="Settings">
               <IconButton color="primary" sx={{ mr: 1 }}>
                 <SettingsIcon />
               </IconButton>
             </Tooltip>
-            
+
             {/* Help icon */}
             <Tooltip title="Help">
               <IconButton color="primary" sx={{ mr: 2 }}>
                 <HelpOutlineIcon />
               </IconButton>
             </Tooltip>
-            
+
             {adminInfo ? (
               <Chip
                 avatar={
@@ -316,14 +310,14 @@ export default function AdminDashboardLayout() {
                 label={adminInfo.fullname || "Admin"}
                 color="primary"
                 variant="outlined"
-                sx={{ 
-                  ml: 1, 
-                  fontWeight: 600, 
+                sx={{
+                  ml: 1,
+                  fontWeight: 600,
                   fontSize: 16,
                   "&:hover": {
                     background: "rgba(26, 35, 126, 0.08)",
-                    cursor: "pointer"
-                  }
+                    cursor: "pointer",
+                  },
                 }}
               />
             ) : (
@@ -347,135 +341,166 @@ export default function AdminDashboardLayout() {
               backgroundColor: "primary.dark",
             }}
           >
-            <Typography variant="h6" color="primary.contrastText" sx={{ ml: 1, display: open ? "block" : "none" }}>
+            <Typography
+              variant="h6"
+              color="primary.contrastText"
+              sx={{ ml: 1, display: open ? "block" : "none" }}
+            >
               Detox Tea Admin
             </Typography>
-            <IconButton onClick={toggleDrawer} sx={{ color: "primary.contrastText" }}>
+            <IconButton
+              onClick={toggleDrawer}
+              sx={{ color: "primary.contrastText" }}
+            >
               <ChevronLeftIcon />
             </IconButton>
           </Toolbar>
           <Divider sx={{ borderColor: "rgba(255,255,255,0.1)" }} />
           <List component="nav">
             <React.Fragment>
-              <ListItemButton 
-                onClick={handleOnclickOverview} 
+              <ListItemButton
+                onClick={handleOnclickOverview}
                 selected={currentPath === "/admin"}
               >
                 <ListItemIcon sx={{ color: "primary.contrastText" }}>
                   <DashboardIcon />
                 </ListItemIcon>
-                <ListItemText primary="Dashboard Overview" primaryTypographyProps={{ fontWeight: currentPath === "/admin" ? 'bold' : 'normal' }} />
+                <ListItemText
+                  primary="Dashboard Overview"
+                  primaryTypographyProps={{
+                    fontWeight: currentPath === "/admin" ? "bold" : "normal",
+                  }}
+                />
               </ListItemButton>
-              
+
               <ListItemButton onClick={handleToggleAdminMgmt}>
                 <ListItemIcon sx={{ color: "primary.contrastText" }}>
                   <PeopleIcon />
                 </ListItemIcon>
                 <ListItemText primary="User Management" />
-                {openAdminMgmt ? <ExpandLess sx={{ color: "primary.contrastText" }} /> : <ExpandMore sx={{ color: "primary.contrastText" }} />}
+                {openAdminMgmt ? (
+                  <ExpandLess sx={{ color: "primary.contrastText" }} />
+                ) : (
+                  <ExpandMore sx={{ color: "primary.contrastText" }} />
+                )}
               </ListItemButton>
-              
+
               <Collapse in={openAdminMgmt} timeout="auto" unmountOnExit>
                 <List component="div" disablePadding>
-                  <ListItemButton 
-                    sx={{ pl: 4 }} 
+                  <ListItemButton
+                    sx={{ pl: 4 }}
                     onClick={handleOnclickUsers}
                     selected={currentPath === "/admin/manage-users"}
                   >
                     <ListItemIcon sx={{ color: "primary.contrastText" }}>
                       <PeopleIcon />
                     </ListItemIcon>
-                    <ListItemText 
-                      primary="Manage Users" 
-                      primaryTypographyProps={{ 
-                        fontWeight: currentPath === "/admin/manage-users" ? 'bold' : 'normal' 
+                    <ListItemText
+                      primary="Manage Users"
+                      primaryTypographyProps={{
+                        fontWeight:
+                          currentPath === "/admin/manage-users"
+                            ? "bold"
+                            : "normal",
                       }}
                     />
                   </ListItemButton>
-                  
-                  <ListItemButton 
-                    sx={{ pl: 4 }} 
+
+                  <ListItemButton
+                    sx={{ pl: 4 }}
                     onClick={handleOnclickStores}
                     selected={currentPath === "/admin/manage-stores"}
                   >
                     <ListItemIcon sx={{ color: "primary.contrastText" }}>
                       <StoreIcon />
                     </ListItemIcon>
-                    <ListItemText 
-                      primary="Manage Shops" 
-                      primaryTypographyProps={{ 
-                        fontWeight: currentPath === "/admin/manage-stores" ? 'bold' : 'normal' 
+                    <ListItemText
+                      primary="Manage Shops"
+                      primaryTypographyProps={{
+                        fontWeight:
+                          currentPath === "/admin/manage-stores"
+                            ? "bold"
+                            : "normal",
                       }}
                     />
                   </ListItemButton>
                 </List>
               </Collapse>
-              
-              <ListItemButton 
+
+              <ListItemButton
                 onClick={handleOnclickProducts}
                 selected={currentPath === "/admin/manage-products"}
               >
                 <ListItemIcon sx={{ color: "primary.contrastText" }}>
                   <InventoryIcon />
                 </ListItemIcon>
-                <ListItemText 
-                  primary="Manage Products" 
-                  primaryTypographyProps={{ 
-                    fontWeight: currentPath === "/admin/manage-products" ? 'bold' : 'normal' 
+                <ListItemText
+                  primary="Manage Products"
+                  primaryTypographyProps={{
+                    fontWeight:
+                      currentPath === "/admin/manage-products"
+                        ? "bold"
+                        : "normal",
                   }}
                 />
               </ListItemButton>
-              
-              <ListItemButton 
+
+              <ListItemButton
                 onClick={handleOnclickVouchers}
                 selected={currentPath === "/admin/manage-vouchers"}
               >
                 <ListItemIcon sx={{ color: "primary.contrastText" }}>
                   <LocalOfferIcon />
                 </ListItemIcon>
-                <ListItemText 
-                  primary="Manage Vouchers" 
-                  primaryTypographyProps={{ 
-                    fontWeight: currentPath === "/admin/manage-vouchers" ? 'bold' : 'normal' 
+                <ListItemText
+                  primary="Manage Vouchers"
+                  primaryTypographyProps={{
+                    fontWeight:
+                      currentPath === "/admin/manage-vouchers"
+                        ? "bold"
+                        : "normal",
                   }}
                 />
               </ListItemButton>
-              
-              <ListItemButton 
+
+              <ListItemButton
                 onClick={handleOnclickPayments}
                 selected={currentPath === "/admin/manage-payments"}
               >
                 <ListItemIcon sx={{ color: "primary.contrastText" }}>
                   <PaymentIcon />
                 </ListItemIcon>
-                <ListItemText 
-                  primary="Payment Management" 
-                  primaryTypographyProps={{ 
-                    fontWeight: currentPath === "/admin/manage-payments" ? 'bold' : 'normal' 
+                <ListItemText
+                  primary="Payment Management"
+                  primaryTypographyProps={{
+                    fontWeight:
+                      currentPath === "/admin/manage-payments"
+                        ? "bold"
+                        : "normal",
                   }}
                 />
               </ListItemButton>
 
-              <ListItemButton 
+              <ListItemButton
                 onClick={handleOnclickOrders}
                 selected={currentPath === "/admin/manage-orders"}
               >
                 <ListItemIcon sx={{ color: "primary.contrastText" }}>
                   <ReceiptLongIcon />
                 </ListItemIcon>
-                <ListItemText 
-                  primary="Manage Orders" 
-                  primaryTypographyProps={{ 
-                    fontWeight: currentPath === "/admin/manage-orders" ? 'bold' : 'normal' 
+                <ListItemText
+                  primary="Manage Orders"
+                  primaryTypographyProps={{
+                    fontWeight:
+                      currentPath === "/admin/manage-orders"
+                        ? "bold"
+                        : "normal",
                   }}
                 />
               </ListItemButton>
-
             </React.Fragment>
             <Divider sx={{ my: 1, borderColor: "rgba(255,255,255,0.1)" }} />
             <React.Fragment>
-
-              
               <ListItemButton onClick={handleOnclickSignout}>
                 <ListItemIcon sx={{ color: "primary.contrastText" }}>
                   <MeetingRoomIcon />
@@ -501,7 +526,7 @@ export default function AdminDashboardLayout() {
                 p: 3,
                 borderRadius: "12px",
                 boxShadow: "0 4px 20px 0 rgba(0,0,0,0.05)",
-                mb: 3
+                mb: 3,
               }}
             >
               <Outlet context={{ handleSetDashboardTitle }} />
