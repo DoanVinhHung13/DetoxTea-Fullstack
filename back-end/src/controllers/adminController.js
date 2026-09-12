@@ -915,6 +915,13 @@ exports.getOrderDetailsAdmin = async (req, res) => {
   try {
     const { orderId } = req.params;
 
+    if (!mongoose.Types.ObjectId.isValid(orderId)) {
+      return res.status(400).json({
+        success: false,
+        message: "ID đơn hàng không hợp lệ",
+      });
+    }
+
     const order = await Order.findById(orderId)
       .populate("buyerId", "username email fullname")
       .populate("addressId")
@@ -1208,15 +1215,17 @@ exports.getOrdersForPaymentManagement = async (req, res) => {
         // Calculate total amount for each seller
         const sellerAmounts = {};
         orderItems.forEach((item) => {
-          const sellerId = item.productId.sellerId._id.toString();
+          if (!item.productId) return;
+          const seller = item.productId.sellerId || { _id: "unknown", username: "Người bán", email: "" };
+          const sellerId = seller._id ? seller._id.toString() : "unknown";
           if (!sellerAmounts[sellerId]) {
             sellerAmounts[sellerId] = {
-              seller: item.productId.sellerId,
+              seller,
               amount: 0,
               items: [],
             };
           }
-          sellerAmounts[sellerId].amount += item.quantity * item.unitPrice;
+          sellerAmounts[sellerId].amount += (item.quantity || 0) * (item.unitPrice || 0);
           sellerAmounts[sellerId].items.push({
             product: item.productId,
             quantity: item.quantity,

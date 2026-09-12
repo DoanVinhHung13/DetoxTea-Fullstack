@@ -1,73 +1,129 @@
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import DashboardIcon from "@mui/icons-material/Dashboard"; // Dashboard Overview
-import ExpandLess from "@mui/icons-material/ExpandLess";
-import ExpandMore from "@mui/icons-material/ExpandMore";
-import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
-import InventoryIcon from "@mui/icons-material/Inventory";
-import LocalOfferIcon from "@mui/icons-material/LocalOffer"; // Icon cho Voucher
-import MeetingRoomIcon from "@mui/icons-material/MeetingRoom";
-import MenuIcon from "@mui/icons-material/Menu";
-import NotificationsIcon from "@mui/icons-material/Notifications";
-import PaymentIcon from "@mui/icons-material/Payment"; // Icon cho Payment Management
-import PeopleIcon from "@mui/icons-material/People"; // Manage Users
-import ReceiptLongIcon from "@mui/icons-material/ReceiptLong"; // Manage Orders
-import SettingsIcon from "@mui/icons-material/Settings";
-import StoreIcon from "@mui/icons-material/Store";
-import { Avatar, Badge, Chip, Paper, Tooltip } from "@mui/material";
-import MuiAppBar from "@mui/material/AppBar";
-import Box from "@mui/material/Box";
-import Collapse from "@mui/material/Collapse";
-import Container from "@mui/material/Container";
-import CssBaseline from "@mui/material/CssBaseline";
-import Divider from "@mui/material/Divider";
-import MuiDrawer from "@mui/material/Drawer";
-import IconButton from "@mui/material/IconButton";
-import Link from "@mui/material/Link";
-import List from "@mui/material/List";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
-import { createTheme, styled, ThemeProvider } from "@mui/material/styles";
-import Toolbar from "@mui/material/Toolbar";
-import Typography from "@mui/material/Typography";
-import * as React from "react";
+import React, { useEffect, useState } from "react";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
+import axios from "axios";
 import { resetUserInfo } from "../../redux/slices/orebi.slice";
 import AuthenService from "../../services/api/AuthenService";
+import { BACKEND_API_URI } from "../../utils/constants";
 
-import axios from "axios";
-import { useEffect, useState } from "react";
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
+// MUI Components
+import {
+  Avatar,
+  Badge,
+  Box,
+  Breadcrumbs,
+  Button,
+  Chip,
+  Container,
+  CssBaseline,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Divider,
+  Drawer as MuiDrawer,
+  IconButton,
+  Link as MuiLink,
+  List,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  ListSubheader,
+  Menu,
+  MenuItem,
+  Popover,
+  Stack,
+  ThemeProvider,
+  Toolbar,
+  Tooltip,
+  Typography,
+  createTheme,
+  styled,
+} from "@mui/material";
+import MuiAppBar from "@mui/material/AppBar";
 
-function Copyright(props) {
-  return (
-    <Typography
-      variant="body2"
-      color="text.secondary"
-      align="center"
-      {...props}
-    >
-      {"Copyright © "}
-      <Link color="inherit" href="#!">
-        Detox Tea Company
-      </Link>{" "}
-      {new Date().getFullYear()}
-      {"."}
-    </Typography>
-  );
-}
+// Icons
+import AccountBalanceWalletOutlinedIcon from "@mui/icons-material/AccountBalanceWalletOutlined";
+import AssignmentReturnOutlinedIcon from "@mui/icons-material/AssignmentReturnOutlined";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import DashboardOutlinedIcon from "@mui/icons-material/DashboardOutlined";
+import ExitToAppIcon from "@mui/icons-material/ExitToApp";
+import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
+import Inventory2OutlinedIcon from "@mui/icons-material/Inventory2Outlined";
+import LocalOfferOutlinedIcon from "@mui/icons-material/LocalOfferOutlined";
+import MenuIcon from "@mui/icons-material/Menu";
+import NotificationsNoneOutlinedIcon from "@mui/icons-material/NotificationsNoneOutlined";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import PeopleAltOutlinedIcon from "@mui/icons-material/PeopleAltOutlined";
+import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
+import ReceiptLongOutlinedIcon from "@mui/icons-material/ReceiptLongOutlined";
+import SpaIcon from "@mui/icons-material/Spa";
+import StorefrontOutlinedIcon from "@mui/icons-material/StorefrontOutlined";
 
-const drawerWidth = 260;
+const drawerWidth = 270;
+
+const customTheme = createTheme({
+  palette: {
+    primary: {
+      main: "#10b981", // Emerald green
+      light: "#34d399",
+      dark: "#059669",
+      contrastText: "#ffffff",
+    },
+    secondary: {
+      main: "#06b6d4", // Cyan
+      light: "#22d3ee",
+      dark: "#0891b2",
+      contrastText: "#ffffff",
+    },
+    background: {
+      default: "#f8fafc",
+      paper: "#ffffff",
+    },
+    text: {
+      primary: "#0f172a",
+      secondary: "#64748b",
+    },
+  },
+  typography: {
+    fontFamily:
+      '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+    button: {
+      textTransform: "none",
+      fontWeight: 600,
+    },
+  },
+  shape: {
+    borderRadius: 10,
+  },
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          boxShadow: "none",
+          "&:hover": {
+            boxShadow: "none",
+          },
+        },
+      },
+    },
+  },
+});
 
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== "open",
 })(({ theme, open }) => ({
   zIndex: theme.zIndex.drawer + 1,
+  backgroundColor: "rgba(255, 255, 255, 0.95)",
+  backdropFilter: "blur(8px)",
+  color: "#0f172a",
+  boxShadow: "none",
+  borderBottom: "1px solid #e2e8f0",
   transition: theme.transitions.create(["width", "margin"], {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
   }),
-  boxShadow: "0 4px 20px 0 rgba(0,0,0,0.1)",
   ...(open && {
     marginLeft: drawerWidth,
     width: `calc(100% - ${drawerWidth}px)`,
@@ -85,456 +141,744 @@ const Drawer = styled(MuiDrawer, {
     position: "relative",
     whiteSpace: "nowrap",
     width: drawerWidth,
-    background: theme.palette.primary.main,
-    color: theme.palette.primary.contrastText,
+    backgroundColor: "#0f172a", // Luxury Slate dark
+    color: "#94a3b8",
+    borderRight: "1px solid #1e293b",
     transition: theme.transitions.create("width", {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.enteringScreen,
     }),
     boxSizing: "border-box",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "space-between",
     ...(!open && {
       overflowX: "hidden",
       transition: theme.transitions.create("width", {
         easing: theme.transitions.easing.sharp,
         duration: theme.transitions.duration.leavingScreen,
       }),
-      width: theme.spacing(7),
-      [theme.breakpoints.up("sm")]: {
-        width: theme.spacing(9),
-      },
+      width: theme.spacing(9),
     }),
   },
 }));
-
-// Custom theme
-const customTheme = createTheme({
-  palette: {
-    primary: {
-      main: "#1a237e", // Deep indigo
-      light: "#534bae",
-      dark: "#000051",
-      contrastText: "#ffffff",
-    },
-    secondary: {
-      main: "#ff6f00", // Amber
-      light: "#ffa040",
-      dark: "#c43e00",
-      contrastText: "#000000",
-    },
-    background: {
-      default: "#f5f7fa",
-    },
-  },
-  typography: {
-    fontFamily: "'Roboto', 'Helvetica', 'Arial', sans-serif",
-    h5: {
-      fontWeight: 600,
-    },
-    h6: {
-      fontWeight: 600,
-    },
-  },
-  components: {
-    MuiListItemButton: {
-      styleOverrides: {
-        root: {
-          "&.Mui-selected": {
-            backgroundColor: "rgba(255, 255, 255, 0.12)",
-            "&:hover": {
-              backgroundColor: "rgba(255, 255, 255, 0.2)",
-            },
-          },
-          "&:hover": {
-            backgroundColor: "rgba(255, 255, 255, 0.08)",
-          },
-        },
-      },
-    },
-    MuiCard: {
-      styleOverrides: {
-        root: {
-          borderRadius: "12px",
-          boxShadow: "0 4px 12px 0 rgba(0,0,0,0.05)",
-        },
-      },
-    },
-  },
-});
 
 export default function AdminDashboardLayout() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
-  const [dashboardTitle, setDashboardTitle] = React.useState("Admin Dashboard");
-  const [open, setOpen] = React.useState(true);
+
+  const [dashboardTitle, setDashboardTitle] = useState("Dashboard Overview");
+  const [open, setOpen] = useState(true);
+  const [adminInfo, setAdminInfo] = useState(null);
+
+  // Menus and Dialogs
+  const [profileAnchorEl, setProfileAnchorEl] = useState(null);
+  const [notificationAnchorEl, setNotificationAnchorEl] = useState(null);
+  const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false);
+
   const toggleDrawer = () => {
     setOpen(!open);
   };
-  const [adminInfo, setAdminInfo] = useState(null);
 
-  // Get current path to highlight active menu item
   const currentPath = location.pathname;
 
+  // Fetch admin stats
   useEffect(() => {
-    // Fetch admin dashboard stats
-    axios
-      .get("https://detoxtea-fullstack.onrender.com/api/admin/report", {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("accessToken") || ""}`,
-        },
-      })
-      .then((res) => {
-        if (res.data.success) {
+    const token = localStorage.getItem("accessToken");
+    if (token) {
+      axios
+        .get(`${BACKEND_API_URI}/admin/report`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then((res) => {
+          if (res.data?.success) {
+            setAdminInfo({
+              fullname: "Admin Detox Tea",
+              role: "Administrator",
+              avatarURL: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=256&q=80",
+            });
+          }
+        })
+        .catch(() => {
           setAdminInfo({
-            totalUsers: res.data.data.totalUsers,
-            totalSellers: res.data.data.totalSellers,
-            totalProducts: res.data.data.totalProducts,
-            totalOrders: res.data.data.totalOrders,
-            summary: `Users: ${res.data.data.totalUsers}, Sellers: ${res.data.data.totalSellers}`,
-            // Giả định avatar admin
-            avatarURL: "https://randomuser.me/api/portraits/men/41.jpg",
-            fullname: "Admin User",
+            fullname: "Detox Admin",
+            role: "Administrator",
+            avatarURL: "",
           });
-        } else {
-          setAdminInfo(null);
-        }
-      })
-      .catch(() => setAdminInfo(null));
+        });
+    } else {
+      setAdminInfo({
+        fullname: "Detox Admin",
+        role: "Administrator",
+        avatarURL: "",
+      });
+    }
   }, []);
 
-  const [openAdminMgmt, setOpenAdminMgmt] = React.useState(
-    currentPath.includes("/manage-users") ||
-      currentPath.includes("/manage-stores"),
-  );
-
-  const handleToggleAdminMgmt = () => {
-    setOpenAdminMgmt((prev) => !prev);
+  const handleSetDashboardTitle = (newTitle) => {
+    setDashboardTitle(newTitle);
   };
 
-  const handleSetDashboardTitle = (newDashboardTitle) => {
-    setDashboardTitle(newDashboardTitle);
-  };
-
-  const handleOnclickOverview = () => {
-    navigate("/admin");
-  };
-  const handleOnclickUsers = () => {
-    navigate("/admin/manage-users");
-  };
-  const handleOnclickStores = () => {
-    navigate("/admin/manage-stores");
-  };
-  const handleOnclickProducts = () => {
-    navigate("/admin/manage-products");
-  };
-  const handleOnclickVouchers = () => {
-    navigate("/admin/manage-vouchers");
-  };
-  const handleOnclickPayments = () => {
-    navigate("/admin/manage-payments");
-  };
-  const handleOnclickOrders = () => {
-    navigate("/admin/manage-orders");
-  };
-
-  const handleOnclickSignout = async () => {
-    await AuthenService.logout();
+  const handleSignOut = async () => {
+    try {
+      await AuthenService.logout();
+    } catch (e) {
+      console.error(e);
+    }
     dispatch(resetUserInfo());
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
     navigate("/signin");
+  };
+
+  // Nav items configuration grouped by section
+  const navSections = [
+    {
+      title: "TỔNG QUAN",
+      items: [
+        {
+          label: "Dashboard Overview",
+          path: "/admin",
+          icon: <DashboardOutlinedIcon />,
+          badge: "Live",
+        },
+      ],
+    },
+    {
+      title: "QUẢN LÝ BÁN HÀNG",
+      items: [
+        {
+          label: "Quản lý Đơn hàng",
+          path: "/admin/manage-orders",
+          icon: <ReceiptLongOutlinedIcon />,
+        },
+        {
+          label: "Quản lý Sản phẩm",
+          path: "/admin/manage-products",
+          icon: <Inventory2OutlinedIcon />,
+        },
+        {
+          label: "Cửa hàng & Đối tác",
+          path: "/admin/manage-stores",
+          icon: <StorefrontOutlinedIcon />,
+        },
+        {
+          label: "Mã Khuyến mãi",
+          path: "/admin/manage-vouchers",
+          icon: <LocalOfferOutlinedIcon />,
+        },
+      ],
+    },
+    {
+      title: "TÀI CHÍNH & VẬN HÀNH",
+      items: [
+        {
+          label: "Quản lý Thanh toán",
+          path: "/admin/manage-payments",
+          icon: <AccountBalanceWalletOutlinedIcon />,
+        },
+        {
+          label: "Yêu cầu Đổi trả",
+          path: "/admin/manage-returns",
+          icon: <AssignmentReturnOutlinedIcon />,
+        },
+      ],
+    },
+    {
+      title: "HỆ THỐNG",
+      items: [
+        {
+          label: "Người dùng & Phân quyền",
+          path: "/admin/manage-users",
+          icon: <PeopleAltOutlinedIcon />,
+        },
+      ],
+    },
+  ];
+
+  // Helper to find breadcrumb display label
+  const getBreadcrumbLabel = () => {
+    for (const section of navSections) {
+      for (const item of section.items) {
+        if (item.path === currentPath) return item.label;
+      }
+    }
+    return dashboardTitle;
   };
 
   return (
     <ThemeProvider theme={customTheme}>
-      <Box sx={{ display: "flex" }}>
+      <Box sx={{ display: "flex", minHeight: "100vh", bgcolor: "#f8fafc" }}>
         <CssBaseline />
-        <AppBar position="absolute" open={open} color="default">
-          <Toolbar
-            sx={{
-              pr: "24px",
-              backgroundColor: "white",
-            }}
-          >
+
+        {/* TOPBAR */}
+        <AppBar position="fixed" open={open}>
+          <Toolbar sx={{ pr: 3, pl: 2, height: 70 }}>
             <IconButton
-              edge="start"
               color="inherit"
               aria-label="open drawer"
               onClick={toggleDrawer}
+              edge="start"
               sx={{
-                marginRight: "36px",
+                mr: 2,
+                color: "#64748b",
+                "&:hover": { color: "#0f172a", bgcolor: "#f1f5f9" },
                 ...(open && { display: "none" }),
               }}
             >
               <MenuIcon />
             </IconButton>
-            <Typography
-              component="h1"
-              variant="h5"
-              color="primary"
-              noWrap
-              sx={{ flexGrow: 1, fontWeight: "bold" }}
-            >
-              {dashboardTitle}
-            </Typography>
 
-            {/* Notification icon */}
-            <Tooltip title="Notifications">
-              <IconButton color="primary" sx={{ mr: 1 }}>
-                <Badge badgeContent={4} color="secondary">
-                  <NotificationsIcon />
-                </Badge>
-              </IconButton>
-            </Tooltip>
-
-            {/* Settings icon */}
-            <Tooltip title="Settings">
-              <IconButton color="primary" sx={{ mr: 1 }}>
-                <SettingsIcon />
-              </IconButton>
-            </Tooltip>
-
-            {/* Help icon */}
-            <Tooltip title="Help">
-              <IconButton color="primary" sx={{ mr: 2 }}>
-                <HelpOutlineIcon />
-              </IconButton>
-            </Tooltip>
-
-            {adminInfo ? (
-              <Chip
-                avatar={
-                  <Avatar
-                    src={adminInfo.avatarURL || undefined}
-                    alt={adminInfo.fullname || "Admin"}
-                  />
-                }
-                label={adminInfo.fullname || "Admin"}
-                color="primary"
-                variant="outlined"
+            {/* Breadcrumbs */}
+            <Box sx={{ flexGrow: 1 }}>
+              <Breadcrumbs
+                aria-label="breadcrumb"
                 sx={{
-                  ml: 1,
-                  fontWeight: 600,
-                  fontSize: 16,
-                  "&:hover": {
-                    background: "rgba(26, 35, 126, 0.08)",
+                  "& .MuiBreadcrumbs-separator": { color: "#cbd5e1" },
+                }}
+              >
+                <MuiLink
+                  underline="hover"
+                  color="#64748b"
+                  sx={{
+                    fontSize: "0.85rem",
                     cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 0.5,
+                  }}
+                  onClick={() => navigate("/admin")}
+                >
+                  <SpaIcon sx={{ fontSize: 16, color: "#10b981" }} />
+                  Admin
+                </MuiLink>
+                <Typography
+                  sx={{
+                    fontSize: "0.875rem",
+                    color: "#0f172a",
+                    fontWeight: 600,
+                  }}
+                >
+                  {getBreadcrumbLabel()}
+                </Typography>
+              </Breadcrumbs>
+            </Box>
+
+            {/* Topbar Actions */}
+            <Stack direction="row" spacing={1.5} alignItems="center">
+              {/* Quick Link to Customer Store */}
+              <Tooltip title="Xem giao diện khách hàng">
+                <Button
+                  variant="outlined"
+                  size="small"
+                  startIcon={<OpenInNewIcon sx={{ fontSize: "16px !important" }} />}
+                  onClick={() => window.open("/", "_blank")}
+                  sx={{
+                    borderColor: "#e2e8f0",
+                    color: "#475569",
+                    fontWeight: 500,
+                    fontSize: "0.8rem",
+                    borderRadius: "8px",
+                    px: 1.5,
+                    py: 0.6,
+                    "&:hover": {
+                      borderColor: "#cbd5e1",
+                      bgcolor: "#f8fafc",
+                      color: "#0f172a",
+                    },
+                    display: { xs: "none", sm: "inline-flex" },
+                  }}
+                >
+                  Xem Cửa hàng
+                </Button>
+              </Tooltip>
+
+              {/* Notifications */}
+              <Tooltip title="Thông báo hệ thống">
+                <IconButton
+                  onClick={(e) => setNotificationAnchorEl(e.currentTarget)}
+                  sx={{
+                    color: "#64748b",
+                    bgcolor: "#f8fafc",
+                    border: "1px solid #e2e8f0",
+                    "&:hover": { color: "#10b981", bgcolor: "#f0fdf4" },
+                  }}
+                >
+                  <Badge
+                    badgeContent={3}
+                    sx={{
+                      "& .MuiBadge-badge": {
+                        backgroundColor: "#10b981",
+                        color: "white",
+                        fontSize: "0.65rem",
+                        height: 16,
+                        minWidth: 16,
+                      },
+                    }}
+                  >
+                    <NotificationsNoneOutlinedIcon sx={{ fontSize: 20 }} />
+                  </Badge>
+                </IconButton>
+              </Tooltip>
+
+              {/* Notification Popover */}
+              <Popover
+                open={Boolean(notificationAnchorEl)}
+                anchorEl={notificationAnchorEl}
+                onClose={() => setNotificationAnchorEl(null)}
+                anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                transformOrigin={{ vertical: "top", horizontal: "right" }}
+                PaperProps={{
+                  sx: {
+                    width: 320,
+                    p: 2,
+                    borderRadius: "12px",
+                    boxShadow: "0 10px 25px -5px rgba(0,0,0,0.1)",
+                    border: "1px solid #e2e8f0",
                   },
                 }}
-              />
-            ) : (
-              <Chip
-                avatar={<Avatar />}
-                label="Admin"
-                color="primary"
-                variant="outlined"
-                sx={{ ml: 2 }}
-              />
-            )}
+              >
+                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1.5 }}>
+                  <Typography variant="subtitle2" sx={{ fontWeight: 700, color: "#0f172a" }}>
+                    Thông báo mới
+                  </Typography>
+                  <Chip label="3 mới" size="small" sx={{ bgcolor: "#ecfdf5", color: "#059669", fontWeight: 600, height: 20 }} />
+                </Box>
+                <Divider sx={{ mb: 1.5 }} />
+                <Stack spacing={1.5}>
+                  <Box sx={{ p: 1, borderRadius: "8px", bgcolor: "#f8fafc", cursor: "pointer", "&:hover": { bgcolor: "#f1f5f9" } }}>
+                    <Typography variant="caption" sx={{ fontWeight: 600, color: "#0f172a", display: "block" }}>
+                      📦 Đơn hàng mới #1089
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      Khách hàng vừa đặt đơn 450.000₫ • 5 phút trước
+                    </Typography>
+                  </Box>
+                  <Box sx={{ p: 1, borderRadius: "8px", bgcolor: "#f8fafc", cursor: "pointer", "&:hover": { bgcolor: "#f1f5f9" } }}>
+                    <Typography variant="caption" sx={{ fontWeight: 600, color: "#0f172a", display: "block" }}>
+                      🔄 Yêu cầu đổi trả cần duyệt
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      Người mua gửi ảnh sản phẩm lỗi • 30 phút trước
+                    </Typography>
+                  </Box>
+                  <Box sx={{ p: 1, borderRadius: "8px", bgcolor: "#f8fafc", cursor: "pointer", "&:hover": { bgcolor: "#f1f5f9" } }}>
+                    <Typography variant="caption" sx={{ fontWeight: 600, color: "#0f172a", display: "block" }}>
+                      🏪 Cửa hàng mới đăng ký
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      Shop "Trà Thảo Mộc Sạch" chờ kích hoạt
+                    </Typography>
+                  </Box>
+                </Stack>
+              </Popover>
+
+              {/* Admin Profile Trigger */}
+              <Box
+                onClick={(e) => setProfileAnchorEl(e.currentTarget)}
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1.2,
+                  p: "4px 10px 4px 6px",
+                  borderRadius: "24px",
+                  border: "1px solid #e2e8f0",
+                  bgcolor: "#ffffff",
+                  cursor: "pointer",
+                  transition: "all 0.2s ease",
+                  "&:hover": {
+                    borderColor: "#cbd5e1",
+                    bgcolor: "#f8fafc",
+                  },
+                }}
+              >
+                <Avatar
+                  src={adminInfo?.avatarURL}
+                  sx={{
+                    width: 32,
+                    height: 32,
+                    bgcolor: "#10b981",
+                    fontSize: "0.85rem",
+                    fontWeight: 700,
+                  }}
+                >
+                  {adminInfo?.fullname ? adminInfo.fullname.charAt(0) : "A"}
+                </Avatar>
+                <Box sx={{ display: { xs: "none", sm: "block" }, textAlign: "left" }}>
+                  <Typography sx={{ fontSize: "0.85rem", fontWeight: 600, color: "#0f172a", lineHeight: 1.2 }}>
+                    {adminInfo?.fullname || "Admin"}
+                  </Typography>
+                  <Typography sx={{ fontSize: "0.7rem", color: "#10b981", fontWeight: 600 }}>
+                    Quản trị viên
+                  </Typography>
+                </Box>
+              </Box>
+
+              {/* Profile Dropdown Menu */}
+              <Menu
+                anchorEl={profileAnchorEl}
+                open={Boolean(profileAnchorEl)}
+                onClose={() => setProfileAnchorEl(null)}
+                anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                transformOrigin={{ vertical: "top", horizontal: "right" }}
+                PaperProps={{
+                  sx: {
+                    mt: 1,
+                    width: 210,
+                    borderRadius: "12px",
+                    boxShadow: "0 10px 25px -5px rgba(0,0,0,0.1)",
+                    border: "1px solid #e2e8f0",
+                  },
+                }}
+              >
+                <MenuItem onClick={() => { setProfileAnchorEl(null); navigate("/profile"); }}>
+                  <ListItemIcon><PersonOutlineIcon fontSize="small" sx={{ color: "#64748b" }} /></ListItemIcon>
+                  <ListItemText primary="Hồ sơ tài khoản" primaryTypographyProps={{ fontSize: "0.875rem" }} />
+                </MenuItem>
+                <MenuItem onClick={() => { setProfileAnchorEl(null); navigate("/"); }}>
+                  <ListItemIcon><OpenInNewIcon fontSize="small" sx={{ color: "#64748b" }} /></ListItemIcon>
+                  <ListItemText primary="Xem website" primaryTypographyProps={{ fontSize: "0.875rem" }} />
+                </MenuItem>
+                <Divider sx={{ my: 0.5 }} />
+                <MenuItem
+                  onClick={() => {
+                    setProfileAnchorEl(null);
+                    setLogoutConfirmOpen(true);
+                  }}
+                  sx={{ color: "#ef4444" }}
+                >
+                  <ListItemIcon><ExitToAppIcon fontSize="small" sx={{ color: "#ef4444" }} /></ListItemIcon>
+                  <ListItemText primary="Đăng xuất" primaryTypographyProps={{ fontSize: "0.875rem", fontWeight: 600 }} />
+                </MenuItem>
+              </Menu>
+            </Stack>
           </Toolbar>
         </AppBar>
+
+        {/* SIDEBAR DRAWER */}
         <Drawer variant="permanent" open={open}>
-          <Toolbar
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              px: [1],
-              backgroundColor: "primary.dark",
-            }}
-          >
-            <Typography
-              variant="h6"
-              color="primary.contrastText"
-              sx={{ ml: 1, display: open ? "block" : "none" }}
+          <Box>
+            {/* Brand Logo Header */}
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                px: 2.5,
+                height: 70,
+                borderBottom: "1px solid #1e293b",
+              }}
             >
-              Detox Tea Admin
-            </Typography>
-            <IconButton
-              onClick={toggleDrawer}
-              sx={{ color: "primary.contrastText" }}
-            >
-              <ChevronLeftIcon />
-            </IconButton>
-          </Toolbar>
-          <Divider sx={{ borderColor: "rgba(255,255,255,0.1)" }} />
-          <List component="nav">
-            <React.Fragment>
-              <ListItemButton
-                onClick={handleOnclickOverview}
-                selected={currentPath === "/admin"}
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1.5,
+                  cursor: "pointer",
+                  overflow: "hidden",
+                }}
+                onClick={() => navigate("/admin")}
               >
-                <ListItemIcon sx={{ color: "primary.contrastText" }}>
-                  <DashboardIcon />
-                </ListItemIcon>
-                <ListItemText
-                  primary="Dashboard Overview"
-                  primaryTypographyProps={{
-                    fontWeight: currentPath === "/admin" ? "bold" : "normal",
+                <Box
+                  sx={{
+                    width: 36,
+                    height: 36,
+                    borderRadius: "10px",
+                    background: "linear-gradient(135deg, #10b981 0%, #06b6d4 100%)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    color: "white",
+                    boxShadow: "0 4px 12px rgba(16, 185, 129, 0.3)",
+                    flexShrink: 0,
                   }}
-                />
-              </ListItemButton>
-
-              <ListItemButton onClick={handleToggleAdminMgmt}>
-                <ListItemIcon sx={{ color: "primary.contrastText" }}>
-                  <PeopleIcon />
-                </ListItemIcon>
-                <ListItemText primary="User Management" />
-                {openAdminMgmt ? (
-                  <ExpandLess sx={{ color: "primary.contrastText" }} />
-                ) : (
-                  <ExpandMore sx={{ color: "primary.contrastText" }} />
+                >
+                  <SpaIcon sx={{ fontSize: 20 }} />
+                </Box>
+                {open && (
+                  <Box>
+                    <Typography
+                      sx={{
+                        fontWeight: 700,
+                        color: "#f8fafc",
+                        fontSize: "0.95rem",
+                        letterSpacing: "-0.01em",
+                        lineHeight: 1.2,
+                      }}
+                    >
+                      Detox Tea
+                    </Typography>
+                    <Stack direction="row" spacing={0.5} alignItems="center">
+                      <FiberManualRecordIcon sx={{ fontSize: 8, color: "#10b981" }} />
+                      <Typography sx={{ fontSize: "0.68rem", color: "#94a3b8", fontWeight: 500 }}>
+                        Admin Portal
+                      </Typography>
+                    </Stack>
+                  </Box>
                 )}
-              </ListItemButton>
+              </Box>
+              <IconButton
+                onClick={toggleDrawer}
+                sx={{
+                  color: "#94a3b8",
+                  "&:hover": { color: "#ffffff", bgcolor: "#1e293b" },
+                }}
+              >
+                <ChevronLeftIcon />
+              </IconButton>
+            </Box>
 
-              <Collapse in={openAdminMgmt} timeout="auto" unmountOnExit>
-                <List component="div" disablePadding>
-                  <ListItemButton
-                    sx={{ pl: 4 }}
-                    onClick={handleOnclickUsers}
-                    selected={currentPath === "/admin/manage-users"}
-                  >
-                    <ListItemIcon sx={{ color: "primary.contrastText" }}>
-                      <PeopleIcon />
-                    </ListItemIcon>
-                    <ListItemText
-                      primary="Manage Users"
-                      primaryTypographyProps={{
-                        fontWeight:
-                          currentPath === "/admin/manage-users"
-                            ? "bold"
-                            : "normal",
+            {/* Navigation Menus */}
+            <List component="nav" sx={{ px: 1.5, py: 2 }}>
+              {navSections.map((section, idx) => (
+                <Box key={idx} sx={{ mb: 2 }}>
+                  {open && (
+                    <ListSubheader
+                      sx={{
+                        backgroundColor: "transparent",
+                        color: "#64748b",
+                        fontSize: "0.68rem",
+                        fontWeight: 700,
+                        letterSpacing: "0.06em",
+                        lineHeight: "24px",
+                        px: 1.5,
+                        mb: 0.5,
                       }}
-                    />
-                  </ListItemButton>
+                    >
+                      {section.title}
+                    </ListSubheader>
+                  )}
+                  {section.items.map((item) => {
+                    const isSelected =
+                      item.path === "/admin"
+                        ? currentPath === "/admin"
+                        : currentPath.startsWith(item.path);
 
-                  <ListItemButton
-                    sx={{ pl: 4 }}
-                    onClick={handleOnclickStores}
-                    selected={currentPath === "/admin/manage-stores"}
+                    return (
+                      <Tooltip
+                        key={item.path}
+                        title={!open ? item.label : ""}
+                        placement="right"
+                      >
+                        <ListItemButton
+                          onClick={() => navigate(item.path)}
+                          selected={isSelected}
+                          sx={{
+                            borderRadius: "10px",
+                            mb: 0.5,
+                            py: 1,
+                            px: 1.5,
+                            transition: "all 0.15s ease",
+                            color: isSelected ? "#ffffff" : "#94a3b8",
+                            backgroundColor: isSelected
+                              ? "rgba(16, 185, 129, 0.15) !important"
+                              : "transparent",
+                            borderLeft: isSelected ? "3px solid #10b981" : "3px solid transparent",
+                            "&:hover": {
+                              backgroundColor: isSelected
+                                ? "rgba(16, 185, 129, 0.22)"
+                                : "#1e293b",
+                              color: "#f8fafc",
+                            },
+                          }}
+                        >
+                          <ListItemIcon
+                            sx={{
+                              minWidth: 36,
+                              color: isSelected ? "#10b981" : "#94a3b8",
+                              transition: "color 0.15s",
+                            }}
+                          >
+                            {item.icon}
+                          </ListItemIcon>
+                          {open && (
+                            <ListItemText
+                              primary={item.label}
+                              primaryTypographyProps={{
+                                fontSize: "0.85rem",
+                                fontWeight: isSelected ? 600 : 500,
+                              }}
+                            />
+                          )}
+                          {open && item.badge && (
+                            <Chip
+                              label={item.badge}
+                              size="small"
+                              sx={{
+                                height: 18,
+                                fontSize: "0.65rem",
+                                fontWeight: 700,
+                                bgcolor: "rgba(16, 185, 129, 0.2)",
+                                color: "#34d399",
+                                border: "1px solid rgba(16, 185, 129, 0.3)",
+                              }}
+                            />
+                          )}
+                        </ListItemButton>
+                      </Tooltip>
+                    );
+                  })}
+                </Box>
+              ))}
+            </List>
+          </Box>
+
+          {/* Sidebar Footer */}
+          <Box sx={{ p: 2, borderTop: "1px solid #1e293b" }}>
+            {open ? (
+              <Box
+                sx={{
+                  p: 1.5,
+                  borderRadius: "10px",
+                  bgcolor: "#1e293b",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1.2, overflow: "hidden" }}>
+                  <Avatar
+                    src={adminInfo?.avatarURL}
+                    sx={{ width: 34, height: 34, bgcolor: "#10b981", fontSize: "0.8rem", fontWeight: 700 }}
                   >
-                    <ListItemIcon sx={{ color: "primary.contrastText" }}>
-                      <StoreIcon />
-                    </ListItemIcon>
-                    <ListItemText
-                      primary="Manage Shops"
-                      primaryTypographyProps={{
-                        fontWeight:
-                          currentPath === "/admin/manage-stores"
-                            ? "bold"
-                            : "normal",
+                    {adminInfo?.fullname ? adminInfo.fullname.charAt(0) : "A"}
+                  </Avatar>
+                  <Box sx={{ overflow: "hidden" }}>
+                    <Typography
+                      sx={{
+                        fontSize: "0.82rem",
+                        color: "#f8fafc",
+                        fontWeight: 600,
+                        whiteSpace: "nowrap",
+                        textOverflow: "ellipsis",
+                        overflow: "hidden",
                       }}
-                    />
-                  </ListItemButton>
-                </List>
-              </Collapse>
-
-              <ListItemButton
-                onClick={handleOnclickProducts}
-                selected={currentPath === "/admin/manage-products"}
-              >
-                <ListItemIcon sx={{ color: "primary.contrastText" }}>
-                  <InventoryIcon />
-                </ListItemIcon>
-                <ListItemText
-                  primary="Manage Products"
-                  primaryTypographyProps={{
-                    fontWeight:
-                      currentPath === "/admin/manage-products"
-                        ? "bold"
-                        : "normal",
+                    >
+                      {adminInfo?.fullname || "Admin"}
+                    </Typography>
+                    <Typography sx={{ fontSize: "0.68rem", color: "#10b981", fontWeight: 500 }}>
+                      Hệ thống hoạt động
+                    </Typography>
+                  </Box>
+                </Box>
+                <Tooltip title="Đăng xuất">
+                  <IconButton
+                    size="small"
+                    onClick={() => setLogoutConfirmOpen(true)}
+                    sx={{
+                      color: "#94a3b8",
+                      "&:hover": { color: "#ef4444", bgcolor: "rgba(239, 68, 68, 0.1)" },
+                    }}
+                  >
+                    <ExitToAppIcon fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+              </Box>
+            ) : (
+              <Tooltip title="Đăng xuất" placement="right">
+                <IconButton
+                  onClick={() => setLogoutConfirmOpen(true)}
+                  sx={{
+                    width: "100%",
+                    color: "#94a3b8",
+                    "&:hover": { color: "#ef4444", bgcolor: "rgba(239, 68, 68, 0.1)" },
                   }}
-                />
-              </ListItemButton>
-
-              <ListItemButton
-                onClick={handleOnclickVouchers}
-                selected={currentPath === "/admin/manage-vouchers"}
-              >
-                <ListItemIcon sx={{ color: "primary.contrastText" }}>
-                  <LocalOfferIcon />
-                </ListItemIcon>
-                <ListItemText
-                  primary="Manage Vouchers"
-                  primaryTypographyProps={{
-                    fontWeight:
-                      currentPath === "/admin/manage-vouchers"
-                        ? "bold"
-                        : "normal",
-                  }}
-                />
-              </ListItemButton>
-
-              <ListItemButton
-                onClick={handleOnclickPayments}
-                selected={currentPath === "/admin/manage-payments"}
-              >
-                <ListItemIcon sx={{ color: "primary.contrastText" }}>
-                  <PaymentIcon />
-                </ListItemIcon>
-                <ListItemText
-                  primary="Payment Management"
-                  primaryTypographyProps={{
-                    fontWeight:
-                      currentPath === "/admin/manage-payments"
-                        ? "bold"
-                        : "normal",
-                  }}
-                />
-              </ListItemButton>
-
-              <ListItemButton
-                onClick={handleOnclickOrders}
-                selected={currentPath === "/admin/manage-orders"}
-              >
-                <ListItemIcon sx={{ color: "primary.contrastText" }}>
-                  <ReceiptLongIcon />
-                </ListItemIcon>
-                <ListItemText
-                  primary="Manage Orders"
-                  primaryTypographyProps={{
-                    fontWeight:
-                      currentPath === "/admin/manage-orders"
-                        ? "bold"
-                        : "normal",
-                  }}
-                />
-              </ListItemButton>
-            </React.Fragment>
-            <Divider sx={{ my: 1, borderColor: "rgba(255,255,255,0.1)" }} />
-            <React.Fragment>
-              <ListItemButton onClick={handleOnclickSignout}>
-                <ListItemIcon sx={{ color: "primary.contrastText" }}>
-                  <MeetingRoomIcon />
-                </ListItemIcon>
-                <ListItemText primary="Sign Out" />
-              </ListItemButton>
-            </React.Fragment>
-          </List>
+                >
+                  <ExitToAppIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
+            )}
+          </Box>
         </Drawer>
+
+        {/* MAIN WORKSPACE CANVAS */}
         <Box
           component="main"
           sx={{
-            backgroundColor: "background.default",
             flexGrow: 1,
-            height: "100vh",
+            minHeight: "100vh",
             overflow: "auto",
+            display: "flex",
+            flexDirection: "column",
           }}
         >
-          <Toolbar />
-          <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
-            <Paper
+          <Toolbar sx={{ height: 70 }} />
+          <Container
+            maxWidth="xl"
+            sx={{
+              py: 3.5,
+              px: { xs: 2, sm: 3, md: 4 },
+              flexGrow: 1,
+            }}
+          >
+            {/* The page renders cleanly without being constrained inside an ugly rigid Paper */}
+            <Outlet context={{ handleSetDashboardTitle }} />
+          </Container>
+
+          {/* Footer Bar */}
+          <Box
+            sx={{
+              py: 2.5,
+              px: 4,
+              borderTop: "1px solid #e2e8f0",
+              bgcolor: "#ffffff",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              flexWrap: "wrap",
+              gap: 1,
+            }}
+          >
+            <Typography variant="body2" sx={{ color: "#64748b", fontSize: "0.8rem" }}>
+              © {new Date().getFullYear()} <strong>Detox Tea Co.</strong> — Hệ thống quản trị trung tâm.
+            </Typography>
+            <Typography variant="body2" sx={{ color: "#94a3b8", fontSize: "0.75rem" }}>
+              Phiên bản 2.5.0 • Trạng thái: Ổn định
+            </Typography>
+          </Box>
+        </Box>
+
+        {/* LOGOUT CONFIRMATION DIALOG */}
+        <Dialog
+          open={logoutConfirmOpen}
+          onClose={() => setLogoutConfirmOpen(false)}
+          PaperProps={{
+            sx: { borderRadius: "14px", p: 1, width: 380 },
+          }}
+        >
+          <DialogTitle sx={{ fontWeight: 700, color: "#0f172a", pb: 1 }}>
+            Xác nhận đăng xuất
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText sx={{ color: "#64748b" }}>
+              Bạn có chắc chắn muốn đăng xuất khỏi trang Quản trị Admin không?
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions sx={{ px: 3, pb: 2 }}>
+            <Button
+              onClick={() => setLogoutConfirmOpen(false)}
+              sx={{ color: "#64748b" }}
+            >
+              Hủy
+            </Button>
+            <Button
+              variant="contained"
+              onClick={handleSignOut}
               sx={{
-                p: 3,
-                borderRadius: "12px",
-                boxShadow: "0 4px 20px 0 rgba(0,0,0,0.05)",
-                mb: 3,
+                bgcolor: "#ef4444",
+                color: "#ffffff",
+                "&:hover": { bgcolor: "#dc2626" },
               }}
             >
-              <Outlet context={{ handleSetDashboardTitle }} />
-            </Paper>
-            <Copyright sx={{ pt: 4 }} />
-          </Container>
-        </Box>
+              Đăng xuất
+            </Button>
+          </DialogActions>
+        </Dialog>
       </Box>
     </ThemeProvider>
   );
 }
+

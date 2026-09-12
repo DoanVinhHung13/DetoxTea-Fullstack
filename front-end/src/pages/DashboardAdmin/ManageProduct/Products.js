@@ -41,6 +41,7 @@ import TableRow from "@mui/material/TableRow";
 import Tooltip from "@mui/material/Tooltip";
 import axios from "axios";
 import * as React from "react";
+import { BACKEND_API_URI } from "../../../utils/constants";
 import CreateProduct from "./CreateProduct";
 import UpdateProduct from "./UpdateProduct";
 export default function Products({
@@ -80,7 +81,7 @@ export default function Products({
 
     try {
       const response = await axios.delete(
-        `https://detoxtea-fullstack.onrender.com/api/admin/products/${deletingProduct._id}`,
+        `${BACKEND_API_URI}/admin/products/${deletingProduct._id}`,
         {
           headers: {
             Authorization: `Bearer ${
@@ -117,7 +118,7 @@ export default function Products({
   const handleViewReviews = async (product) => {
     try {
       const res = await axios.get(
-        `https://detoxtea-fullstack.onrender.com/api/admin/products/${product._id}/reviews`,
+        `${BACKEND_API_URI}/admin/products/${product._id}/reviews`,
         {
           headers: {
             Authorization: `Bearer ${
@@ -161,7 +162,7 @@ export default function Products({
         products.map(async (product) => {
           try {
             const res = await axios.get(
-              `https://detoxtea-fullstack.onrender.com/api/admin/products/${product._id}/reviews`,
+              `${BACKEND_API_URI}/admin/products/${product._id}/reviews`,
               {
                 headers: {
                   Authorization: `Bearer ${

@@ -224,12 +224,18 @@ const ManagePayment = () => {
   ];
 
   return (
-    <div style={{ padding: '24px' }}>
-      <Card>
+    <div>
+      <Card
+        style={{
+          borderRadius: "16px",
+          border: "1px solid #e2e8f0",
+          boxShadow: "0 1px 3px rgba(0,0,0,0.05), 0 10px 15px -5px rgba(0,0,0,0.02)",
+        }}
+      >
         <Row justify="space-between" align="middle" style={{ marginBottom: '24px' }}>
           <Col>
-            <Title level={3} style={{ margin: 0 }}>
-              <DollarOutlined /> Quản lý thanh toán
+            <Title level={3} style={{ margin: 0, color: '#0f172a', fontWeight: 700 }}>
+              Quản lý thanh toán
             </Title>
             <Text type="secondary">
               Quản lý việc chuyển tiền cho seller và hoàn tiền cho buyer

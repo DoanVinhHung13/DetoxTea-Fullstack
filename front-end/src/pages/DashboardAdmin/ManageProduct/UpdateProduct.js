@@ -12,6 +12,7 @@ import Switch from "@mui/material/Switch";
 import TextField from "@mui/material/TextField";
 import axios from "axios";
 import * as React from "react";
+import { BACKEND_API_URI } from "../../../utils/constants";
 
 export default function UpdateProduct({
   targetProduct,
@@ -50,7 +51,7 @@ export default function UpdateProduct({
         isAuction: isActive, // Using isAuction field as isActive
       };
       const { data } = await axios.put(
-        `https://detoxtea-fullstack.onrender.com/api/admin/products/${targetProduct._id}/status`,
+        `${BACKEND_API_URI}/admin/products/${targetProduct._id}/status`,
         reqBody,
         {
           headers: {

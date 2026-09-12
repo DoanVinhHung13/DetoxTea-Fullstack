@@ -63,6 +63,7 @@ import AdminDashboardLayout from "./pages/DashboardAdmin/ManagerDashboardAdminLa
 import ManageStore from "./pages/DashboardAdmin/ManageShop/ManageStore";
 import ManageUser from "./pages/DashboardAdmin/ManageUser/ManageUser";
 import ManageVoucher from "./pages/DashboardAdmin/ManageVoucher/ManageVoucher";
+import ManageReturnRequestA from "./pages/DashboardAdmin/ManageReturnRequest/ManageReturnRequest";
 import News from "./pages/News/News.jsx";
 import ProductList from "./pages/ProductList/ProductList.jsx";
 
@@ -197,6 +198,10 @@ const router = createBrowserRouter(
         <Route
           path="/admin/manage-orders"
           element={<ManageOrderA />}
+        ></Route>
+        <Route
+          path="/admin/manage-returns"
+          element={<ManageReturnRequestA />}
         ></Route>
       </Route>
 

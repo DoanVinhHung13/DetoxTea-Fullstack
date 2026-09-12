@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import axios from "axios";
 import * as React from "react";
+import { BACKEND_API_URI } from "../../../utils/constants";
 
 export default function UpdateUser({
   targetUser,
@@ -48,7 +49,7 @@ export default function UpdateUser({
       setLoading(true);
 
       const res = await axios.put(
-        `https://detoxtea-fullstack.onrender.com/api/admin/users/${targetUser._id}`,
+        `${BACKEND_API_URI}/admin/users/${targetUser._id}`,
         {
           username,
           email,

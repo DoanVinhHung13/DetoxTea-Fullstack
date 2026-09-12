@@ -38,6 +38,7 @@ import TableRow from "@mui/material/TableRow";
 import Tooltip from "@mui/material/Tooltip";
 import axios from "axios";
 import * as React from "react";
+import { BACKEND_API_URI } from "../../../utils/constants";
 import UpdateStore from "./UpdateStore";
 
 export default function Stores({ stores: initialStores, onStoreUpdated }) {
@@ -58,7 +59,7 @@ export default function Stores({ stores: initialStores, onStoreUpdated }) {
 
     try {
       const response = await axios.delete(
-        `https://detoxtea-fullstack.onrender.com/api/admin/stores/${deletingStore._id}`,
+        `${BACKEND_API_URI}/admin/stores/${deletingStore._id}`,
         {
           headers: {
             Authorization: `Bearer ${

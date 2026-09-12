@@ -10,6 +10,7 @@ import {
 } from "@mui/material";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { BACKEND_API_URI } from "../../../utils/constants";
 
 export default function CreateProduct({ open, handleClose, onCreated }) {
   const [form, setForm] = useState({
@@ -33,7 +34,7 @@ export default function CreateProduct({ open, handleClose, onCreated }) {
   const fetchCategories = async () => {
     try {
       const res = await axios.get(
-        "https://detoxtea-fullstack.onrender.com/api/categories",
+        `${BACKEND_API_URI}/categories`,
       );
       setCategories(res.data.data || res.data);
     } catch (err) {
@@ -48,7 +49,7 @@ export default function CreateProduct({ open, handleClose, onCreated }) {
   const handleSubmit = async () => {
     try {
       await axios.post(
-        "https://detoxtea-fullstack.onrender.com/api/admin/products",
+        `${BACKEND_API_URI}/admin/products`,
         {
           ...form,
           price: Number(form.price), // ép kiểu cho chắc

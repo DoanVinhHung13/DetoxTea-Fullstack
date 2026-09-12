@@ -106,11 +106,16 @@ router.put("/stores/:storeId/status", updateStoreStatusByAdmin);
 // --- Product Management by Admin Routes ---
 router.get("/products", getAllProductsAdmin); // danh sách
 router.post("/products", createProductAdmin); // tạo sản phẩm
+router.get("/products/stats", getProductStatsAdmin); // thống kê sản phẩm (trước :id)
 router.get("/products/:id", getProductDetailsAdmin); // chi tiết sản phẩm
 router.put("/products/:id/status", updateProductStatusAdmin); // cập nhật trạng thái
 router.delete("/products/:id", deleteProductAdmin); // xoá sản phẩm
-router.get("/products/stats", getProductStatsAdmin); // thống kê sản phẩm
 router.get("/products/:id/reviews", getProductReviewsAndStats);
+
+// --- Payment Management Routes (Phải đặt trước /orders/:orderId) ---
+router.get("/orders/payment-management", getOrdersForPaymentManagement);
+router.put("/orders/:orderId/release-payment", releasePaymentToSeller);
+router.put("/orders/:orderId/refund-payment", refundPaymentToBuyer);
 
 // --- Order Management by Admin Routes ---
 router.get("/orders", getAllOrdersAdmin);
@@ -123,11 +128,6 @@ router.delete("/reviews/:id", deleteReviewAdmin); // xoá đánh giá theo ID
 
 // --- Admin Dashboard Routes ---
 router.get("/report", getAdminReport);
-
-// --- Payment Management Routes ---
-router.get("/orders/payment-management", getOrdersForPaymentManagement);
-router.put("/orders/:orderId/release-payment", releasePaymentToSeller);
-router.put("/orders/:orderId/refund-payment", refundPaymentToBuyer);
 
 // Voucher Management Routes
 router.post("/vouchers", createVoucher);

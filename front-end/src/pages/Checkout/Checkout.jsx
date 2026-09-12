@@ -77,6 +77,14 @@ const customModalStyles = {
   },
 };
 
+const formatText = (value) => (value && String(value).trim()) || "";
+
+const joinAddress = (...parts) =>
+  parts
+    .map((part) => formatText(part))
+    .filter(Boolean)
+    .join(", ");
+
 const Checkout = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -119,12 +127,18 @@ const Checkout = () => {
   }, [dispatch, token]);
 
   useEffect(() => {
-    if (addresses.length > 0) {
-      const defaultAddress =
-        addresses.find((address) => address.isDefault) || addresses[0];
-      if (defaultAddress) setSelectedAddressId(defaultAddress._id);
-    }
-  }, [addresses]);
+  if (!addresses.length) {
+    setSelectedAddressId("");
+    return;
+  }
+
+  const defaultAddress =
+    addresses.find((address) => address?.isDefault) || addresses[0];
+
+  if (defaultAddress?._id) {
+    setSelectedAddressId(defaultAddress._id);
+  }
+}, [addresses]);
 
   const validatePhoneNumber = (phone) => /^0\d{9}$/.test(phone);
 
@@ -150,15 +164,47 @@ const Checkout = () => {
   const discount = calculateDiscount();
   const total = Math.max(subtotal - discount, 0);
 
-  const handleAddAddress = () => {
-    if (!validatePhoneNumber(newAddress.phone)) {
-      setPhoneError(
-        "Số điện thoại không hợp lệ. Phải bắt đầu bằng số 0 và có 10 chữ số.",
-      );
-      return;
-    }
+  const handleAddAddress = async () => {
+  const payload = {
+    fullName: newAddress.fullName.trim(),
+    phone: newAddress.phone.trim(),
+    street: newAddress.street.trim(),
+    city: newAddress.city.trim(),
+    state: newAddress.state.trim(),
+    country: newAddress.country.trim(),
+    isDefault: !!newAddress.isDefault,
+  };
+
+  if (!validatePhoneNumber(payload.phone)) {
+    setPhoneError(
+      "Số điện thoại không hợp lệ. Phải bắt đầu bằng số 0 và có 10 chữ số.",
+    );
+    return;
+  }
+
+  if (
+    !payload.fullName ||
+    !payload.phone ||
+    !payload.street ||
+    !payload.city ||
+    !payload.state ||
+    !payload.country
+  ) {
+    setPhoneError("Vui lòng nhập đầy đủ thông tin địa chỉ.");
+    return;
+  }
+
+  try {
     setPhoneError("");
-    dispatch(addAddress(newAddress));
+    const resultAction = await dispatch(addAddress(payload));
+    const createdAddress = resultAction?.payload?.data || resultAction?.payload;
+
+    await dispatch(fetchAddresses());
+
+    if (createdAddress?._id) {
+      setSelectedAddressId(createdAddress._id);
+    }
+
     setIsAddressModalOpen(false);
     setNewAddress({
       fullName: "",
@@ -169,7 +215,10 @@ const Checkout = () => {
       country: "Việt Nam",
       isDefault: false,
     });
-  };
+  } catch (error) {
+    setPhoneError("Không thể thêm địa chỉ mới.");
+  }
+};
 
   const handleApplyCoupon = () => {
     if (couponCode.trim()) {
@@ -335,25 +384,38 @@ const Checkout = () => {
                               label={
                                 <Box sx={{ ml: 1 }}>
                                   <Typography
-                                    variant="body1"
-                                    fontWeight={600}
-                                    fontFamily={fonts.body}
-                                  >
-                                    {address.fullName}
-                                  </Typography>
-                                  <Typography
-                                    variant="body2"
-                                    color="text.secondary"
-                                    fontFamily={fonts.body}
-                                  >
-                                    {address.phone}
-                                  </Typography>
-                                  <Typography
-                                    variant="body2"
-                                    fontFamily={fonts.body}
-                                  >
-                                    {`${address.street}, ${address.city}, ${address.state}, ${address.country}`}
-                                  </Typography>
+                                  variant="body1"
+                                  fontWeight={600}
+                                  fontFamily={fonts.body}
+                                >
+                                  {formatText(address?.fullName) || "Chưa có tên người nhận"}
+                                </Typography>
+
+                                <Typography
+                                  variant="body2"
+                                  color="text.secondary"
+                                  fontFamily={fonts.body}
+                                >
+                                  {formatText(address?.phone) || "Chưa có số điện thoại"}
+                                </Typography>
+
+                                <Typography
+                                  variant="body2"
+                                  fontFamily={fonts.body}
+                                  sx={{ mt: 0.5 }}
+                                >
+                                  <strong>Địa chỉ:</strong> {formatText(address?.street) || "Chưa có địa chỉ"}
+                                </Typography>
+
+                                <Typography
+                                  variant="body2"
+                                  color="text.secondary"
+                                  fontFamily={fonts.body}
+                                >
+                                  <strong>Khu vực:</strong>{" "}
+                                  {joinAddress(address?.city, address?.state, address?.country) ||
+                                    "Chưa có thông tin khu vực"}
+                                </Typography>
                                 </Box>
                               }
                               sx={{

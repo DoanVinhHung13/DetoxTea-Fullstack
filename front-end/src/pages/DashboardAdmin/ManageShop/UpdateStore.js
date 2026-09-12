@@ -11,6 +11,7 @@ import Snackbar from "@mui/material/Snackbar";
 import TextField from "@mui/material/TextField";
 import axios from "axios";
 import * as React from "react";
+import { BACKEND_API_URI } from "../../../utils/constants";
 
 export default function UpdateStore({
   targetStore,
@@ -46,7 +47,7 @@ export default function UpdateStore({
     try {
       const reqBody = { storeName, description, bannerImageURL, status };
       const { data } = await axios.put(
-        `https://detoxtea-fullstack.onrender.com/api/admin/stores/${targetStore._id}/status`, // Chỉ cập nhật status qua endpoint /status
+        `${BACKEND_API_URI}/admin/stores/${targetStore._id}/status`, // Chỉ cập nhật status qua endpoint /status
         { status }, // Chỉ gửi status để cập nhật trạng thái
         {
           headers: {
@@ -61,7 +62,7 @@ export default function UpdateStore({
         bannerImageURL !== targetStore.bannerImageURL
       ) {
         await axios.put(
-          `https://detoxtea-fullstack.onrender.com/api/admin/stores/${targetStore._id}`,
+          `${BACKEND_API_URI}/admin/stores/${targetStore._id}`,
           { storeName, description, bannerImageURL },
           {
             headers: {

@@ -226,11 +226,18 @@ const ManageOrder = () => {
   ];
 
   return (
-    <div style={{ padding: '8px' }}>
+    <Card
+      style={{
+        borderRadius: "16px",
+        border: "1px solid #e2e8f0",
+        boxShadow: "0 1px 3px rgba(0,0,0,0.05), 0 10px 15px -5px rgba(0,0,0,0.02)",
+        padding: "8px",
+      }}
+    >
       <Row justify="space-between" align="middle" style={{ marginBottom: '24px' }}>
         <Col>
-          <Title level={3} style={{ margin: 0 }}>
-            <ShoppingCartOutlined /> Quản lý đơn hàng
+          <Title level={3} style={{ margin: 0, color: '#0f172a', fontWeight: 700 }}>
+            Quản lý đơn hàng
           </Title>
           <Text type="secondary">
             Xem và cập nhật trạng thái các đơn hàng trong hệ thống
@@ -421,7 +428,7 @@ const ManageOrder = () => {
           </div>
         </div>
       </Modal>
-    </div>
+    </Card>
   );
 };
 

@@ -1,9 +1,8 @@
-// ManageStore.js
-import Grid from "@mui/material/Grid";
-import Paper from "@mui/material/Paper";
+import { Box, Card } from "@mui/material";
 import axios from "axios";
 import * as React from "react";
 import { useOutletContext } from "react-router-dom";
+import { BACKEND_API_URI } from "../../../utils/constants";
 import Stores from "./Stores";
 
 export default function ManageStore() {
@@ -21,7 +20,7 @@ export default function ManageStore() {
   const updateStoreList = async (page = 1) => {
     try {
       const res = await axios.get(
-        `https://detoxtea-fullstack.onrender.com/api/admin/stores?page=${page}&limit=10&withRatings=true`,
+        `${BACKEND_API_URI}/admin/stores?page=${page}&limit=10&withRatings=true`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
@@ -47,18 +46,26 @@ export default function ManageStore() {
   };
 
   return (
-    <>
-      <Grid item xs={12}>
-        <Paper sx={{ p: 2, display: "flex", flexDirection: "column" }}>
-          <Stores
-            stores={stores}
-            onStoreUpdated={updateStoreList}
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={handlePageChange}
-          />
-        </Paper>
-      </Grid>
-    </>
+    <Box>
+      <Card
+        sx={{
+          borderRadius: "16px",
+          border: "1px solid #e2e8f0",
+          boxShadow: "0 1px 3px rgba(0,0,0,0.05), 0 10px 15px -5px rgba(0,0,0,0.02)",
+          p: { xs: 2, sm: 3 },
+          bgcolor: "#ffffff",
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        <Stores
+          stores={stores}
+          onStoreUpdated={updateStoreList}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+        />
+      </Card>
+    </Box>
   );
 }
